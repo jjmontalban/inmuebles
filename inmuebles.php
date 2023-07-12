@@ -23,7 +23,7 @@
     wp_enqueue_media();
 
     // Cargar la biblioteca de Google Maps JavaScript API
-    wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCmfeK4KkbVFVCjYQW3XpZpzrxaY5z6tQM', array(), null, true);
+    wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=', array(), null, true);
 
     // Registrar el script personalizado
     wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/main.js', array('jquery', 'jquery-ui-sortable', 'media'), '1.0', true);
