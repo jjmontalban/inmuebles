@@ -1,0 +1,24 @@
+.galeria-imagen {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 10px;
+    position: relative;
+}
+
+.galeria-imagen-inner {
+    position: relative;
+}
+
+.galeria-imagen img {
+    height: 125px;
+}
+
+.galeria-imagen .remove-imagen {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    display: block; /* Mostrar el botón de eliminar siempre */
+}
+
+
+
