@@ -1,3 +1,5 @@
+
+
 jQuery(document).ready(function($) {
 
     // Obligatoriedad del numero de la calle
@@ -7,132 +9,132 @@ jQuery(document).ready(function($) {
     });
 
 
-    // Mostrar u ocultar campos según el tipo de inmueble seleccionado
-    var tipoInmueble = $('#tipo_inmueble').val();
-    mostrarCamposTipoInmueble(tipoInmueble);
 
+       // Definir la estructura de los campos por tipo de inmueble
+       var camposPorTipoInmueble = {
+        piso: [
+        // Campos para el tipo de inmueble "piso"
+        { campo: 'campo_m_construidos', requerido: true },
+        { campo: 'campo_num_dormitorios', requerido: true },
+        { campo: 'campo_num_banos', requerido: true },
+        { campo: 'campo_planta', requerido: true },
+        { campo: 'campo_cert_energ', requerido: true },
+        { campo: 'campo_estado_cons', requerido: true },
+        { campo: 'campo_int_ext', requerido: true },
+        { campo: 'campo_planta', requerido: true },
+        { campo: 'campo_ascensor', requerido: true },
+        { campo: 'campo_caracteristica_piso', requerido: false }
+        ],
+        casa_chalet: [
+        // Campos para el tipo de inmueble "casa_chalet"
+        { campo: 'campo_m_construidos', requerido: true },
+        { campo: 'campo_num_dormitorios', requerido: true },
+        { campo: 'campo_num_banos', requerido: true },
+        { campo: 'campo_cal_emis', requerido: true },
+        { campo: 'campo_cert_energ', requerido: true },
+        { campo: 'campo_estado_cons', requerido: true },
+        { campo: 'campo_tipologia_chalet', requerido: true },
+        { campo: 'campo_m_parcela', requerido: false },
+        { campo: 'campo_num_plantas', requerido: false }
+        ],
+        casa_rustica: [
+        // Campos para el tipo de inmueble "casa_rustica"
+        { campo: 'campo_m_construidos', requerido: true },
+        { campo: 'campo_num_dormitorios', requerido: true },
+        { campo: 'campo_num_banos', requerido: true },
+        // Resto de campos para "casa_rustica"
+        ],
+        local: [
+        // Campos para el tipo de inmueble "local"
+        { campo: 'campo_tipo_local', requerido: true },
+        { campo: 'campo_ubicacion_local', requerido: true },
+        { campo: 'campo_metros_lineales', requerido: true },
+        // Resto de campos para "local"
+        ],
+        oficina: [
+        // Campos para el tipo de inmueble "oficina"
+        { campo: 'campo_tipo_oficina', requerido: true },
+        { campo: 'campo_m_construidos', requerido: true },
+        // Resto de campos para "oficina"
+        ],
+        garaje: [
+        // Campos para el tipo de inmueble "garaje"
+        { campo: 'campo_num_plazas', requerido: true },
+        // Resto de campos para "garaje"
+        ],
+        terreno: [
+        // Campos para el tipo de inmueble "terreno"
+        { campo: 'campo_tipo_terreno', requerido: true },
+        // Resto de campos para "terreno"
+        ]
+    };
+
+
+/**
+ * Mostrar u ocultar campos según el tipo de inmueble seleccionado
+ */
+    
+// Función para mostrar u ocultar los campos según el tipo de inmueble seleccionado
+function mostrarCamposTipoInmueble(tipoInmueble) {
+    // Quitar el atributo required de todos los campos que comienzan con "campo_"
+    $('[id^="campo_"] input').prop('required', false);
+    
+    // Ocultar todos los campos que comienzan con "campo_"
+    $('[id^="campo_"]').hide();
+    
+    // Obtener los campos correspondientes al tipo de inmueble seleccionado
+    var campos = camposPorTipoInmueble[tipoInmueble];
+    
+    // Verificar si campos es un arreglo válido
+    if (Array.isArray(campos)) {
+        // Mostrar los campos correspondientes y establecer el atributo required
+        campos.forEach(function(campo) {
+            console.log('Mostrando campo: ' + campo.campo); // Verificar si se muestra en la consola
+
+            var campoElement = $('#' + campo.campo);
+            campoElement.show().find('input').prop('required', campo.requerido);
+        });
+    }
+}
+
+    // Obtener el tipo de inmueble inicial
+    var tipoInmueble = $('#tipo_inmueble').val();
+
+     // Mostrar los campos iniciales según el tipo de inmueble seleccionado
+     mostrarCamposTipoInmueble(tipoInmueble);
+
+     // Asignar el evento 'change' al elemento #tipo_inmueble
     $('#tipo_inmueble').on('change', function() {
         var tipoInmueble = $(this).val();
         mostrarCamposTipoInmueble(tipoInmueble);
     });
 
-    function mostrarCamposTipoInmueble(tipoInmueble) {
 
-        if (tipoInmueble === 'piso') {
-            $('.campo_planta').show();
-            $('.campo_planta input').prop('required', true);
-            $('.campo_caracteristica_piso').show();
-            $('.campo_caracteristica_piso input').prop('required', true);
-            $('.campo_ascensor').show();
-            $('.campo_ascensor input').prop('required', true);
-        }
-        else {
-            $('.campo_planta').hide();
-            $('.campo_planta input').prop('required', false);
-            $('.campo_caracteristica_piso').hide();
-            $('.campo_caracteristica_piso input').prop('required', false);
-            $('.campo_ascensor').hide();
-            $('.campo_ascensor input').prop('required', false);
-        } 
 
-        if (tipoInmueble === 'casa_chalet') {
-            $('.campo_metros_parcela').show();
-            $('.campo_metros_parcela input').prop('required', true);
-            $('.campo_tipologia_chalet').show();
-            $('.campo_tipologia_chalet input').prop('required', true);
-            $('.campo_num_plantas').show();
-            $('.campo_num_plantas input').prop('required', true);
-        } else {
-            $('.campo_metros_parcela').hide();
-            $('.campo_metros_parcela input').prop('required', false);
-            $('.campo_tipologia_chalet').hide();
-            $('.campo_tipologia_chalet input').prop('required', false);
-            $('.campo_num_plantas').hide();
-            $('.campo_num_plantas input').prop('required', false);
-        }
 
-        if (tipoInmueble === 'casa_rustica') {
-            $('.campo_metros_parcela').show();
-            $('.campo_metros_parcela input').prop('required', true);
-            $('.campo_num_plantas').show();
-            $('.campo_num_plantas input').prop('required', true);
-            $('.campo_tipo_casa_rustica').show();
-            $('.campo_tipo_casa_rustica input').prop('required', true);
-        } else {
-            $('.campo_metros_parcela').hide();
-            $('.campo_metros_parcela input').prop('required', false);
-            $('.campo_num_plantas').hide();
-            $('.campo_num_plantas input').prop('required', false);
-            $('.campo_tipo_casa_rustica').hide();
-            $('.campo_tipo_casa_rustica input').prop('required', false);
-        }
 
-        if (tipoInmueble === 'local') {
-            $('.campo_num_estancias').show();
-            $('.campo_num_estancias input').prop('required', true);
-            $('.campo_num_banos').show();
-            $('.campo_num_banos input').prop('required', true);
-            $('.campos_caracteristicas_local').show();
-            $('.campos_caracteristicas_local input').prop('required', true);
-            $('.campo_ubicacion_local').show();
-            $('.campo_ubicacion_local input').prop('required', true);
-            $('.campo_metros_lineales').show();
-            $('.campo_metros_lineales input').prop('required', true);
-            $('.campo_num_escaparates').show();
-            $('.campo_num_escaparates input').prop('required', true);
-            
-        } else {
-            $('.campo_num_estancias').hide();
-            $('.campo_num_estancias input').prop('required', false);
-            $('.campo_num_banos').hide();
-            $('.campo_num_banos input').prop('required', false);
-            $('.campos_caracteristicas_local').hide();
-            $('.campos_caracteristicas_local input').prop('required', false);
-            $('.campo_ubicacion_local').hide();
-            $('.campo_ubicacion_local input').prop('required', false);
-            $('.campo_metros_lineales').hide();
-            $('.campo_metros_lineales input').prop('required', false);
-            $('.campo_num_escaparates').hide();
-            $('.campo_num_escaparates input').prop('required', false);
-        }
-        
-        if (tipoInmueble === 'oficina') {
-            /* $('.campo_num_plantas').show();
-            $('.campo_num_plantas input').prop('required', true);
-            $('.campo_tipo_casa_rustica').show();
-            $('.campo_tipo_casa_rustica input').prop('required', true); */
-        } else {
-            /* $('.campo_num_plantas').hide();
-            $('.campo_num_plantas input').prop('required', false);
-            $('.campo_tipo_casa_rustica').hide();
-            $('.campo_tipo_casa_rustica input').prop('required', false); */
-        }
-        
-        if (tipoInmueble === 'garaje') {
-            $('.campo_metros_plaza').show();
-            $('.campo_metros_plaza input').prop('required', true);
-            $('.campo_plaza').show();
-            $('.campo_plaza input').prop('required', true);
-        } else {
-            $('.campo_metros_plaza').hide();
-            $('.campo_metros_plaza input').prop('required', false);
-            $('.campo_plaza').hide();
-            $('.campo_plaza input').prop('required', false);
-        }
-        
-        if (tipoInmueble === 'terreno') {
-            /* $('.campo_num_plantas').show();
-            $('.campo_num_plantas input').prop('required', true);
-            $('.campo_tipo_casa_rustica').show();
-            $('.campo_tipo_casa_rustica input').prop('required', true); */
-        } else {
-            /* $('.campo_num_plantas').hide();
-            $('.campo_num_plantas input').prop('required', false);
-            $('.campo_tipo_casa_rustica').hide();
-            $('.campo_tipo_casa_rustica input').prop('required', false); */
-        }
-        
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // Mostrar u ocultar campos según el valor seleccionado en el campo Tipo de Operación
@@ -161,6 +163,8 @@ jQuery(document).ready(function($) {
             $('.campo_fianza').hide();
         }
     }
+
+    
 
 
    /* GALERIA DE IMAGENES */ 
@@ -207,72 +211,78 @@ jQuery(document).ready(function($) {
 
 
 
+    /* MAPA */
+    
+    // Asigna el evento al botón "Validar Dirección"
+    $('#validar_direccion').on('click', function(event) {
+        event.preventDefault(); // Evita el comportamiento predeterminado del enlace
+        
+        // Obtén los valores de los campos necesarios
+        var nombreCalle = document.getElementById('nombre_calle').value;
+        var numero = document.getElementById('numero').value;
+        var localidad = document.getElementById('localidad').value;
+    
+        // Verificar si algún campo está vacío
+        if (nombreCalle === '' || numero === '' || localidad === '') {
+            alert('Por favor, complete todos los campos de dirección.');
+            return;
+        }
 
-    // Obtén el valor de la dirección del formulario
-    var direccion = $('#direccion').val();
-
-    // Crea un objeto geocoder de Google Maps
-    var geocoder = new google.maps.Geocoder();
-
-    // Realiza la geocodificación de la dirección
-    geocoder.geocode({ 'address': direccion }, function(results, status) {
-    if (status === 'OK') {
-        // Obtiene la latitud y longitud de los resultados de la geocodificación
-        var latitud = results[0].geometry.location.lat();
-        var longitud = results[0].geometry.location.lng();
-
-        // Crea un objeto de mapa de Google Maps y muestra el mapa en un elemento HTML con el ID "mapa"
-        var mapa = new google.maps.Map(document.getElementById('mapa'), {
-        center: { lat: latitud, lng: longitud },
-        zoom: 14
+        // Concatenar los valores para formar la dirección completa
+        var direccion = nombreCalle + ' ' + numero + ', ' + localidad;
+        
+        // Crea el objeto Geocoder
+        var geocoder = new google.maps.Geocoder();
+    
+        // Geocodifica la dirección para obtener la ubicación
+        geocoder.geocode({ address: direccion }, function(results, status) {
+        if (status === 'OK' && results.length > 0) {
+            // Obtén la ubicación geográfica
+            var ubicacion = results[0].geometry.location;
+    
+            // Crea el mapa centrado en la ubicación
+            var mapa = new google.maps.Map(document.getElementById('mapa'), {
+            center: ubicacion,
+            zoom: 18
+            });
+    
+            // Agrega un marcador en la ubicación
+            var marcador = new google.maps.Marker({
+            position: ubicacion,
+            map: mapa,
+            title: 'Ubicación'
+            });
+    
+            // Muestra el modal con el mapa
+            $('#mapaModal').show();
+        } else {
+            // Maneja el error si la dirección no es válida
+            console.error('Error al geocodificar la dirección:', status);
+        }
         });
-
-        // Agrega un marcador en la ubicación del inmueble en el mapa
-        var marcador = new google.maps.Marker({
-        position: { lat: latitud, lng: longitud },
-        map: mapa,
-        title: 'Ubicación del Inmueble'
-        });
-    } else {
-        console.log('Error al geolocalizar la dirección: ' + status);
-    }
+    });
+  
+    // Asigna el evento al botón "Cerrar Modal"
+    $('#cerrar_modal').on('click', function() {
+        // Oculta el modal
+        $('#mapaModal').hide();
     });
 
 
-
-    $('#validar_direccion').on('click', function() {
-        var nombreCalle = $('#nombre_calle').val();
-        var numero = $('#numero').val();
-        var localidad = $('#localidad').val();
+    document.getElementById('mapa_correcto').addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        // Obtener la ubicación del marcador en el mapa
+        var ubicacionMarcador = marcador.getPosition();
       
-        var direccion = nombreCalle + ' ' + numero + ', ' + localidad;
+        // Guardar la ubicación en el campo oculto
+        document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
+      });
       
-        var geocoder = new google.maps.Geocoder();
-      
-        geocoder.geocode({ 'address': direccion }, function(results, status) {
-          if (status === 'OK') {
-            var latitud = results[0].geometry.location.lat();
-            var longitud = results[0].geometry.location.lng();
-      
-            var mapa = new google.maps.Map(document.getElementById('mapa'), {
-              center: { lat: latitud, lng: longitud },
-              zoom: 14
-            });
-      
-            var marcador = new google.maps.Marker({
-              position: { lat: latitud, lng: longitud },
-              map: mapa,
-              title: 'Ubicación del Inmueble'
-            });
-          } else {
-            console.log('Error al geolocalizar la dirección: ' + status);
-          }
-        });
+      document.getElementById('mapa_correcto').addEventListener('click', function() {
+        document.getElementById('mapaModal').style.display = 'none';
       });
 
 
-
-
-
-
 });
+
