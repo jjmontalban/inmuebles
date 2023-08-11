@@ -9,93 +9,156 @@ jQuery(document).ready(function($) {
     });
 
 
-
-       // Definir la estructura de los campos por tipo de inmueble
-       var camposPorTipoInmueble = {
+    /**
+     * Mostrar u ocultar campos según el tipo de inmueble seleccionado
+     */
+    // Definir la estructura de los campos por tipo de inmueble
+    var camposPorTipoInmueble = {
         piso: [
-        // Campos para el tipo de inmueble "piso"
-        { campo: 'campo_m_construidos', requerido: true },
-        { campo: 'campo_num_dormitorios', requerido: true },
-        { campo: 'campo_num_banos', requerido: true },
-        { campo: 'campo_planta', requerido: true },
-        { campo: 'campo_cert_energ', requerido: true },
-        { campo: 'campo_estado_cons', requerido: true },
-        { campo: 'campo_int_ext', requerido: true },
-        { campo: 'campo_planta', requerido: true },
-        { campo: 'campo_ascensor', requerido: true },
-        { campo: 'campo_caracteristica_piso', requerido: false }
+            // Campos para el tipo de inmueble "piso"
+            { campo: 'campo_m_construidos', requerido: true },
+            { campo: 'campo_num_dormitorios', requerido: true },
+            { campo: 'campo_num_banos', requerido: true },
+            { campo: 'campo_planta', requerido: true },
+            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_estado_cons', requerido: true },
+            { campo: 'campo_int_ext', requerido: true },
+            { campo: 'campo_planta', requerido: true },
+            { campo: 'campo_ascensor', requerido: true },
+            { campo: 'campo_cal_emis', requerido: true },
+            { campo: 'campo_precio_venta', requerido: true },
+            
+            { campo: 'campo_bloque', requerido: false },
+            { campo: 'consumo_energ', requerido: false },
+            { campo: 'emisiones', requerido: false },
+            { campo: 'campo_escalera', requerido: false },
+            { campo: 'campo_urbanizacion', requerido: false },
+            { campo: 'campo_caracteristicas_piso', requerido: false },
+            { campo: 'campo_otras_caracteristicas', requerido: false },
+            { campo: 'campo_m_utiles', requerido: false },
+            { campo: 'campo_orientacion', requerido: false },
+            { campo: 'campo_calefaccion', requerido: false },
+            { campo: 'campo_ano_edificio', requerido: false },
+            { campo: 'campo_calefaccion', requerido: false }
         ],
+        
         casa_chalet: [
-        // Campos para el tipo de inmueble "casa_chalet"
-        { campo: 'campo_m_construidos', requerido: true },
-        { campo: 'campo_num_dormitorios', requerido: true },
-        { campo: 'campo_num_banos', requerido: true },
-        { campo: 'campo_cal_emis', requerido: true },
-        { campo: 'campo_cert_energ', requerido: true },
-        { campo: 'campo_estado_cons', requerido: true },
-        { campo: 'campo_tipologia_chalet', requerido: true },
-        { campo: 'campo_m_parcela', requerido: false },
-        { campo: 'campo_num_plantas', requerido: false }
+            // Campos para el tipo de inmueble "casa_chalet"
+            { campo: 'campo_tipologia_chalet', requerido: true },
+            { campo: 'campo_m_construidos', requerido: true },
+            { campo: 'campo_num_dormitorios', requerido: true },
+            { campo: 'campo_num_banos', requerido: true },
+            { campo: 'campo_cal_emis', requerido: true },
+            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_estado_cons', requerido: true },
+            
+            
+            { campo: 'campo_m_parcela', requerido: false },
+            { campo: 'campo_m_utiles', requerido: false },
+            { campo: 'campo_num_plantas', requerido: false },
+            { campo: 'consumo_energ', requerido: false },
+            { campo: 'emisiones', requerido: false },
+            { campo: 'campo_orientacion', requerido: false },
+            { campo: 'campo_otras_caracteristicas', requerido: false },
+            { campo: 'campo_calefaccion', requerido: false },
+            { campo: 'campo_ano_edificio', requerido: false },
         ],
+        
         casa_rustica: [
-        // Campos para el tipo de inmueble "casa_rustica"
-        { campo: 'campo_m_construidos', requerido: true },
-        { campo: 'campo_num_dormitorios', requerido: true },
-        { campo: 'campo_num_banos', requerido: true },
-        // Resto de campos para "casa_rustica"
+            { campo: 'campo_tipo_rustica', requerido: true },
+            { campo: 'campo_m_construidos', requerido: true },
+            { campo: 'campo_num_dormitorios', requerido: true },
+            { campo: 'campo_num_banos', requerido: true },
+            { campo: 'campo_cal_emis', requerido: true },
+            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_estado_cons', requerido: true },
+            
+            { campo: 'campo_m_parcela', requerido: false },
+            { campo: 'campo_m_utiles', requerido: false },
+            { campo: 'campo_num_plantas', requerido: false },
+            { campo: 'campo_orientacion', requerido: false },
+            { campo: 'campo_otras_caracteristicas', requerido: false },
+            { campo: 'campo_calefaccion', requerido: false },
+            { campo: 'campo_ano_edificio', requerido: false },
+            
+            
         ],
+        
         local: [
-        // Campos para el tipo de inmueble "local"
-        { campo: 'campo_tipo_local', requerido: true },
-        { campo: 'campo_ubicacion_local', requerido: true },
-        { campo: 'campo_metros_lineales', requerido: true },
-        // Resto de campos para "local"
+            { campo: 'campo_planta', requerido: true },
+            { campo: 'campo_m_construidos', requerido: true },
+            { campo: 'campo_tipo_local', requerido: true },
+            { campo: 'campo_cal_emis', requerido: true },
+            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_estado_cons', requerido: true },
+            { campo: 'campo_ubicacion_local', requerido: true },
+            
+            
+            { campo: 'campo_m_utiles', requerido: false },
+            { campo: 'campo_metros_lineales', requerido: false },
+            { campo: 'campo_estancias', requerido: false },
+            { campo: 'campo_escaparates', requerido: false },
+            { campo: 'campo_num_plantas', requerido: false },
+            { campo: 'campo_num_banos', requerido: false },
+            { campo: 'campo_caracteristicas_local', requerido: false },
         ],
+
         oficina: [
-        // Campos para el tipo de inmueble "oficina"
-        { campo: 'campo_tipo_oficina', requerido: true },
-        { campo: 'campo_m_construidos', requerido: true },
-        // Resto de campos para "oficina"
+            { campo: 'campo_tipo_oficina', requerido: true },
+            { campo: 'campo_m_construidos', requerido: true },
+            { campo: 'campo_uso_excl', requerido: true },
+            { campo: 'campo_estado_cons', requerido: true },
+            { campo: 'campo_int_ext', requerido: true },
+            { campo: 'campo_distribucion', requerido: true },
+            { campo: 'campo_aire_acond', requerido: true },
+            { campo: 'campo_cal_emis', requerido: true },
+            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_num_ascensores', requerido: true },
+            { campo: 'campo_num_plazas', requerido: true },
         ],
+
         garaje: [
-        // Campos para el tipo de inmueble "garaje"
-        { campo: 'campo_num_plazas', requerido: true },
-        // Resto de campos para "garaje"
+            { campo: 'campo_tipo_plaza', requerido: true },
         ],
+
         terreno: [
-        // Campos para el tipo de inmueble "terreno"
-        { campo: 'campo_tipo_terreno', requerido: true },
-        // Resto de campos para "terreno"
+            { campo: 'campo_tipo_terreno', requerido: true },
+            { campo: 'campo_acceso_rodado', requerido: true },
         ]
+            
     };
+    
+    // Función para mostrar u ocultar los campos según el tipo de inmueble seleccionado
+    function mostrarCamposTipoInmueble(tipoInmueble) {
+        // Quitar el atributo required de todos los campos que comienzan con "campo_"
+        $('[id^="campo_"]').find('input, select').prop('required', false);
+        // Ocultar todos los campos que comienzan con "campo_"
+        $('[id^="campo_"]').hide();
+    
+        // Obtener los campos correspondientes al tipo de inmueble seleccionado
+        var campos = camposPorTipoInmueble[tipoInmueble];
+    
+        // Verificar si campos es un arreglo válido
+if (Array.isArray(campos)) {
+    // Mostrar los campos correspondientes y establecer el atributo required
+    campos.forEach(function(campo) {
+        var campoElement = $('#' + campo.campo);
+        campoElement.show();
+        var selectElement = campoElement.find('select');
+        if (selectElement.length > 0) {
+            selectElement.prop('required', campo.requerido);
+        } else {
+            campoElement.find('input').prop('required', campo.requerido);
+        }
 
-
-/**
- * Mostrar u ocultar campos según el tipo de inmueble seleccionado
- */
-    
-// Función para mostrar u ocultar los campos según el tipo de inmueble seleccionado
-function mostrarCamposTipoInmueble(tipoInmueble) {
-    // Quitar el atributo required de todos los campos que comienzan con "campo_"
-    $('[id^="campo_"] input').prop('required', false);
-    
-    // Ocultar todos los campos que comienzan con "campo_"
-    $('[id^="campo_"]').hide();
-    
-    // Obtener los campos correspondientes al tipo de inmueble seleccionado
-    var campos = camposPorTipoInmueble[tipoInmueble];
-    
-    // Verificar si campos es un arreglo válido
-    if (Array.isArray(campos)) {
-        // Mostrar los campos correspondientes y establecer el atributo required
-        campos.forEach(function(campo) {
-            console.log('Mostrando campo: ' + campo.campo); // Verificar si se muestra en la consola
-
-            var campoElement = $('#' + campo.campo);
-            campoElement.show().find('input').prop('required', campo.requerido);
-        });
-    }
+        // Agregar el if-else para el campo con id "emisiones"
+        if (campo.campo === 'emisiones' || campo.campo === 'consumo_energ') {
+            campoElement.find('input').prop('required', false);
+        }
+    });
 }
+    }
+    
 
     // Obtener el tipo de inmueble inicial
     var tipoInmueble = $('#tipo_inmueble').val();
@@ -110,34 +173,27 @@ function mostrarCamposTipoInmueble(tipoInmueble) {
     });
 
 
+    /**
+     * Mostrar u ocultar campos según el valor seleccionado en el campo Acceso rodado
+     */
+    var accesoRodado = $('input[name="acceso_rodado"]:checked').val();
+    //mostrarSelectTipoAcceso(accesoRodado);
+
+    $('input[name="acceso_rodado"]').on('change', function() {
+        var accesoRodado = $(this).val();
+        mostrarSelectTipoAcceso(accesoRodado);
+    });
+
+    function mostrarSelectTipoAcceso(accesoRodado) {
+        if (accesoRodado === 'si_tiene') {
+            $('.campo_si_rodado').show();
+        }
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Mostrar u ocultar campos según el valor seleccionado en el campo Tipo de Operación
+    /**
+     * Mostrar u ocultar campos según el valor seleccionado en el campo Tipo de Operación
+     */
     var tipoOperacion = $('input[name="tipo_operacion"]:checked').val();
     mostrarCamposTipoOperacion(tipoOperacion);
 
@@ -148,26 +204,31 @@ function mostrarCamposTipoInmueble(tipoInmueble) {
 
     function mostrarCamposTipoOperacion(tipoOperacion) {
         if (tipoOperacion === 'venta') {
-            $('.campo_precio_venta').show();
-            $('.campo_gastos_comunidad').show();
+            $('#campo_precio_venta').show().find('input').prop('required', true);
+            $('#campo_gastos_comunidad').show().find('input').prop('required', false);
+            $('#campo_precio_alquiler').hide().find('input').prop('required', false);
+            $('#campo_fianza').hide().find('input').prop('required', false);
+        
+        } else if (tipoOperacion === 'alquiler') {
+            $('#campo_precio_venta').hide().find('input').prop('required', false);
+            $('#campo_gastos_comunidad').hide().find('input').prop('required', false);
+            $('#campo_precio_alquiler').show().find('input').prop('required', true);
+            $('#campo_fianza').show().find('input').prop('required', false);
+        
         } else {
-            $('.campo_precio_venta').hide();
-            $('.campo_gastos_comunidad').hide();
-        }
-
-        if (tipoOperacion === 'alquiler') {
-            $('.campo_precio_alquiler').show();
-            $('.campo_fianza').show();
-        } else {
-            $('.campo_precio_alquiler').hide();
-            $('.campo_fianza').hide();
+            $('#campo_precio_venta').hide().find('input').prop('required', false);
+            $('#campo_gastos_comunidad').hide().find('input').prop('required', false);
+            $('#campo_precio_alquiler').hide().find('input').prop('required', false);
+            $('#campo_fianza').hide().find('input').prop('required', false);
         }
     }
 
     
 
 
-   /* GALERIA DE IMAGENES */ 
+   /**
+     * Galeria de imagenes
+    */
    
    // Agregar imagen
    $('.agregar-imagen').on('click', function() {
@@ -210,9 +271,9 @@ function mostrarCamposTipoInmueble(tipoInmueble) {
     });
 
 
-
-    /* MAPA */
-    
+    /**
+     * MAPA
+    */
     // Asigna el evento al botón "Validar Dirección"
     $('#validar_direccion').on('click', function(event) {
         event.preventDefault(); // Evita el comportamiento predeterminado del enlace
@@ -279,9 +340,9 @@ function mostrarCamposTipoInmueble(tipoInmueble) {
         document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
       });
       
-      document.getElementById('mapa_correcto').addEventListener('click', function() {
+    document.getElementById('mapa_correcto').addEventListener('click', function() {
         document.getElementById('mapaModal').style.display = 'none';
-      });
+    });
 
 
 });

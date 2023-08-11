@@ -43,3 +43,10 @@
   display: block;
   margin: 10px auto;
 }
+
+/* Estilos para el placeholder */
+input::placeholder {
+    text-align: right; /* Alinea el placeholder a la derecha */
+    color: #bbb; /* Establece el color más apagado para el placeholder */
+  }
+
