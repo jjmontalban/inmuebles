@@ -33,8 +33,8 @@ jQuery(document).ready(function($) {
             { campo: 'emisiones', requerido: false },
             { campo: 'campo_escalera', requerido: false },
             { campo: 'campo_urbanizacion', requerido: false },
-            { campo: 'campo_caracteristicas_piso', requerido: false },
-            { campo: 'campo_otras_caracteristicas', requerido: false },
+            { campo: 'campo_caract_inm', requerido: false },
+            { campo: 'campo_otra_caract_inm', requerido: false },
             { campo: 'campo_m_utiles', requerido: false },
             { campo: 'campo_orientacion', requerido: false },
             { campo: 'campo_calefaccion', requerido: false },
@@ -59,7 +59,8 @@ jQuery(document).ready(function($) {
             { campo: 'consumo_energ', requerido: false },
             { campo: 'emisiones', requerido: false },
             { campo: 'campo_orientacion', requerido: false },
-            { campo: 'campo_otras_caracteristicas', requerido: false },
+            { campo: 'campo_caract_inm', requerido: false },
+            { campo: 'campo_otra_caract_inm', requerido: false },
             { campo: 'campo_calefaccion', requerido: false },
             { campo: 'campo_ano_edificio', requerido: false },
         ],
@@ -77,7 +78,8 @@ jQuery(document).ready(function($) {
             { campo: 'campo_m_utiles', requerido: false },
             { campo: 'campo_num_plantas', requerido: false },
             { campo: 'campo_orientacion', requerido: false },
-            { campo: 'campo_otras_caracteristicas', requerido: false },
+            { campo: 'campo_caract_inm', requerido: false },
+            { campo: 'campo_otra_caract_inm', requerido: false },
             { campo: 'campo_calefaccion', requerido: false },
             { campo: 'campo_ano_edificio', requerido: false },
             
@@ -95,12 +97,13 @@ jQuery(document).ready(function($) {
             
             
             { campo: 'campo_m_utiles', requerido: false },
-            { campo: 'campo_metros_lineales', requerido: false },
-            { campo: 'campo_estancias', requerido: false },
-            { campo: 'campo_escaparates', requerido: false },
+            { campo: 'campo_m_lineales', requerido: false },
+            { campo: 'campo_num_estancias', requerido: false },
+            { campo: 'campo_num_escap', requerido: false },
             { campo: 'campo_num_plantas', requerido: false },
             { campo: 'campo_num_banos', requerido: false },
-            { campo: 'campo_caracteristicas_local', requerido: false },
+            { campo: 'campo_caract_local', requerido: false },
+            { campo: 'campo_ano_edificio', requerido: false },
         ],
 
         oficina: [

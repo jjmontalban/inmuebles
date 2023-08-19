@@ -23,12 +23,19 @@ function mostrar_campos_personalizados( $post ) {
     $precio_alquiler = get_post_meta($post->ID, 'precio_alquiler', true);
     $fianza = get_post_meta($post->ID, 'fianza', true);
     $calefaccion = get_post_meta($post->ID, 'calefaccion', true);
-    $caracteristica_piso = get_post_meta($post->ID, 'caracteristica_piso', false);
+
+
+    // Obtener los valores de los checkboxes de caract_inm como un array
+    // Verificar si el valor existe y, de lo contrario, asignar un array vacío
+    $caract_inm = is_array($caract_inm = get_post_meta($post->ID, 'caract_inm', true)) ? $caract_inm : array();
+    
 
     $m_construidos = get_post_meta($post->ID, 'm_construidos', true);
     $m_utiles = get_post_meta($post->ID, 'm_utiles', true);
+    $m_lineales = get_post_meta($post->ID, 'm_lineales', true);
     $num_dormitorios = get_post_meta($post->ID, 'num_dormitorios', true);
     $num_banos = get_post_meta($post->ID, 'num_banos', true);
+    $num_escap = get_post_meta($post->ID, 'num_escap', true);
 
     $calif_consumo_energ = get_post_meta($post->ID, 'calif_consumo_energ', true);
     $consumo_energ = get_post_meta($post->ID, 'consumo_energ', true);
@@ -57,11 +64,11 @@ function mostrar_campos_personalizados( $post ) {
     
     // Obtener los valores de los checkboxes de orientación como un array
     // Verificar si el valor existe y, de lo contrario, asignar un array vacío
-    $otras_caracteristicas = is_array($otras_caracteristicas = get_post_meta($post->ID, 'otras_caracteristicas', true)) ? $otras_caracteristicas : array();
+    $otra_caract_inm = is_array($otra_caract_inm = get_post_meta($post->ID, 'otra_caract_inm', true)) ? $otra_caract_inm : array();
    
     // Obtener los valores de los checkboxes de orientación como un array
     // Verificar si el valor existe y, de lo contrario, asignar un array vacío
-    $caracteristicas_local = is_array($caracteristicas_local = get_post_meta($post->ID, 'caracteristicas_local', true)) ? $caracteristicas_local : array();
+    $caract_local = is_array($caract_local = get_post_meta($post->ID, 'caract_local', true)) ? $caract_local : array();
     
     $residencial_altura = get_post_meta($post->ID, 'residencial_altura', true);
     $residencial_unif = get_post_meta($post->ID, 'residencial_unif', true);
@@ -72,26 +79,18 @@ function mostrar_campos_personalizados( $post ) {
     $dotaciones = get_post_meta($post->ID, 'dotaciones', true);
     $otra = get_post_meta($post->ID, 'otra', true);
     
-    $humos = get_post_meta($post->ID, 'humos', true);
-    $cocina_equipada = get_post_meta($post->ID, 'cocina_equipada', true);
-    $puerta_seguridad = get_post_meta($post->ID, 'puerta_seguridad', true);
-    $alarma = get_post_meta($post->ID, 'alarma', true);
-    $almacen = get_post_meta($post->ID, 'almacen', true);
     $ascensor_garaje = get_post_meta($post->ID, 'ascensor_garaje', true);
     $persona_seguridad = get_post_meta($post->ID, 'persona_seguridad', true);
     $plaza_cubierta = get_post_meta($post->ID, 'plaza_cubierta', true);
     $alarma_cerrada = get_post_meta($post->ID, 'alarma_cerrada', true);
     $puerta_auto = get_post_meta($post->ID, 'puerta_auto', true);
 
-    $individual = get_post_meta($post->ID, 'individual', true);
-    $centralizada = get_post_meta($post->ID, 'centralizada', true);
-    $no_dispone = get_post_meta($post->ID, 'no_dispone', true);
 
     $caracteristica_garaje = get_post_meta($post->ID, 'caracteristica_garaje', false);
     $m_parcela = get_post_meta($post->ID, 'm_parcela', true);
     $m_fachada = get_post_meta($post->ID, 'm_fachada', true);
     $m_plaza = get_post_meta($post->ID, 'm_plaza', true);
-    $tipologia_chalet = get_post_meta($post->ID, 'tipologia_chalet', false);
+    $tipologia_chalet = get_post_meta($post->ID, 'tipologia_chalet', true);
     $tipo_rustica = get_post_meta($post->ID, 'tipo_rustica', true);
     $num_plantas = get_post_meta($post->ID, 'num_plantas', true);
     $num_estancias = get_post_meta($post->ID, 'num_estancias', true);
@@ -109,7 +108,7 @@ function mostrar_campos_personalizados( $post ) {
                     <option value="piso" <?php selected( $tipo_inmueble, 'piso' ); ?>>Piso</option>
                     <option value="casa_chalet" <?php selected( $tipo_inmueble, 'casa_chalet' ); ?>>Casa / Chalet</option>
                     <option value="casa_rustica" <?php selected( $tipo_inmueble, 'casa_rustica' ); ?>>Casa Rústica</option>
-                    <option value="local_nave" <?php selected( $tipo_inmueble, 'local_nave' ); ?>>Local o Nave</option>
+                    <option value="local" <?php selected( $tipo_inmueble, 'local' ); ?>>Local o Nave</option>
                     <option value="garaje" <?php selected( $tipo_inmueble, 'garaje' ); ?>>Garaje</option>
                     <option value="oficina" <?php selected( $tipo_inmueble, 'oficina' ); ?>>Oficina</option>
                     <option value="terreno" <?php selected( $tipo_inmueble, 'terreno' ); ?>>Terreno</option>
@@ -255,12 +254,12 @@ function mostrar_campos_personalizados( $post ) {
                 </select>
             </td>      
         </tr>
-        <tr id="campo_caracteristicas_piso">
+        <tr id="campo_caract_inm">
             <th>Característica adicional</th>
             <td>
-                <label><input type="checkbox" name="caracteristica_piso[]" value="atico" <?php if (in_array('atico', $caracteristica_piso)) echo 'checked'; ?>>Ático</label>
-                <label><input type="checkbox" name="caracteristica_piso[]" value="estudio" <?php if (in_array('estudio', $caracteristica_piso)) echo 'checked'; ?>>Estudio</label>
-                <label><input type="checkbox" name="caracteristica_piso[]" value="duplex" <?php if (in_array('duplex', $caracteristica_piso)) echo 'checked'; ?>>Dúplex</label>
+                <label><input type="checkbox" name="caract_inm[]" id="atico" value="atico" <?php if (in_array('atico', $caract_inm)) echo 'checked'; ?>>Ático</label>
+                <label><input type="checkbox" name="caract_inm[]" id="estudio" value="estudio" <?php if (in_array('estudio', $caract_inm)) echo 'checked'; ?>>Estudio</label>
+                <label><input type="checkbox" name="caract_inm[]" id="duplex" value="duplex"<?php if (in_array('duplex', $caract_inm)) echo 'checked'; ?>>Dúplex</label>
             </td>
         </tr>
 
@@ -275,11 +274,11 @@ function mostrar_campos_personalizados( $post ) {
         </tr>
         <tr id="campo_m_parcela">
             <th><label for="m_parcela">Metros de Parcela</label></th>
-            <td><input type="number" name="m_parcela" id="m_parcela" value="<?php echo esc_attr($m_utiles); ?>" placeholder="m²" required></td>
+            <td><input type="number" name="m_parcela" id="m_parcela" value="<?php echo esc_attr($m_parcela); ?>" placeholder="m²" required></td>
         </tr>
-        <tr id="campo_metros_lineales">
-            <th><label for="metros_lineales">Metros lineales de fachada*</label></th>
-            <td><input type="number" name="metros_lineales" id="metros_lineales" value="<?php echo esc_attr($metros_lineales); ?>" required></td>
+        <tr id="campo_m_lineales">
+            <th><label for="m_lineales">Metros lineales de fachada*</label></th>
+            <td><input type="number" name="m_lineales" id="m_lineales" value="<?php echo esc_attr($m_lineales); ?>" required></td>
         </tr>
         <tr id="campo_m_plaza">
             <th><label for="m_plaza">Superficie de la plaza</label></th>
@@ -301,17 +300,13 @@ function mostrar_campos_personalizados( $post ) {
             <th><label for="num_estancias">Nº de estancias</label></th>
             <td><input type="number" name="num_estancias" id="num_estancias" value="<?php echo esc_attr($num_estancias); ?>"></td>
         </tr>
-        <tr id="campo_num_plantas_ofi">
-            <th><label for="num_plantas_ofi">Número de plantas de la oficina</label></th>
-            <td><input type="number" name="num_plantas_ofi" id="num_plantas_ofi" value="<?php echo esc_attr($num_plantas_ofi); ?>"></td>
+        <tr id="campo_num_plantas">
+            <th><label for="num_plantas">Número de plantas</label></th>
+            <td><input type="number" name="num_plantas" id="num_plantas" value="<?php echo esc_attr($num_plantas); ?>"></td>
         </tr>
-        <tr id="campo_num_plantas_edif">
-            <th><label for="num_plantas_edif">Número de plantas del edificio</label></th>
-            <td><input type="number" name="num_plantas_edif" id="num_plantas_edif" value="<?php echo esc_attr($num_plantas_edif); ?>"></td>
-        </tr>
-        <tr id="campo_num_escaparates">
-            <th><label for="num_escaparates">Número de escaparates*</label></th>
-            <td><input type="number" name="num_escaparates" id="num_escaparates" value="<?php echo esc_attr($num_escaparates); ?>"></td>
+        <tr id="campo_num_escap">
+            <th><label for="num_escap">Número de escaparates*</label></th>
+            <td><input type="number" name="num_escap" id="num_escap" value="<?php echo esc_attr($num_escap); ?>"></td>
         </tr>
         <tr id="campo_num_ascensores">
             <th><label for="num_ascensores">Número de ascensores*</label></th>
@@ -452,7 +447,7 @@ function mostrar_campos_personalizados( $post ) {
                 </select>
             </td>
         </tr>
-        <tr id="orientacion">
+        <tr id="campo_orientacion">
     <th>Orientacion</th>
     <td>
         <label><input type="checkbox" name="orientacion[]" id="norte" value="norte" <?php if (in_array('norte', $orientacion)) echo 'checked'; ?>>Norte</label>
@@ -475,24 +470,24 @@ function mostrar_campos_personalizados( $post ) {
                     <label><input type="checkbox" name="calificacion_terreno[]" id="otra" value="<?php echo esc_attr($otra); ?>">Otra</label>
                 </td>
         </tr>
-        <div id="campo_otras_caracteristicas">
+        <div id="campo_otra_caract_inm">
             <tr>
                 <th>Otras caracteristicas de la vivienda</th>
                 <td>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="armario" value="armario" <?php if (in_array('armario', $otras_caracteristicas)) echo 'checked'; ?> >Armarios empotrados</label>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="aire" value="aire" <?php if (in_array('aire', $otras_caracteristicas)) echo 'checked'; ?> >Aire Acondicionado</label>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="terraza" value="terraza" <?php if (in_array('terraza', $otras_caracteristicas)) echo 'checked'; ?> >Terraza</label>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="balcon" value="balcon" <?php if (in_array('balcon', $otras_caracteristicas)) echo 'checked'; ?> >Balcón</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="armario" value="armario" <?php if (in_array('armario', $otra_caract_inm)) echo 'checked'; ?> >Armarios empotrados</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="aire" value="aire" <?php if (in_array('aire', $otra_caract_inm)) echo 'checked'; ?> >Aire Acondicionado</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="terraza" value="terraza" <?php if (in_array('terraza', $otra_caract_inm)) echo 'checked'; ?> >Terraza</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="balcon" value="balcon" <?php if (in_array('balcon', $otra_caract_inm)) echo 'checked'; ?> >Balcón</label>
                 </td>
             </tr>
             <tr>
                 <th></th>
                 <td>    
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="garaje" value="garaje" <?php if (in_array('garaje', $otras_caracteristicas)) echo 'checked'; ?> >plaza de garaje</label>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="chimenea" value="chimenea" <?php if (in_array('chimenea', $otras_caracteristicas)) echo 'checked'; ?> >Chimenea</label>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="trastero" value="trastero" <?php if (in_array('trastero', $otras_caracteristicas)) echo 'checked'; ?> >Trastero</label>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="piscina" value="piscina" <?php if (in_array('piscina', $otras_caracteristicas)) echo 'checked'; ?> >Piscina</label>
-                    <label><input type="checkbox" name="otras_caracteristicas[]" id="jardin" value="jardin" <?php if (in_array('jardin', $otras_caracteristicas)) echo 'checked'; ?> >Jardín</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="garaje" value="garaje" <?php if (in_array('garaje', $otra_caract_inm)) echo 'checked'; ?> >plaza de garaje</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="chimenea" value="chimenea" <?php if (in_array('chimenea', $otra_caract_inm)) echo 'checked'; ?> >Chimenea</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="trastero" value="trastero" <?php if (in_array('trastero', $otra_caract_inm)) echo 'checked'; ?> >Trastero</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="piscina" value="piscina" <?php if (in_array('piscina', $otra_caract_inm)) echo 'checked'; ?> >Piscina</label>
+                    <label><input type="checkbox" name="otra_caract_inm[]" id="jardin" value="jardin" <?php if (in_array('jardin', $otra_caract_inm)) echo 'checked'; ?> >Jardín</label>
                 </td>   
             </tr>
         </div>
@@ -501,27 +496,34 @@ function mostrar_campos_personalizados( $post ) {
             <td>
                 <select name="calefaccion" id="calefaccion">
                     <option value="">Seleccionar</option>
-                    <option value="individual" <?php selected($calefaccion, 'diafana'); ?>>Individual</option>
+                    <option value="individual" <?php selected($calefaccion, 'individual'); ?>>Individual</option>
                     <option value="centralizada" <?php selected($calefaccion, 'centralizada'); ?>>Centralizada</option>
                     <option value="no_dispone" <?php selected($calefaccion, 'no_dispone'); ?>>No dispone</option>
                 </select>
             </td>
         </tr>
-        <tr id="campo_caracteristicas_local">
-            <th>Equipamiento</th>
-            <td>    
-                <label><input type="checkbox" name="caracteristicas_local[]" id="calefaccion" value="calefaccion" <?php if (in_array('calefaccion', $caracteristicas_local)) echo 'checked'; ?> >Calefacción</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="humos" value="humos" <?php if (in_array('humos', $caracteristicas_local)) echo 'checked'; ?> >Salida de humos</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="cocina_equipada" value="cocina_equipada" <?php if (in_array('cocina_equipada', $caracteristicas_local)) echo 'checked'; ?> >Cocina totalmente equipada</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="puerta_seguridad" value="puerta_seguridad" <?php if (in_array('puerta_seguridad', $caracteristicas_local)) echo 'checked'; ?> >Puerta de seguridad</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="alarma" value="alarma" <?php if (in_array('alarma', $caracteristicas_local)) echo 'checked'; ?> >Sistema de alarma</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="almacen" value="almacen" <?php if (in_array('almacen', $caracteristicas_local)) echo 'checked'; ?> >Almacén</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="circuito" value="circuito" <?php if (in_array('circuito', $caracteristicas_local)) echo 'checked'; ?> >Circuito cerrado de seguridad</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="esquina" value="esquina" <?php if (in_array('esquina', $caracteristicas_local)) echo 'checked'; ?> >Hace esquina</label>
-                <label><input type="checkbox" name="caracteristicas_local[]" id="oficina" value="oficina" <?php if (in_array('oficina', $caracteristicas_local)) echo 'checked'; ?> >Tiene oficina</label>
-            </td>
-        </tr>
-        <tr id="campo_caracteristicas_garaje">
+        <div id="campo_caract_local">
+            <tr>
+                <th>Equipamiento</th>
+                <td>    
+                    <label><input type="checkbox" name="caract_local[]" id="calefaccion" value="calefaccion" <?php if (in_array('calefaccion', $caract_local)) echo 'checked'; ?> >Calefacción</label>
+                    <label><input type="checkbox" name="caract_local[]" id="humos" value="humos" <?php if (in_array('humos', $caract_local)) echo 'checked'; ?> >Salida de humos</label>
+                    <label><input type="checkbox" name="caract_local[]" id="cocina_equipada" value="cocina_equipada" <?php if (in_array('cocina_equipada', $caract_local)) echo 'checked'; ?> >Cocina totalmente equipada</label>
+                    <label><input type="checkbox" name="caract_local[]" id="puerta_seguridad" value="puerta_seguridad" <?php if (in_array('puerta_seguridad', $caract_local)) echo 'checked'; ?> >Puerta de seguridad</label>
+                    <label><input type="checkbox" name="caract_local[]" id="alarma" value="alarma" <?php if (in_array('alarma', $caract_local)) echo 'checked'; ?> >Sistema de alarma</label>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>    
+                    <label><input type="checkbox" name="caract_local[]" id="almacen" value="almacen" <?php if (in_array('almacen', $caract_local)) echo 'checked'; ?> >Almacén</label>
+                    <label><input type="checkbox" name="caract_local[]" id="circuito" value="circuito" <?php if (in_array('circuito', $caract_local)) echo 'checked'; ?> >Circuito cerrado de seguridad</label>
+                    <label><input type="checkbox" name="caract_local[]" id="esquina" value="esquina" <?php if (in_array('esquina', $caract_local)) echo 'checked'; ?> >Hace esquina</label>
+                    <label><input type="checkbox" name="caract_local[]" id="oficina" value="oficina" <?php if (in_array('oficina', $caract_local)) echo 'checked'; ?> >Tiene oficina</label>
+                </td>
+            </tr>
+        </div>
+        <tr id="campo_caract_garaje">
             <th>Características del garaje</th>
             <td>    
                 <label><input type="checkbox" name="ascensor_garaje" id="ascensor_garaje" value="<?php echo esc_attr($ascensor_garaje); ?>">Ascensor</label>
@@ -656,25 +658,37 @@ function inmuebles_guardar_campos_personalizados( $post_id ) {
     }
 
     // Verificamos si se han enviado los checkboxes y si el valor enviado es un array
-    if (isset($_POST['otras_caracteristicas']) && is_array($_POST['otras_caracteristicas'])) {
+    if (isset($_POST['caract_inm']) && is_array($_POST['caract_inm'])) {
         // Sanitizamos los valores del array
-        $otras_caracteristicas = array_map('sanitize_text_field', $_POST['otras_caracteristicas']);
-        // Actualizamos el campo personalizado 'orientacion' con el array de valores
-        update_post_meta($post_id, 'otras_caracteristicas', $otras_caracteristicas);
+        $caract_inm = array_map('sanitize_text_field', $_POST['caract_inm']);
+        
+        // Actualizamos el campo personalizado 'caract_inm' con el array de valores
+        update_post_meta($post_id, 'caract_inm', $caract_inm);
     } else {
-        // Si no se ha seleccionado ninguna orientación, guardamos un array vacío para asegurarnos de que el campo esté limpio
-        update_post_meta($post_id, 'otras_caracteristicas', array());
+        // Si no se ha seleccionado ninguna caract_inm, guardamos un array vacío para asegurarnos de que el campo esté limpio
+        update_post_meta($post_id, 'caract_inm', array());
     }
 
     // Verificamos si se han enviado los checkboxes y si el valor enviado es un array
-    if (isset($_POST['caracteristicas_local']) && is_array($_POST['caracteristicas_local'])) {
+    if (isset($_POST['otra_caract_inm']) && is_array($_POST['otra_caract_inm'])) {
         // Sanitizamos los valores del array
-        $caracteristicas_local = array_map('sanitize_text_field', $_POST['caracteristicas_local']);
-        // Actualizamos el campo personalizado 'orientacion' con el array de valores
-        update_post_meta($post_id, 'caracteristicas_local', $caracteristicas_local);
+        $otra_caract_inm = array_map('sanitize_text_field', $_POST['otra_caract_inm']);
+        // Actualizamos el campo personalizado 'otra_caract_inm' con el array de valores
+        update_post_meta($post_id, 'otra_caract_inm', $otra_caract_inm);
     } else {
-        // Si no se ha seleccionado ninguna orientación, guardamos un array vacío para asegurarnos de que el campo esté limpio
-        update_post_meta($post_id, 'caracteristicas_local', array());
+        // Si no se ha seleccionado ninguna otra_caract_inm, guardamos un array vacío para asegurarnos de que el campo esté limpio
+        update_post_meta($post_id, 'otra_caract_inm', array());
+    }
+
+    // Verificamos si se han enviado los checkboxes y si el valor enviado es un array
+    if (isset($_POST['caract_local']) && is_array($_POST['caract_local'])) {
+        // Sanitizamos los valores del array
+        $caract_local = array_map('sanitize_text_field', $_POST['caract_local']);
+        // Actualizamos el campo personalizado 'caract_local' con el array de valores
+        update_post_meta($post_id, 'caract_local', $caract_local);
+    } else {
+        // Si no se ha seleccionado ninguna caract_local, guardamos un array vacío para asegurarnos de que el campo esté limpio
+        update_post_meta($post_id, 'caract_local', array());
     }
 
     
@@ -726,6 +740,9 @@ function inmuebles_guardar_campos_personalizados( $post_id ) {
     }
     if (isset($_POST['m_utiles'])) {
         update_post_meta($post_id, 'm_utiles', sanitize_text_field($_POST['m_utiles']));
+    }
+    if (isset($_POST['m_lineales'])) {
+        update_post_meta($post_id, 'm_lineales', sanitize_text_field($_POST['m_lineales']));
     }
     if (isset($_POST['calif_consumo_energ'])) {
         update_post_meta($post_id, 'calif_consumo_energ', sanitize_text_field($_POST['calif_consumo_energ']));
@@ -828,6 +845,9 @@ function inmuebles_guardar_campos_personalizados( $post_id ) {
     if (isset($_POST['tipologia_chalet'])) {
         update_post_meta($post_id, 'tipologia_chalet', sanitize_text_field($_POST['tipologia_chalet']));
     }
+    if (isset($_POST['tipo_local'])) {
+        update_post_meta($post_id, 'tipo_local', sanitize_text_field($_POST['tipo_local']));
+    }
     
     if (isset($_POST['tipo_rustica'])) {
         update_post_meta($post_id, 'tipo_rustica', sanitize_text_field($_POST['tipo_rustica']));
@@ -835,6 +855,10 @@ function inmuebles_guardar_campos_personalizados( $post_id ) {
     
     if (isset($_POST['num_plantas'])) {
         update_post_meta($post_id, 'num_plantas', sanitize_text_field($_POST['num_plantas']));
+    }
+    
+    if (isset($_POST['num_escap'])) {
+        update_post_meta($post_id, 'num_escap', sanitize_text_field($_POST['num_escap']));
     }
     
     if (isset($_POST['num_estancias'])) {
