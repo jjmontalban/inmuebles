@@ -1,0 +1,14 @@
+# Ignorar archivos y directorios generados automáticamente
+wp-config.php
+/wp-content/
+/node_modules/
+/vendor/
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de configuración local
+.env
+
+# Ignorar archivos de respaldo de editores de código
+*.vscode
+*~
