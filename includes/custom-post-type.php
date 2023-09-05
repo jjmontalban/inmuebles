@@ -23,7 +23,7 @@ function inmuebles_registrar_tipo_entrada_inmueble() {
         'labels' => $labels,
         'public' => true,
         'has_archive' => true,
-        'rewrite' => array( 'slug' => 'inmuebles' ),
+        'rewrite' => array( 'slug' => 'inmueble' ),
         'menu_icon' => 'dashicons-admin-multisite',
         'supports' => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
     );
