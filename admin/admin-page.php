@@ -1035,3 +1035,25 @@ function inmuebles_agregar_campos_personalizados() {
 
 }
 add_action( 'add_meta_boxes', 'inmuebles_agregar_campos_personalizados' );
+
+
+
+/**
+ * Guarda la taxonomía 'tipo de inmueble' cada vez que se guarde un inmueble cogiendo el valor del campo personalizado "tipo_inmueble"
+ */
+function asignar_tipo_inmueble_taxonomia($post_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) 
+        return $post_id;
+    
+    // Verifica si el tipo de entrada es "inmueble"
+    if ('inmueble' != get_post_type($post_id)) 
+        return $post_id;
+    
+    // Obtiene el valor del campo personalizado "tipo_inmueble"
+    $tipo_inmueble = get_post_meta($post_id, 'tipo_inmueble', true);
+    
+    // Actualiza los términos de taxonomía
+    wp_set_post_terms($post_id, $tipo_inmueble, 'tipo_inmueble', false);
+}
+
+add_action('save_post', 'asignar_tipo_inmueble_taxonomia');

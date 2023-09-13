@@ -34,30 +34,38 @@ add_action( 'init', 'inmuebles_registrar_tipo_entrada_inmueble' );
 
 
 /**
- * Registra la taxonomía 'inmuebles'.
+ * Registra la taxonomía 'tipo de inmueble'.
  */
-function inmuebles_registrar_taxonomia_inmuebles() {
+function registrar_taxonomia_tipo_inmueble() {
     $labels = array(
-        'name' => 'Inmuebles',
-        'singular_name' => 'Inmueble',
-        'search_items' => 'Buscar Inmuebles',
-        'all_items' => 'Todos los Inmuebles',
-        'edit_item' => 'Editar Inmueble',
-        'update_item' => 'Actualizar Inmueble',
-        'add_new_item' => 'Añadir Nuevo Inmueble',
-        'new_item_name' => 'Nombre del Nuevo Inmueble',
-        'menu_name' => 'Inmuebles',
+        'name' => 'Tipos de Inmuebles',
+        'singular_name' => 'Tipo de Inmueble',
+        'search_items' => 'Buscar Tipos de Inmuebles',
+        'all_items' => 'Todos los Tipos de Inmuebles',
+        'parent_item' => 'Tipo de Inmueble Padre',
+        'parent_item_colon' => 'Tipo de Inmueble Padre:',
+        'edit_item' => 'Editar Tipo de Inmueble',
+        'update_item' => 'Actualizar Tipo de Inmueble',
+        'add_new_item' => 'Agregar Nuevo Tipo de Inmueble',
+        'new_item_name' => 'Nuevo Nombre de Tipo de Inmueble',
+        'menu_name' => 'Tipos de Inmuebles',
     );
 
     $args = array(
-        'hierarchical' => true,
+        'hierarchical' => false,
         'labels' => $labels,
-        'show_ui' => true,
+        'public' => true,
+        'show_ui' => false,
+        'show_in_quick_edit' => false,
         'show_admin_column' => true,
         'query_var' => true,
-        'rewrite' => array( 'slug' => 'inmuebles' ),
+        'rewrite' => array('slug' => 'tipo-inmueble'), // Personaliza la URL como desees
     );
 
-    register_taxonomy( 'inmuebles', 'post', $args );
+    register_taxonomy('tipo_inmueble', 'inmueble', $args);
 }
-add_action( 'init', 'inmuebles_registrar_taxonomia_inmuebles' );
+add_action('init', 'registrar_taxonomia_tipo_inmueble');
+
+
+
+
