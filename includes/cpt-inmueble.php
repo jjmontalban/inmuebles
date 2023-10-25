@@ -1,16 +1,15 @@
 <?php
 
-
 /**
  * Registra el tipo de entrada personalizado 'inmueble'.
  */
-function inmuebles_registrar_tipo_entrada_inmueble() {
+function inmuebles_registrar_cpt_inmueble() {
     $labels = array(
-        'name' => 'Inmuebles',
+        'name' => 'Inmueble',
         'singular_name' => 'Inmueble',
         'menu_name' => 'Inmuebles',
         'name_admin_bar' => 'Inmueble',
-        'add_new' => 'Añadir Nuevo',
+        'add_new' => 'Añadir Inmueble',
         'add_new_item' => 'Añadir Nuevo Inmueble',
         'new_item' => 'Nuevo Inmueble',
         'edit_item' => 'Editar Inmueble',
@@ -25,12 +24,12 @@ function inmuebles_registrar_tipo_entrada_inmueble() {
         'has_archive' => true,
         'rewrite' => array( 'slug' => 'inmueble' ),
         'menu_icon' => 'dashicons-admin-multisite',
-        'supports' => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
+        'supports' => array( 'thumbnail' ),
     );
 
     register_post_type( 'inmueble', $args );
 }
-add_action( 'init', 'inmuebles_registrar_tipo_entrada_inmueble' );
+add_action( 'init', 'inmuebles_registrar_cpt_inmueble' );
 
 
 /**
@@ -38,7 +37,7 @@ add_action( 'init', 'inmuebles_registrar_tipo_entrada_inmueble' );
  */
 function registrar_taxonomia_tipo_inmueble() {
     $labels = array(
-        'name' => 'Tipos de Inmuebles',
+        'name' => 'Tipo de Inmueble',
         'singular_name' => 'Tipo de Inmueble',
         'search_items' => 'Buscar Tipos de Inmuebles',
         'all_items' => 'Todos los Tipos de Inmuebles',

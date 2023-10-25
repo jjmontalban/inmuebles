@@ -1,104 +1,36 @@
-<?php
+<?php 
 
-
-// Función para agregar la página de configuración en el menú de Inmuebles
-function inmuebles_add_settings_page() {
-    add_menu_page(
-        'Inmuebles Settings',   // Título de la página
-        'Inmuebles',            // Título en el menú
-        'manage_options',       // Capacidad requerida para acceder
-        'inmuebles-settings',   // Slug de la página
-        'inmuebles_settings_page', // Función que renderiza la página
-        'dashicons-admin-home', // Icono (puedes cambiarlo)
-        30 // Posición en el menú
-    );
+/**
+ * Agrega el metabox "Datos del inmueble" al formulario de edición de inmuebles.
+ */
+function inmuebles_agregar_mb_campos_inmueble() {
+    add_meta_box( 'inmueble_campos_inmueble', 
+                  'Datos del inmueble', 
+                  'mostrar_campos_inmueble', 
+                  'inmueble', 
+                  'normal', 
+                  'high' );
 }
-
-// Renderizar la Página de Configuración
-function inmuebles_settings_page() {
-    // Verificar si el usuario tiene la capacidad requerida para acceder a esta página
-    if (!current_user_can('manage_options')) {
-        return;
-    }
-
-    // Renderizar el formulario de configuración
-    ?>
-    <div class="wrap">
-        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        <form method="post" action="options.php">
-            <?php settings_fields('inmuebles_settings_group'); ?>
-            <?php do_settings_sections('inmuebles-settings'); ?>
-            <?php submit_button(); ?>
-        </form>
-    </div>
-    <?php
-
-    echo '<form method="post" action="options.php">';
-    settings_fields('inmuebles_settings_group');
-    do_settings_sections('inmuebles-settings');
-    
-    echo '<label for="inmuebles_google_maps_api_key">Google Maps API Key:</label><br>';
-    echo '<input type="text" id="inmuebles_google_maps_api_key" name="inmuebles_google_maps_api_key" value="' . esc_attr(get_option('inmuebles_google_maps_api_key')) . '" /><br>';
-    
-    submit_button();
-    echo '</form>';
-}
-
-
-// Guardar la Configuración
-
-function inmuebles_settings_init() {
-    register_setting('inmuebles_settings_group', 'inmuebles_google_maps_api_key');
-}
-add_action('admin_init', 'inmuebles_settings_init');
-
+add_action( 'add_meta_boxes', 'inmuebles_agregar_mb_campos_inmueble' );
 
 
 /**
- * Página de configuración en el panel de administración
+ * Agrega el metabox "Datos del propietario" al formulario de edición de inmuebles.
  */
-function inmuebles_plugin_menu() {
-    // Agregar página de configuración
-    add_options_page('Configuración de Google Maps API', 'Google Maps API', 'manage_options', 'inmuebles-google-maps-api', 'inmuebles_google_maps_api_page');
+function inmuebles_agregar_mb_campos_propietario_inmueble() {
+    add_meta_box( 'inmueble_propietario', 
+                  'Registrar nuevo Propietario para el inmueble (para seleccionar uno nuevo deseleccionar el propeitario del selector anterior)', 
+                  'mostrar_campos_propietario', 
+                  'inmueble',
+                  'normal', 
+                  'high' );
 }
-add_action('admin_menu', 'inmuebles_plugin_menu');
+add_action('add_meta_boxes', 'inmuebles_agregar_mb_campos_propietario_inmueble');
 
 
-/**
- * Mostrar el formulario de configuración de google maps
- */
-function inmuebles_google_maps_api_page() {
-    // Verificar permisos de administrador
-    if (!current_user_can('manage_options')) {
-        return;
-    }
-
-    // Guardar la clave de API si se envía el formulario
-    if (isset($_POST['inmuebles_google_maps_api_key'])) {
-        update_option('inmuebles_google_maps_api_key', sanitize_text_field($_POST['inmuebles_google_maps_api_key']));
-        echo '<div class="updated"><p>Clave de API guardada.</p></div>';
-    }
-
-    // Obtener la clave de API actual
-    $api_key = get_option('inmuebles_google_maps_api_key', '');
-
-    // Mostrar el formulario
-    ?>
-    <div class="wrap">
-        <h1>Configuración de Google Maps API</h1>
-        <form method="post" action="">
-            <label for="inmuebles_google_maps_api_key">Clave de API de Google Maps:</label>
-            <input type="text" name="inmuebles_google_maps_api_key" value="<?php echo esc_attr($api_key); ?>" style="width: 100%;">
-            <p>Obtén una clave de API de Google Maps en <a href="https://cloud.google.com/maps-platform/" target="_blank">https://cloud.google.com/maps-platform/</a></p>
-            <?php submit_button('Guardar'); ?>
-        </form>
-    </div>
-    <?php
-}
 
 /**
  * Obtiene  los campos personalizados del inmueble.
- *
  * @param WP_Post $post El objeto de entrada actual.
  */
 function obtener_campos_inmueble($post_id) {
@@ -142,13 +74,18 @@ function obtener_campos_inmueble($post_id) {
 
 /**
  * Muestra los campos del inmueble en el formulario de edición de inmuebles.
- *
  * @param WP_Post $post El objeto de entrada actual.
  */
 function mostrar_campos_inmueble( $post ) {  
 
-     // Usamos nuestra función para obtener todos los valores.
+     // Usamos nuestra función para obtener todos los valores del inmueble.
     $campos = obtener_campos_inmueble($post->ID);
+    
+    //relativo al propietario
+    $selected = get_post_meta($post->ID, 'propietario_id', true);
+    $propietarios = get_posts(array('post_type' => 'propietario', 'numberposts' => -1));
+
+
     ?>
     <table class="form-table">
         <tr>
@@ -268,7 +205,7 @@ function mostrar_campos_inmueble( $post ) {
             </td>
         </tr>
         <tr id="campo_tipologia_chalet">
-            <th>Tipo de Chalet</th>
+            <th>Tipo de Chalet*</th>
             <td>
                 <label><input type="radio" name="tipologia_chalet" value="atico" <?php checked($campos['tipologia_chalet'] ?? '', 'atico'); ?> required>Adosado</label>
                 <label><input type="radio" name="tipologia_chalet" value="estudio" <?php checked($campos['tipologia_chalet'] ?? '', 'estudio'); ?>>Pareado</label>
@@ -379,21 +316,20 @@ function mostrar_campos_inmueble( $post ) {
             <th><label for="calif_consumo_energ">Calificación de consumo de energía*</label></th>
             <td>
                 <select name="calif_consumo_energ" id="calif_consumo_energ" required>
-                    <option value="" disabled <?php if (empty($calif_consumo_energ)) echo 'selected'; ?> >Seleccionar</option>
-                    <option value="a" <?php selected($campos['calif_consumo_energ'] ?? '', 'A'); ?>>A</option>
-                    <option value="b" <?php selected($campos['calif_consumo_energ'] ?? '', 'B'); ?>>B</option>
-                    <option value="c" <?php selected($campos['calif_consumo_energ'] ?? '', 'C'); ?>>C</option>
-                    <option value="d" <?php selected($campos['calif_consumo_energ'] ?? '', 'D'); ?>>D</option>
-                    <option value="e" <?php selected($campos['calif_consumo_energ'] ?? '', 'E'); ?>>E</option>
-                    <option value="f" <?php selected($campos['calif_consumo_energ'] ?? '', 'F'); ?>>F</option>
-                    <option value="g" <?php selected($campos['calif_consumo_energ'] ?? '', 'G'); ?>>G</option>
+                    <option value="">Seleccionar</option>
+                    <option value="a" <?php selected($campos['calif_consumo_energ'] ?? '', 'a'); ?>>A</option>
+                    <option value="b" <?php selected($campos['calif_consumo_energ'] ?? '', 'b'); ?>>B</option>
+                    <option value="c" <?php selected($campos['calif_consumo_energ'] ?? '', 'c'); ?>>C</option>
+                    <option value="d" <?php selected($campos['calif_consumo_energ'] ?? '', 'd'); ?>>D</option>
+                    <option value="e" <?php selected($campos['calif_consumo_energ'] ?? '', 'e'); ?>>E</option>
+                    <option value="f" <?php selected($campos['calif_consumo_energ'] ?? '', 'f'); ?>>F</option>
+                    <option value="g" <?php selected($campos['calif_consumo_energ'] ?? '', 'g'); ?>>G</option>
                     <option value="exento" <?php selected($campos['calif_consumo_energ'] ?? '', 'exento'); ?>>Exento</option>
                     <option value="tramite" <?php selected($campos['calif_consumo_energ'] ?? '', 'tramite'); ?>>En Trámite</option>
                 </select>
-                
-                <th><label for="consumo_energ">Consumo de energía</label></th>
-                <td><input type="number" name="consumo_energ" id="consumo_energ" value="<?php echo esc_attr($campos['consumo_energ'] ?? ''); ?>" placeholder="kwh/m2 año"></td>
             </td>
+            <th><label for="consumo_energ">Consumo de energía</label></th>
+            <td><input type="number" name="consumo_energ" id="consumo_energ" value="<?php echo esc_attr($campos['consumo_energ'] ?? ''); ?>" placeholder="kwh/m2 año"></td>
         </tr>
         <tr id="campo_cal_emis">
             <th><label for="cal_emis">Calificación de Emisiones*</label></th>
@@ -621,6 +557,28 @@ function mostrar_campos_inmueble( $post ) {
                 <button type="button" class="agregar-imagen button button-primary">Agregar Imagen</button>
             </td>
         </tr>
+        
+        
+
+        <tr>
+            <th>Propietario del Inmueble</th>
+            <td>
+                <select name="propietario_id" id="selector-propietario">
+                    <option value="">Seleccionar</option>
+                    <?php foreach ($propietarios as $propietario) :
+                        $nombre = trim(get_post_meta($propietario->ID, 'nombre', true));
+                        $apellidos = trim(get_post_meta($propietario->ID, 'apellidos', true));
+                        $valor = ($nombre && $apellidos) ? $nombre . ' ' . $apellidos : $nombre . $apellidos;
+                    ?>
+                        <option value="<?php echo $propietario->ID; ?>" <?php selected($propietario->ID, $selected); ?>>
+                            <?php echo $valor; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+        </tr>
+
+        
 
     </table>
    
@@ -630,16 +588,15 @@ function mostrar_campos_inmueble( $post ) {
 
 /**
  * Guarda los valores de los campos personalizados al guardar un inmueble.
- *
  * @param int $post_id ID del inmueble actual.
  */
-function inmuebles_guardar_campos_personalizados( $post_id ) {
+function inmuebles_guardar_campos_inmueble( $post_id ) {
     // Verificar si se está guardando un inmueble
     if ( get_post_type( $post_id ) !== 'inmueble' ) {
         return;
     }
 
-    // Guardar los valores de los campos personalizados
+    // Guardar los valores de los campos personalizados del inmueble
     if ( isset( $_POST['tipo_inmueble'] ) ) {
         update_post_meta( $post_id, 'tipo_inmueble', sanitize_text_field( $_POST['tipo_inmueble'] ) );
     }
@@ -691,7 +648,6 @@ function inmuebles_guardar_campos_personalizados( $post_id ) {
     if (isset($_POST['acceso_rodado'])) {
         update_post_meta($post_id, 'acceso_rodado', sanitize_text_field($_POST['acceso_rodado']));
     }
-    
     if (isset($_POST['uso_excl'])) {
         update_post_meta($post_id, 'uso_excl', sanitize_text_field($_POST['uso_excl']));
     }
@@ -885,26 +841,44 @@ function inmuebles_guardar_campos_personalizados( $post_id ) {
     } else {
         update_post_meta($post_id, 'caract_garaje', array());
     }
+
+    //Relativo al propietario
+    $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
+    $apellidos = isset($_POST['apellidos']) ? $_POST['apellidos'] : '';
+    $email = isset($_POST['email']) ? $_POST ['email'] : '';
+    $telefono1 = isset($_POST['telefono1']) ? $_POST['telefono1'] : '';
+    $telefono2 = isset($_POST['telefono2']) ? $_POST['telefono2'] : '';
+
+    //Guardando un propietario desde la página de inmueble
+    if( $nombre && $email && $telefono1 ){
+        // Crear una nueva entrada de propietario
+        $propietario_id = wp_insert_post(array(
+            'post_type' => 'propietario',
+            'post_status' => 'publish'
+            ));
+    
+        if($propietario_id) {
+            // Establecer los campos personalizados del propietario
+            update_post_meta($propietario_id, 'nombre', $nombre);
+            update_post_meta($propietario_id, 'apellidos', $apellidos);
+            update_post_meta($propietario_id, 'email', $email);
+            update_post_meta($propietario_id, 'telefono1', $telefono1);
+            update_post_meta($propietario_id, 'telefono2', $telefono2);
+    
+            // Establecer este propietario al inmueble actual
+            update_post_meta($post_id, 'propietario_id', $propietario_id);
+        }
+    }
+
+    //Guardar el propietario seleccionado del dropdown en la meta del inmueble
+    if(isset($_POST['propietario_id'])) {
+        update_post_meta($post_id, 'propietario_id', $_POST['propietario_id']);
+    }
+    
+
+
 }
-add_action( 'save_post', 'inmuebles_guardar_campos_personalizados' );
-
-
-/**
- * Agrega el metabox "Datos del inmueble" al formulario de edición de inmuebles.
- */
-function inmuebles_agregar_mb_campos_inmueble() {
-    add_meta_box(
-        'inmueble_campos_inmueble',
-        'Datos del inmueble',
-        'mostrar_campos_inmueble',
-        'inmueble',
-        'normal',
-        'high'
-    );
-
-}
-add_action( 'add_meta_boxes', 'inmuebles_agregar_mb_campos_inmueble' );
-
+add_action( 'save_post', 'inmuebles_guardar_campos_inmueble' );
 
 
 /**
@@ -924,5 +898,19 @@ function asignar_tipo_inmueble_taxonomia($post_id) {
     // Actualiza los términos de taxonomía
     wp_set_post_terms($post_id, $tipo_inmueble, 'tipo_inmueble', false);
 }
-
 add_action('save_post', 'asignar_tipo_inmueble_taxonomia');
+
+
+
+/**
+ * Modificar el valor de la columna "title" en el listado de 'inmueble'
+ */
+function modificar_valor_columna_title($title, $post_id) {
+    if (get_post_type($post_id) == 'inmueble') {
+        $titulo_personalizado = get_post_meta($post_id, 'nombre_calle', true) . ' ' . get_post_meta($post_id, 'precio_venta', true);
+        //valor personalizado en lugar del título original
+        $title = $titulo_personalizado;
+    }
+    return $title;
+}
+add_filter('the_title', 'modificar_valor_columna_title', 10, 2);

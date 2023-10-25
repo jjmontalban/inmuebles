@@ -362,5 +362,23 @@ jQuery(document).ready(function($) {
     });
 
 
-});
+    // Detectar cambios en el selector de propietarios
+    $('#selector-propietario').change(function() {
+        // Si se ha seleccionado un propietario, ocultamos los campos para crear uno nuevo
+        if ($(this).val()) {
+            $('#contenedor-propietario').hide();
+            
+            // Remover el atributo 'required' de los campos ocultos
+            $('#contenedor-propietario').find('input[required]').removeAttr('required');
+        } else {
+            $('#contenedor-propietario').show();
+            
+            // Añadir el atributo 'required' de nuevo a los campos cuando son visibles
+            $('#nombre, #email, #telefono1').attr('required', 'required');
+        }
+    }).trigger('change');  // Trigger inicial para ajustar la visualización en función de la selección actual
 
+
+    
+
+});
