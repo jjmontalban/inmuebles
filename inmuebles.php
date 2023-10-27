@@ -38,7 +38,7 @@ function inmuebles_uninstall_plugin() {
     // Eliminar tipos de contenido personalizados (CPT)
     unregister_post_type('inmueble');
     unregister_post_type('propietario');
-    unregister_post_type('demanda');
+    unregister_post_type('consulta');
 
     // Eliminar la página de configuración del menú
     remove_menu_page('inmuebles-settings'); // Reemplaza 'inmuebles-settings' con el slug de tu página de configuración
@@ -56,12 +56,12 @@ function inmuebles_deactivate_plugin() {
 // Incluimos los archivos secundarios
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-inmueble.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-propietario.php';
-/* require_once plugin_dir_path(__FILE__) . 'includes/cpt-demanda.php';
- */
+require_once plugin_dir_path(__FILE__) . 'includes/cpt-consulta.php';
+require_once plugin_dir_path(__FILE__) . 'includes/cpt-demanda.php';
 require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php';
- require_once plugin_dir_path(__FILE__) . 'admin/propietario-page.php';
-/*require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
-require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php'; */
+require_once plugin_dir_path(__FILE__) . 'admin/propietario-page.php';
+require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
+require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
 
 
 /**

@@ -34,15 +34,15 @@ function mostrar_campos_propietario( $post ) {
                 <td><input type="text" name="nombre" id="nombre" value="<?php echo esc_attr( $nombre ?? ''); ?>" required></td>
             </tr>
             <tr>
-                <th><label for="nombre">Apellidos</label></th>
+                <th><label for="apellidos">Apellidos</label></th>
                 <td><input type="text" name="apellidos" id="apellidos" value="<?php echo esc_attr( $apellidos ?? ''); ?>"></td>
             </tr>
             <tr>
-                <th><label for="nombre">Email*</label></th>
+                <th><label for="email">Email*</label></th>
                 <td><input type="text" name="email" id="email" value="<?php echo esc_attr( $email ?? ''); ?>" required></td>
             </tr>
             <tr>
-                <th><label for="nombre">Teléfono 1*</label></th>
+                <th><label for="telefono1">Teléfono 1*</label></th>
                 <td><input type="text" name="telefono1" id="telefono1" value="<?php echo esc_attr( $telefono1 ?? ''); ?>" required></td>
             </tr>
             <tr>

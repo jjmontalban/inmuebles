@@ -378,7 +378,6 @@ jQuery(document).ready(function($) {
         }
     }).trigger('change');  // Trigger inicial para ajustar la visualización en función de la selección actual
 
-
     
 
 });
