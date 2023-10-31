@@ -158,15 +158,16 @@ function ocultar_boton_anadir_nueva_consulta() {
 add_action('admin_head', 'ocultar_boton_anadir_nueva_consulta');
 
 
-//Eliminar el botón "Añadir nueva" desde la página de edición de consulta
+// Eliminar el botón "Añadir nueva" desde la página de edición de consulta
 function ocultar_boton_anadir_nueva_consulta_edit() {
     global $post_type_object;
 
-    if ($post_type_object->name == 'consulta') {
+    if ($post_type_object && $post_type_object->name == 'consulta') {
         $post_type_object->labels->add_new = '';
     }
 }
 add_action('in_admin_header', 'ocultar_boton_anadir_nueva_consulta_edit');
+
 
 
 

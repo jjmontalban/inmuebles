@@ -1,33 +1,18 @@
 <?php 
 
-/**
- * Agrega el metabox "Datos del inmueble" al formulario de edición de inmuebles.
- */
-function inmuebles_agregar_mb_campos_inmueble() {
-    add_meta_box( 'inmueble_campos_inmueble', 
-                  'Datos del inmueble', 
-                  'mostrar_campos_inmueble', 
-                  'inmueble', 
-                  'normal', 
-                  'high' );
-}
-add_action( 'add_meta_boxes', 'inmuebles_agregar_mb_campos_inmueble' );
+ //array asociativo para mapear valores de los tipos de inmueble
+global $tipos_inmueble_map;
 
-
-/**
- * Agrega el metabox "Datos del propietario" al formulario de edición de inmuebles.
- */
-function inmuebles_agregar_mb_campos_propietario_inmueble() {
-    add_meta_box( 'inmueble_propietario', 
-                  'Registrar nuevo Propietario para el inmueble (para seleccionar uno nuevo deseleccionar el propeitario del selector anterior)', 
-                  'mostrar_campos_propietario', 
-                  'inmueble',
-                  'normal', 
-                  'high' );
-}
-add_action('add_meta_boxes', 'inmuebles_agregar_mb_campos_propietario_inmueble');
-
-
+$tipos_inmueble_map = array(
+    'piso' => 'Piso',
+    'casa_rustica' => 'Casa rústica',
+    'apartamento' => 'Apartamento',
+    'casa_chalet' => 'Chalet',
+    'local' => 'Local',
+    'garaje' => 'Garaje',
+    'oficina' => 'Oficina',
+    'terreno' => 'Terreno',
+);
 
 /**
  * Obtiene  los campos personalizados del inmueble.
@@ -71,6 +56,36 @@ function obtener_campos_inmueble($post_id) {
     
     return $valores;
 }
+
+
+/**
+ * Agrega el metabox "Datos del inmueble" al formulario de edición de inmuebles.
+ */
+function inmuebles_agregar_mb_campos_inmueble() {
+    add_meta_box( 'inmueble_campos_inmueble', 
+                  'Datos del inmueble', 
+                  'mostrar_campos_inmueble', 
+                  'inmueble', 
+                  'normal', 
+                  'high' );
+}
+add_action( 'add_meta_boxes', 'inmuebles_agregar_mb_campos_inmueble' );
+
+
+/**
+ * Agrega el metabox "Datos del propietario" al formulario de edición de inmuebles.
+ */
+function inmuebles_agregar_mb_campos_propietario_inmueble() {
+    add_meta_box( 'inmueble_propietario', 
+                  'Registrar nuevo Propietario para el inmueble (para seleccionar uno nuevo deseleccionar el propeitario del selector anterior)', 
+                  'mostrar_campos_propietario', 
+                  'inmueble',
+                  'normal', 
+                  'high' );
+}
+add_action('add_meta_boxes', 'inmuebles_agregar_mb_campos_propietario_inmueble');
+
+
 
 /**
  * Muestra los campos del inmueble en el formulario de edición de inmuebles.
