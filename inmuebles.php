@@ -52,6 +52,8 @@ function inmuebles_uninstall_plugin() {
 function inmuebles_deactivate_plugin() {
 }
 
+// Incluimos las dependencias (Google)
+require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
 
 // Incluimos los archivos secundarios
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-inmueble.php';
