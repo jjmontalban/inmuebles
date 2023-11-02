@@ -116,7 +116,7 @@ function chipicasa_modificar_texto_accion($actions, $post) {
             $actions['edit'] = str_replace('Editar', 'Ver', $actions['edit']);
         }
     }
-        
+
     return $actions;
 }
 add_filter('post_row_actions', 'chipicasa_modificar_texto_accion', 10, 2);
