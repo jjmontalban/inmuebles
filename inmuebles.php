@@ -62,6 +62,7 @@ require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/propietario-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
+require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
 
 
 /**
