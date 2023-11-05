@@ -58,10 +58,12 @@ require_once plugin_dir_path(__FILE__) . 'includes/cpt-inmueble.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-propietario.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-consulta.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-demanda.php';
+require_once plugin_dir_path(__FILE__) . 'includes/cpt-cita.php';
 require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/propietario-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
+require_once plugin_dir_path(__FILE__) . 'admin/cita-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
 
 
@@ -73,6 +75,12 @@ function inmuebles_load_scripts() {
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui-core');
     wp_enqueue_script('jquery-ui-sortable');
+
+    // Registrar los scripts para celandario de citas
+    wp_enqueue_style('fullcalendar-css', 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css');
+    wp_enqueue_script('moment', 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js', array('jquery'), null, true);
+    wp_enqueue_script('fullcalendar', 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js', array('jquery', 'moment'), null, true);
+    wp_enqueue_script('fullcalendar-es', 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.js', array('fullcalendar'), null, true);
 
     // Registrar el script 'media' de WordPress
     wp_enqueue_media();
@@ -90,7 +98,6 @@ function inmuebles_load_scripts() {
     wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '1.0', true);
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_scripts');
-
 
 
 /**
