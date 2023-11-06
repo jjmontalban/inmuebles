@@ -2,6 +2,7 @@
 
  //array asociativo para mapear valores de los tipos de inmueble
 global $tipos_inmueble_map;
+global $zonas_inmueble_map;
 
 $tipos_inmueble_map = array(
     'piso' => 'Piso',
@@ -14,13 +15,25 @@ $tipos_inmueble_map = array(
     'terreno' => 'Terreno',
 );
 
+$zonas_inmueble_map = array(
+    'centro' => 'Centro',
+    'regla' => 'Regla',
+    'cruz_mar' => 'Cruz del Mar',
+    'faro' => 'Faro',
+    'muelle' => 'Muelle',
+    'garaje' => 'Garaje',
+    'alcancia' => 'La Alcancía',
+    'laguna' => 'La Laguna',
+    'pinar' => 'Pinar',
+);
+
 /**
  * Obtiene  los campos personalizados del inmueble.
  * @param WP_Post $post El objeto de entrada actual.
  */
 function obtener_campos_inmueble($post_id) {
     $campos = array(
-        'tipo_inmueble', 'localidad', 'nombre_calle', 'numero', 
+        'tipo_inmueble', 'zona_inmueble', 'localidad', 'nombre_calle', 'numero', 
         'planta', 'bloque', 'escalera', 'urbanizacion', 
         'visibilidad_direccion', 'tipo_operacion', 'precio_venta', 
         'gastos_comunidad', 'precio_alquiler', 'fianza', 'calefaccion',
@@ -115,6 +128,22 @@ function mostrar_campos_inmueble( $post ) {
                     <option value="garaje" <?php selected( $campos['tipo_inmueble'] ?? '', 'garaje' ); ?>>Garaje</option>
                     <option value="oficina" <?php selected( $campos['tipo_inmueble'] ?? '', 'oficina' ); ?>>Oficina</option>
                     <option value="terreno" <?php selected( $campos['tipo_inmueble'] ?? '', 'terreno' ); ?>>Terreno</option>
+                </select>
+            </td>
+        </tr>   
+        <tr>
+            <th><label for="zona_inmueble">Zona del Inmueble</label></th>
+            <td>
+                <select name="zona_inmueble" id="zona_inmueble" required>
+                    <option value="">Seleccionar</option>
+                    <option value="piso" <?php selected(  $campos['zona_inmueble'] ?? '', 'centro' ); ?>>Centro</option>
+                    <option value="casa_chalet" <?php selected( $campos['zona_inmueble'] ?? '', 'regla' ); ?>>Regla</option>
+                    <option value="casa_rustica" <?php selected( $campos['zona_inmueble'] ?? '', 'cruz_mar' ); ?>>Curz del Mar</option>
+                    <option value="local" <?php selected( $campos['zona_inmueble'] ?? '', 'faro' ); ?>>Faro</option>
+                    <option value="garaje" <?php selected( $campos['zona_inmueble'] ?? '', 'muelle' ); ?>>Muelle</option>
+                    <option value="oficina" <?php selected( $campos['zona_inmueble'] ?? '', 'alcancia' ); ?>>La Alcancía</option>
+                    <option value="terreno" <?php selected( $campos['zona_inmueble'] ?? '', 'pinar' ); ?>>Pinar</option>
+                    <option value="terreno" <?php selected( $campos['zona_inmueble'] ?? '', 'laguna' ); ?>>La Laguna</option>
                 </select>
             </td>
         </tr>   
@@ -614,6 +643,9 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
     // Guardar los valores de los campos personalizados del inmueble
     if ( isset( $_POST['tipo_inmueble'] ) ) {
         update_post_meta( $post_id, 'tipo_inmueble', sanitize_text_field( $_POST['tipo_inmueble'] ) );
+    }
+    if ( isset( $_POST['zona_inmueble'] ) ) {
+        update_post_meta( $post_id, 'zona_inmueble', sanitize_text_field( $_POST['zona_inmueble'] ) );
     }
     if ( isset( $_POST['localidad'] ) ) {
         update_post_meta( $post_id, 'localidad', sanitize_text_field( $_POST['localidad'] ) );
