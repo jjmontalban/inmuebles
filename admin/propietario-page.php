@@ -124,3 +124,33 @@ function mostrar_datos_columnas_personalizadas_propietario($column, $post_id) {
 }
 add_action('manage_propietario_posts_custom_column', 'mostrar_datos_columnas_personalizadas_propietario', 10, 2);
 
+
+
+/**
+ * Desactivar edicion rápida
+ */
+function desactivar_quick_edit_propietario($actions, $post) {
+    
+    if ($post->post_type === 'propietario') {
+        unset($actions['inline hide-if-no-js']);
+    }
+    return $actions;
+}
+add_filter('post_row_actions', 'desactivar_quick_edit_propietario', 10, 2);
+
+
+/**
+ * Cambiar texto editar por ver
+ */
+function modificar_texto_accion_propeitario($actions, $post) {
+    // Solo modificar para el tipo de publicación 'consulta'
+    if ($post->post_type === 'propietario') {
+        if (isset($actions['edit'])) {
+            $actions['edit'] = str_replace('Editar', 'Ver', $actions['edit']);
+        }
+    }
+
+    return $actions;
+}
+add_filter('post_row_actions', 'modificar_texto_accion_propeitario', 10, 2);
+

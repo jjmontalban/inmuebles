@@ -346,22 +346,6 @@ jQuery(document).ready(function($) {
         $('#mapaModal').hide();
     });
 
-
-    document.getElementById('mapa_correcto').addEventListener('click', function(event) {
-        event.preventDefault();
-        
-        // Obtener la ubicación del marcador en el mapa
-        var ubicacionMarcador = marcador.getPosition();
-      
-        // Guardar la ubicación en el campo oculto
-        document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
-      });
-      
-    document.getElementById('mapa_correcto').addEventListener('click', function() {
-        document.getElementById('mapaModal').style.display = 'none';
-    });
-
-
     // Detectar cambios en el selector de propietarios
     $('#selector-propietario').change(function() {
         // Si se ha seleccionado un propietario, ocultamos los campos para crear uno nuevo
@@ -378,6 +362,21 @@ jQuery(document).ready(function($) {
         }
     }).trigger('change');  // Trigger inicial para ajustar la visualización en función de la selección actual
 
+
+    document.getElementById('mapa_correcto').addEventListener('click', function(event) {
+        event.preventDefault();
+        // Obtener la ubicación del marcador en el mapa
+        var ubicacionMarcador = marcador.getPosition();
+        // Guardar la ubicación en el campo oculto
+        document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
+    });
     
+    document.getElementById('mapa_correcto').addEventListener('click', function() {
+        document.getElementById('mapaModal').style.display = 'none';
+    });
+    
+
+       
+
 
 });

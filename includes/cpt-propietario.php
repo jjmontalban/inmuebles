@@ -20,7 +20,8 @@ function registrar_cpt_propietario() {
 
     $args = array(
         'labels' => $labels,
-        'public' => true,
+        'public' => false,
+        'show_ui' => true, //solo desde el admin
         'has_archive' => true,
         'rewrite' => array( 'slug' => 'propietario' ),
         'menu_icon' => 'dashicons-admin-users',

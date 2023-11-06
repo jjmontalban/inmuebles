@@ -961,3 +961,31 @@ function modificar_valor_columna_title($title, $post_id) {
     return $title;
 }
 add_filter('the_title', 'modificar_valor_columna_title', 10, 2);
+
+
+/**
+ * Cambiar texto editar por ver en el menu de acciones
+ */
+function modificar_texto_accion_inmueble($actions, $post) {
+    if ($post->post_type === 'inmueble') {
+        if (isset($actions['edit'])) {
+            $actions['edit'] = str_replace('Editar', 'Ver', $actions['edit']);
+        }
+    }
+
+    return $actions;
+}
+add_filter('post_row_actions', 'modificar_texto_accion_inmueble', 10, 2);
+
+
+/**
+ * Desactivar edicion rápida
+ */
+function desactivar_quick_edit_inmueble($actions, $post) {
+    
+    if ($post->post_type === 'inmueble') {
+        unset($actions['inline hide-if-no-js']);
+    }
+    return $actions;
+}
+add_filter('post_row_actions', 'desactivar_quick_edit_inmueble', 10, 2);

@@ -18,7 +18,7 @@ function crear_cpt_consulta() {
         'public'             => false,
         'show_in_menu'       => true,
         'show_ui' => true,
-        'supports'           => array('') // Sólo soporta título, elimina el editor de texto
+        'supports'           => array('')
     );
     register_post_type('consulta', $args);
 }

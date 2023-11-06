@@ -1,18 +1,22 @@
 <?php 
 /**
- * Modificar el listado de la página de demandas
+ * Agregar columnas personalizadas a la lista de entradas de demandas
+ * @param int $columns
  */
-function agregar_columnas_demandas($columns) {
-    return array(
+function agregar_columnas_personalizadas_demanda($columns) {
+    $columns = array(
+        'cb' => '<input type="checkbox" />',
         'nombre' => 'Nombre',
         'telefono' => 'Teléfono',
         'email' => 'Email',
         'inmueble_interesado' => 'Inmueble por el que se interesó',
+        'date' => 'Fecha de publicación',
     );
+    return $columns;
 }
-add_filter('manage_demandas_posts_columns', 'agregar_columnas_demandas');
+add_filter('manage_demanda_posts_columns', 'agregar_columnas_personalizadas_demanda');
 
-function llenar_columnas_demandas($column, $post_id) {
+function mostrar_datos_columnas_personalizadas_demanda($column, $post_id) {
     switch ($column) {
         case 'nombre':
             echo get_post_meta($post_id, 'nombre', true);
@@ -28,7 +32,9 @@ function llenar_columnas_demandas($column, $post_id) {
             break;
     }
 }
-add_action('manage_demandas_posts_custom_column', 'llenar_columnas_demandas', 10, 2);
+add_action('manage_demanda_posts_custom_column', 'mostrar_datos_columnas_personalizadas_demanda', 10, 2);
+
+
 
 
 /**
@@ -110,7 +116,7 @@ add_action('save_post', 'inmuebles_guardar_campos_demanda');
 /**
  * Cambiar texto editar por ver en el menu de acciones
  */
-function chipicasa_modificar_texto_accion($actions, $post) {
+function modificar_texto_accion_demanda($actions, $post) {
     if ($post->post_type === 'demanda') {
         if (isset($actions['edit'])) {
             $actions['edit'] = str_replace('Editar', 'Ver', $actions['edit']);
@@ -119,4 +125,17 @@ function chipicasa_modificar_texto_accion($actions, $post) {
 
     return $actions;
 }
-add_filter('post_row_actions', 'chipicasa_modificar_texto_accion', 10, 2);
+add_filter('post_row_actions', 'modificar_texto_accion_demanda', 10, 2);
+
+
+/**
+ * Desactivar edicion rápida
+ */
+function desactivar_quick_edit_demanda($actions, $post) {
+    
+    if ($post->post_type === 'demanda') {
+        unset($actions['inline hide-if-no-js']);
+    }
+    return $actions;
+}
+add_filter('post_row_actions', 'desactivar_quick_edit_demanda', 10, 2);

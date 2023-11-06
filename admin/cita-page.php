@@ -1,6 +1,4 @@
 <?php 
-
-
 /**
  * Agrega el metabox "Datos de la cita" al formulario de edición.
  */
@@ -16,14 +14,12 @@ function citas_meta_box() {
 }
 add_action('add_meta_boxes', 'citas_meta_box');
 
+
 /**
  * Muestra los campos de la cita en el formulario de edición.
  * @param WP_Post $post El objeto de entrada actual.
  */
 function mostrar_campos_cita($post) {
-
-
-
     $inmueble_id = get_post_meta($post->ID, 'inmueble_id', true);
     $demanda_id = get_post_meta($post->ID, 'demanda_id', true);
     $fecha = get_post_meta($post->ID, 'fecha', true);
@@ -44,13 +40,6 @@ function mostrar_campos_cita($post) {
     
     ?>
 
-<style>
-        #calendario {
-            height: 400px; /* Ajusta la altura del calendario según tus necesidades */
-            max-width: 100%; /* Ajusta el ancho máximo según tus necesidades */
-        }
-    </style>
-
     
     <table class="form-table">
         <tr>
@@ -59,8 +48,12 @@ function mostrar_campos_cita($post) {
                 <select name="inmueble_id" id="inmueble_id">
                     <option value="">Selecciona un inmueble</option>
                     <?php foreach ($inmuebles as $inmueble) : ?>
+                        <?php
+                        $tipo_inmueble = get_post_meta($inmueble->ID, 'tipo_inmueble', true);
+                        $nombre_calle = get_post_meta($inmueble->ID, 'nombre_calle', true);
+                        ?>
                         <option value="<?php echo esc_attr($inmueble->ID); ?>" <?php selected($inmueble_id, $inmueble->ID); ?>>
-                            <?php echo esc_html(get_term_field('tipo_inmueble', $inmueble->ID) . ' en ' . get_post_meta($inmueble->ID, 'direccion', true)); ?>
+                            <?php echo esc_html($tipo_inmueble . ' en ' . $nombre_calle); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -73,36 +66,27 @@ function mostrar_campos_cita($post) {
                     <option value="">Selecciona una demanda</option>
                     <?php foreach ($demandas as $demanda) : ?>
                         <option value="<?php echo esc_attr($demanda->ID); ?>" <?php selected($demanda_id, $demanda->ID); ?>>
-                            <?php echo esc_html(get_the_title($demanda->ID)); ?>
+                            <?php echo esc_html( $demanda->nombre ); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </td>
         </tr>
         <tr>
-            <th><label for="fecha">Fecha</label></th>
-            <td>
-                <div id="calendario"></div>
-                <input type="hidden" name="fecha" id="fecha" value="<?php echo esc_attr($fecha); ?>">
-            </td>
-        </tr>
+    <th><label for="fecha">Fecha y Hora</label></th>
+    <td>
+        <?php
+        $fecha = get_post_meta($post->ID, 'fecha', true);
+        $hora = get_post_meta($post->ID, 'hora', true);
+
+        ?>
+        <input type="date" name="fecha" id="fecha" value="<?php echo esc_attr( $fecha ?? ''); ?>" required>
+        <input type="time" name="hora" id="hora" value="<?php echo esc_attr( $hora ?? ''); ?>" required>
+    </td>
+</tr>
+
+
     </table>
-    <script>
-    jQuery(document).ready(function($) {
-        $('#calendario').fullCalendar({
-            defaultView: 'month',
-            editable: true,
-            eventStartEditable: true,
-            eventOverlap: false,
-            locale: 'es', // Establece el idioma a español
-            events: [], // Puedes cargar eventos aquí si los necesitas
-            select: function(start, end, jsEvent, view) {
-                // Captura la fecha seleccionada y guárdala en el campo de fecha
-                $('#fecha').val(start.format());
-            }
-        });
-    });
-</script>
     <?php
 }
 
@@ -120,6 +104,36 @@ function guardar_campos_cita($post_id) {
     if (array_key_exists('fecha', $_POST)) {
         update_post_meta($post_id, 'fecha', sanitize_text_field($_POST['fecha']));
     }
+    if (array_key_exists('hora', $_POST)) {
+        update_post_meta($post_id, 'hora', sanitize_text_field($_POST['hora']));
+    }
+
+    // Obtener información necesaria para el correo electrónico
+    $inmueble_id = get_post_meta($post_id, 'inmueble_id', true);
+    $demanda_id = get_post_meta($post_id, 'demanda_id', true);
+    $fecha = get_post_meta($post_id, 'fecha', true);
+    $hora = get_post_meta($post_id, 'hora', true);
+
+    // Obtener la dirección de correo electrónico del administrador del sitio
+    $admin_email = get_option('admin_email');
+
+    // Obtener la dirección de correo electrónico de la demanda
+    $demanda_email = get_post_meta($demanda_id, 'email', true);
+
+    // Asunto y contenido del correo electrónico
+    $subject = 'Nueva cita agendada';
+    $message = "Se ha agendado una nueva cita:\n";
+    $message .= "Fecha: $fecha\n";
+    $message .= "Hora: $hora\n";
+    $message .= "Inmueble ID: $inmueble_id\n";
+    $message .= "Demanda ID: $demanda_id\n";
+
+    // Enviar correo electrónico al administrador del sitio
+    wp_mail($admin_email, $subject, $message);
+
+    // Enviar correo electrónico a la demanda
+    wp_mail($demanda_email, $subject, $message);
+
 }
 add_action('save_post', 'guardar_campos_cita');
 
@@ -132,38 +146,65 @@ add_action('save_post', 'guardar_campos_cita');
 function agregar_columnas_personalizadas_cita($columns) {
     $columns = array(
         'cb' => '<input type="checkbox" />',
-        'nombre' => 'Nombre',
-        'apellidos' => 'Apellidos',
-        'telefono1' => 'Teléfono 1',
-        'telefono2' => 'Teléfono 2',
-        'email' => 'Email',
-        'date' => 'Fecha de publicación',
+        'demanda' => 'Nombre demanda',
+        'inmueble' => 'Nombre Inmueble',
+        'fecha' => 'Fecha de la cita',
+        'hora' => 'Hora de la cita',
     );
     return $columns;
 }
-//add_filter('manage_propietario_posts_columns', 'agregar_columnas_personalizadas_propietario');
+add_filter('manage_cita_posts_columns', 'agregar_columnas_personalizadas_cita');
 
 // Mostrar datos en las columnas personalizadas
 function mostrar_datos_columnas_personalizadas_cita($column, $post_id) {
     switch ($column) {
-        case 'nombre':
-            echo get_post_meta($post_id, 'nombre', true);
+        case 'inmueble':
+            $inmueble_id = get_post_meta($post_id, 'inmueble_id', true);
+            echo get_the_title($inmueble_id);
             break;
-        case 'apellidos':
-            echo get_post_meta($post_id, 'apellidos', true);
+        case 'demanda':
+            $demanda_id = get_post_meta($post_id, 'demanda_id', true);
+            echo get_post_meta($demanda_id, 'nombre', true);
             break;
-        case 'telefono1':
-            echo get_post_meta($post_id, 'telefono1', true);
+        case 'fecha':
+            $fecha = get_post_meta($post_id, 'fecha', true);
+            echo date('d/m/Y', strtotime($fecha));
             break;
-        case 'telefono2':
-            echo get_post_meta($post_id, 'telefono2', true);
-            break;
-        case 'email':
-            echo get_post_meta($post_id, 'email', true);
+        case 'hora':
+            $hora = get_post_meta($post_id, 'hora', true);
+            echo date('H:i', strtotime($hora));
             break;
         default:
             break;
     }
 }
-//add_action('manage_propietario_posts_custom_column', 'mostrar_datos_columnas_personalizadas_propietario', 10, 2);
+add_action('manage_cita_posts_custom_column', 'mostrar_datos_columnas_personalizadas_cita', 10, 2);
 
+/**
+ * Cambiar texto editar por ver
+ */
+function modificar_texto_accion_cita($actions, $post) {
+    // Solo modificar para el tipo de publicación 'cita'
+    if ($post->post_type === 'cita') {
+        if (isset($actions['edit'])) {
+            $actions['edit'] = str_replace('Editar', 'Ver', $actions['edit']);
+        }
+    }
+
+    return $actions;
+}
+add_filter('post_row_actions', 'modificar_texto_accion_cita', 10, 2);
+
+
+
+/**
+ * Desactivar edicion rápida
+ */
+function desactivar_quick_edit_cita($actions, $post) {
+    
+    if ($post->post_type === 'cita') {
+        unset($actions['inline hide-if-no-js']);
+    }
+    return $actions;
+}
+add_filter('post_row_actions', 'desactivar_quick_edit_cita', 10, 2);

@@ -39,6 +39,8 @@ function inmuebles_uninstall_plugin() {
     unregister_post_type('inmueble');
     unregister_post_type('propietario');
     unregister_post_type('consulta');
+    unregister_post_type('cita');
+    unregister_post_type('demanda');
 
     // Eliminar la página de configuración del menú
     remove_menu_page('inmuebles-settings'); // Reemplaza 'inmuebles-settings' con el slug de tu página de configuración

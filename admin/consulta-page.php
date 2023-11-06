@@ -14,7 +14,7 @@ function procesar_formulario_contacto() {
 
     $consulta_id = wp_insert_post(array(
         'post_type' => 'consulta',
-        'post_title' => 'Consulta sobre ' . get_the_title($inmueble_id),
+        'post_title' => get_the_title($inmueble_id),
         'post_status' => 'publish',
     ));
 
@@ -72,17 +72,6 @@ function llenar_columnas_consulta($column, $post_id) {
 add_action('manage_consulta_posts_custom_column', 'llenar_columnas_consulta', 10, 2);
 
 
-/**
- * Ocultar el título por defecto en la página de edición
- */
-/* function ocultar_titulo_consulta() {
-    $screen = get_current_screen();
-    if ($screen->id == 'consulta') {
-        remove_post_type_support('consulta', 'title');
-    }
-}
-add_action('admin_head', 'ocultar_titulo_consulta'); */
-
 
 /**
  * Agrega el metabox "Datos de la consulta" a la página de consulta
@@ -125,7 +114,7 @@ function mostrar_metabox_consulta($post) {
 /**
  * Cambiar texto editar por ver
  */
-function modificar_texto_accion($actions, $post) {
+function modificar_texto_accion_consulta($actions, $post) {
     // Solo modificar para el tipo de publicación 'consulta'
     if ($post->post_type === 'consulta') {
         if (isset($actions['edit'])) {
@@ -135,7 +124,21 @@ function modificar_texto_accion($actions, $post) {
 
     return $actions;
 }
-add_filter('post_row_actions', 'modificar_texto_accion', 10, 2);
+add_filter('post_row_actions', 'modificar_texto_accion_consulta', 10, 2);
+
+
+/**
+ * Desactivar edicion rápida
+ */
+function desactivar_quick_edit_consulta($actions, $post) {
+    
+    if ($post->post_type === 'consulta') {
+        unset($actions['inline hide-if-no-js']);
+    }
+    return $actions;
+}
+add_filter('post_row_actions', 'desactivar_quick_edit_consulta', 10, 2);
+
 
 
 //Eliminar el submenú "Añadir nueva"
