@@ -73,26 +73,17 @@ require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
  * Carga librerias js necesarias
  */
 function inmuebles_load_scripts() {
-    // Registrar jQuery y jQuery UI
-    wp_enqueue_script('jquery');
-    wp_enqueue_script('jquery-ui-core');
+    // Registrar jQuery UI
     wp_enqueue_script('jquery-ui-sortable');
-
-    // Registrar los scripts para celandario de citas
-    wp_enqueue_style('fullcalendar-css', 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css');
-    wp_enqueue_script('moment', 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js', array('jquery'), null, true);
-    wp_enqueue_script('fullcalendar', 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js', array('jquery', 'moment'), null, true);
-    wp_enqueue_script('fullcalendar-es', 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.js', array('fullcalendar'), null, true);
 
     // Registrar el script 'media' de WordPress
     wp_enqueue_media();
 
+    // Agregar la página de configuración en el menú de administración
+    add_action('admin_menu', 'inmuebles_add_settings_page');
+    
     // Obtener la clave de API almacenada
     $api_key = get_option('inmuebles_google_maps_api_key', '');
-
-     // Agregar la página de configuración en el menú de administración
-     add_action('admin_menu', 'inmuebles_add_settings_page');
-
     // Cargar la biblioteca de Google Maps JavaScript API con la clave
     wp_enqueue_script('google-maps', "https://maps.googleapis.com/maps/api/js?key={$api_key}", array(), null, true);
 

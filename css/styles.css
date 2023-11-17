@@ -50,3 +50,10 @@ input::placeholder {
     color: #bbb; /* Establece el color más apagado para el placeholder */
   }
 
+
+
+   /* Estilos para la galeria de imagenes en la creación de inmuebles */
+   #sortable { list-style-type: none; margin: 0; padding: 0; width: 450px; }
+   #sortable li { display: inline-block; margin: 10px; position: relative; }
+   #sortable li .remove-imagen { position: absolute; top: 5px; right: 5px; background-color: white; padding: 5px; border: none; }
+   #sortable li img { width: 100px; height: 100px; display: block; }

@@ -90,7 +90,7 @@ add_action( 'add_meta_boxes', 'inmuebles_agregar_mb_campos_inmueble' );
  */
 function inmuebles_agregar_mb_campos_propietario_inmueble() {
     add_meta_box( 'inmueble_propietario', 
-                  'Registrar nuevo Propietario para el inmueble (para seleccionar uno nuevo deseleccionar el propeitario del selector anterior)', 
+                  'Registrar nuevo Propietario para el inmueble (para seleccionar uno nuevo deseleccionar el propietario del selector anterior)', 
                   'mostrar_campos_propietario', 
                   'inmueble',
                   'normal', 
@@ -115,6 +115,7 @@ function mostrar_campos_inmueble( $post ) {
 
 
     ?>
+
     <table class="form-table">
         <tr>
             <th><label for="tipo_inmueble">Tipo de Inmueble*</label></th>
@@ -136,14 +137,14 @@ function mostrar_campos_inmueble( $post ) {
             <td>
                 <select name="zona_inmueble" id="zona_inmueble" required>
                     <option value="">Seleccionar</option>
-                    <option value="piso" <?php selected(  $campos['zona_inmueble'] ?? '', 'centro' ); ?>>Centro</option>
-                    <option value="casa_chalet" <?php selected( $campos['zona_inmueble'] ?? '', 'regla' ); ?>>Regla</option>
-                    <option value="casa_rustica" <?php selected( $campos['zona_inmueble'] ?? '', 'cruz_mar' ); ?>>Curz del Mar</option>
-                    <option value="local" <?php selected( $campos['zona_inmueble'] ?? '', 'faro' ); ?>>Faro</option>
-                    <option value="garaje" <?php selected( $campos['zona_inmueble'] ?? '', 'muelle' ); ?>>Muelle</option>
-                    <option value="oficina" <?php selected( $campos['zona_inmueble'] ?? '', 'alcancia' ); ?>>La Alcancía</option>
-                    <option value="terreno" <?php selected( $campos['zona_inmueble'] ?? '', 'pinar' ); ?>>Pinar</option>
-                    <option value="terreno" <?php selected( $campos['zona_inmueble'] ?? '', 'laguna' ); ?>>La Laguna</option>
+                    <option value="centro" <?php selected(  $campos['zona_inmueble'] ?? '', 'centro' ); ?>>Centro</option>
+                    <option value="regla" <?php selected( $campos['zona_inmueble'] ?? '', 'regla' ); ?>>Regla</option>
+                    <option value="cruz_mar" <?php selected( $campos['zona_inmueble'] ?? '', 'cruz_mar' ); ?>>Curz del Mar</option>
+                    <option value="faro" <?php selected( $campos['zona_inmueble'] ?? '', 'faro' ); ?>>Faro</option>
+                    <option value="muelle" <?php selected( $campos['zona_inmueble'] ?? '', 'muelle' ); ?>>Muelle</option>
+                    <option value="alcancia" <?php selected( $campos['zona_inmueble'] ?? '', 'alcancia' ); ?>>La Alcancía</option>
+                    <option value="pinar" <?php selected( $campos['zona_inmueble'] ?? '', 'pinar' ); ?>>Pinar</option>
+                    <option value="laguna" <?php selected( $campos['zona_inmueble'] ?? '', 'laguna' ); ?>>La Laguna</option>
                 </select>
             </td>
         </tr>   
@@ -580,29 +581,25 @@ function mostrar_campos_inmueble( $post ) {
             <td><textarea name="descripcion" id="descripcion"><?php echo esc_textarea( $campos['descripcion'] ?? '' ); ?></textarea></td>
         </tr>
 
-
         <!-- Campo de Galería de Imágenes -->
         <tr>
             <th>Galería de Imágenes</th>
             <td>
-                <div id="galeria-imagenes-container" class="sortable-container ui-sortable">
+                <ul id="sortable" class="sortable-container">
                     <?php if (!empty($campos['galeria_imagenes'])) : ?>
                         <?php foreach ($campos['galeria_imagenes'] as $index => $imagen) : ?>
-                            <div class="galeria-imagen">
-                                <div class="galeria-imagen-inner">
-                                    <img src="<?php echo esc_url($imagen); ?>" alt="Imagen">
-                                    <button type="button" class="remove-imagen button-link">Eliminar</button>
-                                </div>
-                                <input type="hidden" name="galeria_imagenes[]" value="<?php echo esc_attr( $imagen ); ?>">
-                            </div>
+                            <li class="ui-state-default" data-index="<?php echo esc_attr($index); ?>">
+                                <img src="<?php echo esc_url($imagen); ?>" alt="Imagen">
+                                <button type="button" class="remove-imagen button-link">Eliminar</button>
+                                <input type="hidden" name="galeria_imagenes[<?php echo esc_attr($index); ?>]" value="<?php echo esc_attr($imagen); ?>">
+                            </li>
                         <?php endforeach; ?>
                     <?php endif; ?>
-                </div>
+                </ul>
                 <button type="button" class="agregar-imagen button button-primary">Agregar Imagen</button>
+                <input type="hidden" id="orden-imagenes" name="orden_imagenes" value="">
             </td>
         </tr>
-        
-        
 
         <tr>
             <th>Propietario del Inmueble</th>
@@ -961,21 +958,6 @@ function modificar_valor_columna_title($title, $post_id) {
     return $title;
 }
 add_filter('the_title', 'modificar_valor_columna_title', 10, 2);
-
-
-/**
- * Cambiar texto editar por ver en el menu de acciones
- */
-function modificar_texto_accion_inmueble($actions, $post) {
-    if ($post->post_type === 'inmueble') {
-        if (isset($actions['edit'])) {
-            $actions['edit'] = str_replace('Editar', 'Ver', $actions['edit']);
-        }
-    }
-
-    return $actions;
-}
-add_filter('post_row_actions', 'modificar_texto_accion_inmueble', 10, 2);
 
 
 /**
