@@ -388,6 +388,8 @@ function mostrar_campos_inmueble( $post ) {
                     <option value="e" <?php selected($campos['cal_emis'] ?? '', 'e'); ?>>E</option>
                     <option value="f" <?php selected($campos['cal_emis'] ?? '', 'f'); ?>>F</option>
                     <option value="g" <?php selected($campos['cal_emis'] ?? '', 'g'); ?>>G</option>
+                    <option value="exento" <?php selected($campos['cal_emis'] ?? '', 'exento'); ?>>Exento</option>
+                    <option value="tramite" <?php selected($campos['cal_emis'] ?? '', 'tramite'); ?>>En trámite</option>
                 </select>
             </td>
             <th><label for="emisiones">Emisiones</label></th>
