@@ -277,9 +277,9 @@ function mostrar_campos_inmueble( $post ) {
         <tr id="campo_tipo_terreno">
             <th>Tipo de terreno</th>
             <td>
-                <label><input type="radio" name="tipo_terreno" value="urbano" <?php checked($campos['tipo_terreno'] ?? '', 'local'); ?> required>Urbano (solar)</label>
-                <label><input type="radio" name="tipo_terreno" value="urbanizable" <?php checked($campos['tipo_terreno'] ?? '', 'nave'); ?>>Urbanizable</label>
-                <label><input type="radio" name="tipo_terreno" value="urbanizable" <?php checked($campos['tipo_terreno'] ?? '', 'nave'); ?>>No urbanizable</label>
+                <label><input type="radio" name="tipo_terreno" value="urbano" <?php checked($campos['tipo_terreno'] ?? '', 'urbano'); ?> required>Urbano (solar)</label>
+                <label><input type="radio" name="tipo_terreno" value="urbanizable" <?php checked($campos['tipo_terreno'] ?? '', 'urbanizable'); ?>>Urbanizable</label>
+                <label><input type="radio" name="tipo_terreno" value="no_urbanizable" <?php checked($campos['tipo_terreno'] ?? '', 'no_urbanizable'); ?>>No urbanizable</label>
             </td>
         </tr>
         <tr id="campo_tipo_plaza">
