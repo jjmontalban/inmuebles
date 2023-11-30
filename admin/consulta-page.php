@@ -150,9 +150,9 @@ add_action('admin_menu', 'eliminar_submenu_consultas');
 
 //Eliminar el botón "Añadir nueva" desde la página de listado de consultas
 function ocultar_boton_anadir_nueva_consulta() {
-    global $post_type;
+    global $post;
 
-    if ('consulta' == $post_type) {
+    if ($post->post_type === 'consulta') {
         echo '<style type="text/css">
             .page-title-action { display: none; }
         </style>';

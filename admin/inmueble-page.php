@@ -896,30 +896,37 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
     $telefono2 = isset($_POST['telefono2']) ? $_POST['telefono2'] : '';
 
     //Guardando un propietario desde la página de inmueble
-    if( $nombre && $email && $telefono1 ){
-        // Crear una nueva entrada de propietario
+if ($nombre && $email && $telefono1) {
+    // Verificar si es una nueva publicación de inmueble
+    $es_nuevo_inmueble = empty(get_post_meta($post_id, 'propietario_id', true));
+
+
+    if ($es_nuevo_inmueble) {
+        // Crear una nueva entrada de propietario solo si es un inmueble nuevo
         $propietario_id = wp_insert_post(array(
             'post_type' => 'propietario',
             'post_status' => 'publish'
-            ));
-    
-        if($propietario_id) {
+        ));
+
+        if ($propietario_id) {
             // Establecer los campos personalizados del propietario
             update_post_meta($propietario_id, 'nombre', $nombre);
             update_post_meta($propietario_id, 'apellidos', $apellidos);
             update_post_meta($propietario_id, 'email', $email);
             update_post_meta($propietario_id, 'telefono1', $telefono1);
             update_post_meta($propietario_id, 'telefono2', $telefono2);
-    
+
             // Establecer este propietario al inmueble actual
             update_post_meta($post_id, 'propietario_id', $propietario_id);
         }
     }
+}
 
-    //Guardar el propietario seleccionado del dropdown en la meta del inmueble
-    if(isset($_POST['propietario_id'])) {
-        update_post_meta($post_id, 'propietario_id', $_POST['propietario_id']);
-    }
+// Guardar el propietario seleccionado del dropdown en la meta del inmueble
+if (isset($_POST['propietario_id'])) {
+    update_post_meta($post_id, 'propietario_id', $_POST['propietario_id']);
+}
+
     
 
 

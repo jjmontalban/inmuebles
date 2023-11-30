@@ -9,8 +9,8 @@ function crear_cpt_consulta() {
         'singular_name'         => _x('Consulta', 'Post type singular name', 'textdomain'),
         'menu_name'             => _x('Consultas', 'Admin Menu text', 'textdomain'),
         'name_admin_bar'        => _x('Consulta', 'Add New on Toolbar', 'textdomain'),
-        'edit_item'             => __('Ver consulta', 'textdomain'), // Cambio aquí
-        // ... Puedes agregar más etiquetas si las necesitas
+        'edit_item'             => __('Ver consulta', 'textdomain'), 
+    
     );
 
     $args = array(
