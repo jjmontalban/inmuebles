@@ -57,3 +57,17 @@ input::placeholder {
    #sortable li { display: inline-block; margin: 10px; position: relative; }
    #sortable li .remove-imagen { position: absolute; top: 5px; right: 5px; background-color: white; padding: 5px; border: none; }
    #sortable li img { width: 100px; height: 100px; display: block; }
+
+
+
+   
+.form-shortcode-container {
+    /* Estilos para el contenedor del shortcode */
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

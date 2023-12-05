@@ -54,20 +54,19 @@ function inmuebles_uninstall_plugin() {
 function inmuebles_deactivate_plugin() {
 }
 
-
 // Incluimos los archivos secundarios
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-inmueble.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-propietario.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-consulta.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-demanda.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-cita.php';
+require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
 require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/propietario-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/cita-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
-
 
 /**
  * Carga librerias js necesarias
@@ -88,7 +87,8 @@ function inmuebles_load_scripts() {
     wp_enqueue_script('google-maps', "https://maps.googleapis.com/maps/api/js?key={$api_key}", array(), null, true);
 
     // Registrar el script personalizado
-    wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '1.0', true);
+    wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '2.0', true);
+    
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_scripts');
 
@@ -98,6 +98,6 @@ add_action('admin_enqueue_scripts', 'inmuebles_load_scripts');
  */
 function inmuebles_load_styles() {
     // Registrar el archivo CSS del plugin
-    wp_enqueue_style('inmuebles-style', plugin_dir_url(__FILE__) . 'css/styles.css', array(), '1.0', 'all');
+    wp_enqueue_style('inmuebles-style', plugin_dir_url(__FILE__) . 'css/style.css', array(), '2.0', 'all');
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_styles');
