@@ -61,13 +61,3 @@ input::placeholder {
 
 
    
-.form-shortcode-container {
-    /* Estilos para el contenedor del shortcode */
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}

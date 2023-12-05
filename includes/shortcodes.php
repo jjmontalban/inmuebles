@@ -3,9 +3,7 @@
 // Función para generar el formulario de contacto
 function formulario_contacto_shortcode() {
     ob_start(); ?>
-    <style>
-       
-    </style>
+
     <div class="form-shortcode-container">
         <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-contacto">
             <input type="hidden" name="action" value="procesar_formulario_contacto">
