@@ -33,8 +33,7 @@ $zonas_inmueble_map = array(
  */
 function obtener_campos_inmueble($post_id) {
     $campos = array(
-        'tipo_inmueble', 'zona_inmueble', 'localidad', 'nombre_calle', 'numero', 
-        'planta', 'bloque', 'escalera', 'urbanizacion', 
+        'tipo_inmueble', 'zona_inmueble', 'localidad', 'nombre_calle', 'numero', 'numero_obligatorio',
         'visibilidad_direccion', 'tipo_operacion', 'precio_venta', 
         'gastos_comunidad', 'precio_alquiler', 'fianza', 'calefaccion',
         'caract_inm', 'm_construidos','m_utiles','m_lineales','superf_terreno',
@@ -655,6 +654,11 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
     if ( isset( $_POST['numero'] ) ) {
         update_post_meta( $post_id, 'numero', sanitize_text_field( $_POST['numero'] ) );
     }
+    
+    // Comprueba si el checkbox 'numero_obligatorio' está marcado
+    $numero_obligatorio = isset($_POST['numero_obligatorio']) ? '1' : '0';
+    update_post_meta($post_id, 'numero_obligatorio', $numero_obligatorio);
+
     if ( isset( $_POST['planta'] ) ) {
         update_post_meta( $post_id, 'planta', sanitize_text_field( $_POST['planta'] ) );
     }
@@ -749,7 +753,7 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'm_lineales', sanitize_text_field($_POST['m_lineales']));
     }
     if (isset($_POST['m_plaza'])) {
-        update_post_meta($post_id, 'superf_terreno', sanitize_text_field($_POST['superf_terreno']));
+        update_post_meta($post_id, 'm_plaza', sanitize_text_field($_POST['m_plaza']));
     }
     if (isset($_POST['calif_consumo_energ'])) {
         update_post_meta($post_id, 'calif_consumo_energ', sanitize_text_field($_POST['calif_consumo_energ']));

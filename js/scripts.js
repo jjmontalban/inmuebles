@@ -123,9 +123,9 @@ jQuery(document).ready(function($) {
 
         garaje: [
             { campo: 'campo_tipo_plaza', requerido: true },
-            { campo: 'campo_caract_garaje', requerido: true },
             { campo: 'campo_m_plaza', requerido: true },
-
+            
+            { campo: 'campo_caract_garaje', requerido: false },
             { campo: 'campo_bloque', requerido: false },
             { campo: 'campo_escalera', requerido: false },
             { campo: 'campo_urbanizacion', requerido: false },
