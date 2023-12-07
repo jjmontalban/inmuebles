@@ -95,6 +95,11 @@ function mostrar_campos_cita($post) {
  * @param int $post_id ID de la cita actual.
  */
 function guardar_campos_cita($post_id) {
+
+     if ( get_post_type($post_id) !== 'cita') {
+         return;
+     }
+
     if (array_key_exists('inmueble_id', $_POST)) {
         update_post_meta($post_id, 'inmueble_id', sanitize_text_field($_POST['inmueble_id']));
     }
