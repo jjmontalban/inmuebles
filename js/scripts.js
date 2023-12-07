@@ -372,7 +372,7 @@ jQuery(document).ready(function($) {
             $('#contenedor-propietario').show();
             
             // Añadir el atributo 'required' de nuevo a los campos cuando son visibles
-            $('#nombre, #email, #telefono1').attr('required', 'required');
+            $('#nombre, #email, #telefono').attr('required', 'required');
         }
     }).trigger('change');  // Trigger inicial para ajustar la visualización en función de la selección actual
 

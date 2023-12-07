@@ -23,8 +23,7 @@ function mostrar_campos_propietario( $post ) {
     $nombre = get_post_meta($post->ID, 'nombre', true);
     $apellidos = get_post_meta($post->ID, 'apellidos', true);
     $email = get_post_meta($post->ID, 'email', true);
-    $telefono1 = get_post_meta($post->ID, 'telefono1', true);
-    $telefono2 = get_post_meta($post->ID, 'telefono2', true);
+    $telefono = get_post_meta($post->ID, 'telefono', true);
     
     ?>
     <div id="contenedor-propietario">
@@ -42,12 +41,8 @@ function mostrar_campos_propietario( $post ) {
                 <td><input type="text" name="email" id="email" value="<?php echo esc_attr( $email ?? ''); ?>" required></td>
             </tr>
             <tr>
-                <th><label for="telefono1">Teléfono 1*</label></th>
-                <td><input type="text" name="telefono1" id="telefono1" value="<?php echo esc_attr( $telefono1 ?? ''); ?>" required></td>
-            </tr>
-            <tr>
-                <th><label for="telefono2">Teléfono 2</label></th>
-                <td><input type="text" name="telefono2" id="telefono2" value="<?php echo esc_attr( $telefono2 ?? ''); ?>"></td>
+                <th><label for="telefono">Teléfono*</label></th>
+                <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr( $telefono ?? ''); ?>" required></td>
             </tr>
         </table>
     </div>
@@ -68,11 +63,8 @@ function inmuebles_guardar_campos_propietario( $post_id ) {
     if (array_key_exists('email', $_POST)) {
         update_post_meta($post_id, 'email', sanitize_text_field($_POST['email']));
     }
-    if (array_key_exists('telefono1', $_POST)) {
-        update_post_meta($post_id, 'telefono1', sanitize_text_field($_POST['telefono1']));
-    }
-    if (array_key_exists('telefono2', $_POST)) {
-        update_post_meta($post_id, 'telefono2', sanitize_text_field($_POST['telefono2']));
+    if (array_key_exists('telefono', $_POST)) {
+        update_post_meta($post_id, 'telefono', sanitize_text_field($_POST['telefono']));
     }
 }
 add_action('save_post', 'inmuebles_guardar_campos_propietario');
@@ -91,8 +83,7 @@ function agregar_columnas_personalizadas_propietario($columns) {
         'cb' => '<input type="checkbox" />',
         'nombre' => 'Nombre',
         'apellidos' => 'Apellidos',
-        'telefono1' => 'Teléfono 1',
-        'telefono2' => 'Teléfono 2',
+        'telefono' => 'Teléfono',
         'email' => 'Email',
         'date' => 'Fecha de publicación',
     );
@@ -109,11 +100,8 @@ function mostrar_datos_columnas_personalizadas_propietario($column, $post_id) {
         case 'apellidos':
             echo get_post_meta($post_id, 'apellidos', true);
             break;
-        case 'telefono1':
-            echo get_post_meta($post_id, 'telefono1', true);
-            break;
-        case 'telefono2':
-            echo get_post_meta($post_id, 'telefono2', true);
+        case 'telefono':
+            echo get_post_meta($post_id, 'telefono', true);
             break;
         case 'email':
             echo get_post_meta($post_id, 'email', true);

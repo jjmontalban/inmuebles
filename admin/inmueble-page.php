@@ -745,7 +745,7 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'm_lineales', sanitize_text_field($_POST['m_lineales']));
     }
     if (isset($_POST['superf_terreno'])) {
-        update_post_meta($post_id, 'm_lineales', sanitize_text_field($_POST['m_lineales']));
+        update_post_meta($post_id, 'superf_terreno', sanitize_text_field($_POST['superf_terreno']));
     }
     if (isset($_POST['m_plaza'])) {
         update_post_meta($post_id, 'm_plaza', sanitize_text_field($_POST['m_plaza']));
@@ -894,35 +894,49 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
     $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
     $apellidos = isset($_POST['apellidos']) ? $_POST['apellidos'] : '';
     $email = isset($_POST['email']) ? $_POST ['email'] : '';
-    $telefono1 = isset($_POST['telefono1']) ? $_POST['telefono1'] : '';
-    $telefono2 = isset($_POST['telefono2']) ? $_POST['telefono2'] : '';
+    $telefono = isset($_POST['telefono']) ? $_POST['telefono'] : '';
 
-    //Guardando un propietario desde la página de inmueble
-if ($nombre && $email && $telefono1) {
-    // Verificar si es una nueva publicación de inmueble
-    $es_nuevo_inmueble = empty(get_post_meta($post_id, 'propietario_id', true));
+    // Guardando un propietario desde la página de inmueble
+    if ($nombre && $email && $telefono) {
+        // Verificar si es una nueva publicación de inmueble
+        $es_nuevo_inmueble = empty(get_post_meta($post_id, 'propietario_id', true));
 
-
-    if ($es_nuevo_inmueble) {
-        // Crear una nueva entrada de propietario solo si es un inmueble nuevo
-        $propietario_id = wp_insert_post(array(
+        // Buscar si ya existe un propietario con el mismo telefono
+        $args = array(
             'post_type' => 'propietario',
-            'post_status' => 'publish'
-        ));
+            'meta_query' => array(
+                array(
+                    'key' => 'telefono',
+                    'value' => $telefono,
+                    'compare' => '=',
+                )
+            )
+        );
+        $query = new WP_Query($args);
 
-        if ($propietario_id) {
-            // Establecer los campos personalizados del propietario
-            update_post_meta($propietario_id, 'nombre', $nombre);
-            update_post_meta($propietario_id, 'apellidos', $apellidos);
-            update_post_meta($propietario_id, 'email', $email);
-            update_post_meta($propietario_id, 'telefono1', $telefono1);
-            update_post_meta($propietario_id, 'telefono2', $telefono2);
+        if ($es_nuevo_inmueble && !$query->have_posts()) {
+            // Crear una nueva entrada de propietario solo si es un inmueble nuevo y no existe un propietario con el mismo telefono
+            $propietario_id = wp_insert_post(array(
+                'post_type' => 'propietario',
+                'post_status' => 'publish'
+            ));
 
-            // Establecer este propietario al inmueble actual
-            update_post_meta($post_id, 'propietario_id', $propietario_id);
+            if ($propietario_id) {
+                // Establecer los campos personalizados del propietario
+                update_post_meta($propietario_id, 'nombre', $nombre);
+                update_post_meta($propietario_id, 'apellidos', $apellidos);
+                update_post_meta($propietario_id, 'email', $email);
+                update_post_meta($propietario_id, 'telefono', $telefono);
+
+                // Establecer este propietario al inmueble actual
+                update_post_meta($post_id, 'propietario_id', $propietario_id);
+            }
+        } else if ($query->have_posts()) {
+            // Si ya existe un propietario con el mismo telefono, asignarlo al inmueble actual
+            $propietario_existente = $query->posts[0];
+            update_post_meta($post_id, 'propietario_id', $propietario_existente->ID);
         }
     }
-}
 
 // Guardar el propietario seleccionado del dropdown en la meta del inmueble
 if (isset($_POST['propietario_id'])) {
