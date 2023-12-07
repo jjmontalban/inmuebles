@@ -6,6 +6,11 @@ jQuery(document).ready(function($) {
     $('#numero_obligatorio').on('change', function() {
         var disabled = $(this).is(':checked');
         $('#numero').prop('disabled', disabled);
+     
+        // Si el checkbox está marcado, quitar el atributo 'required' del campo 'numero'
+        if(disabled) {
+            $('#numero').removeAttr('required');
+        } 
     });
 
 
@@ -123,8 +128,8 @@ jQuery(document).ready(function($) {
 
         garaje: [
             { campo: 'campo_tipo_plaza', requerido: true },
-            { campo: 'campo_m_plaza', requerido: true },
             
+            { campo: 'campo_m_plaza', requerido: false },
             { campo: 'campo_caract_garaje', requerido: false },
             { campo: 'campo_bloque', requerido: false },
             { campo: 'campo_escalera', requerido: false },
@@ -135,7 +140,7 @@ jQuery(document).ready(function($) {
             { campo: 'campo_tipo_terreno', requerido: true },
             { campo: 'campo_acceso_rodado', requerido: true },
             { campo: 'campo_superf_terreno', requerido: true },
-            { campo: 'campo_tipo_calif_terreno', requerido: true },
+            { campo: 'campo_calif_terreno', requerido: true },
             { campo: 'campo_tipo_terreno', requerido: true },
         ]
             
