@@ -10,7 +10,7 @@ function formulario_contacto_shortcode() {
                 <h5>Solicita más información de este inmueble</h5>
                 <input type="hidden" name="inmueble_id" value="<?php echo get_the_ID(); ?>">
             <?php elseif (is_post_type_archive('inmueble')) : ?>
-                <h5>Solicita más información sobre el inmueble que deseas</h5>
+                <h5>Solicita más información</h5>
                 <input type="hidden" name="tipo_formulario" value="Contacto desde listado">
             <?php elseif (is_post_type_archive('page')) : ?>
                 <h5>Dinos quién eres y te contactamos:</h5>
