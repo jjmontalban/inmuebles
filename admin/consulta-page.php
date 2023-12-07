@@ -4,33 +4,55 @@
  * Crea una nueva consulta al usar el formulario del front
  */
 function procesar_formulario_contacto() {
-   
     $nombre = sanitize_text_field($_POST['nombre']);
     $email = sanitize_email($_POST['email']);
     $telefono = sanitize_text_field($_POST['telefono']);
     $mensaje = sanitize_textarea_field($_POST['mensaje']);
-    //inmueble x el q se interesó
-    $inmueble_id = isset($_POST['inmueble_id']) ? intval($_POST['inmueble_id']) : 0;
+    
+    // Inicializamos la variable del ID del inmueble en 0
+    $inmueble_id = 0;
 
+    // Verificamos si se proporciona el ID del inmueble
+    if (isset($_POST['inmueble_id'])) {
+        $inmueble_id = intval($_POST['inmueble_id']);
+    }
+
+    // Creamos el título del post, usando el valor del campo 'tipo_formulario' si está presente
+    $post_title = isset($_POST['tipo_formulario']) ? sanitize_text_field($_POST['tipo_formulario']) : '';
+
+    // Si el título sigue siendo vacío, usamos el título del inmueble si hay uno, de lo contrario, usamos 'Consulta'
+    if (empty($post_title)) {
+        $post_title = $inmueble_id ? get_the_title($inmueble_id) : 'Contacto desde el sitio web';
+    }
+
+    // Creamos el post
     $consulta_id = wp_insert_post(array(
         'post_type' => 'consulta',
-        'post_title' => get_the_title($inmueble_id),
+        'post_title' => $post_title,
         'post_status' => 'publish',
     ));
-
-
 
     if ($consulta_id) {
         update_post_meta($consulta_id, 'nombre', $nombre);
         update_post_meta($consulta_id, 'email', $email);
         update_post_meta($consulta_id, 'telefono', $telefono);
         update_post_meta($consulta_id, 'mensaje', $mensaje);
-        update_post_meta($consulta_id, 'inmueble_interesado', $inmueble_id);
 
+        // Solo actualizamos el campo 'inmueble_interesado' si se proporciona el ID del inmueble
+        if ($inmueble_id) {
+            update_post_meta($consulta_id, 'inmueble_interesado', $inmueble_id);
+        }
+
+        // Si el formulario se envió desde la página de tipo 'page', limpiamos el campo 'inmueble_interesado'
+        if (isset($_POST['tipo_formulario']) && $_POST['tipo_formulario'] === 'desde pagina') {
+            delete_post_meta($consulta_id, 'inmueble_interesado');
+        }
     }
+
     wp_redirect($_SERVER['HTTP_REFERER']); // Redireccionar de nuevo a la página del formulario
     exit;
 }
+
 add_action('admin_post_procesar_formulario_contacto', 'procesar_formulario_contacto');
 add_action('admin_post_nopriv_procesar_formulario_contacto', 'procesar_formulario_contacto');
 

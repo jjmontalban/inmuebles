@@ -11,10 +11,10 @@ function formulario_contacto_shortcode() {
                 <input type="hidden" name="inmueble_id" value="<?php echo get_the_ID(); ?>">
             <?php elseif (is_post_type_archive('inmueble')) : ?>
                 <h5>Solicita más información sobre el inmueble que deseas</h5>
-                <input type="hidden" value="archive-inmueble">
+                <input type="hidden" name="tipo_formulario" value="Contacto desde listado">
             <?php elseif (is_post_type_archive('page')) : ?>
                 <h5>Dinos quién eres y te contactamos:</h5>
-                <input type="hidden" value="page">
+                <input type="hidden" name="tipo_formulario" value="desde pagina">
             <?php endif; ?>
                 <input type="text" name="nombre" placeholder="Nombre" required ><br>
                 <input type="email" name="email" placeholder="Email (opcional)"><br>
@@ -23,9 +23,33 @@ function formulario_contacto_shortcode() {
                 <input type="submit" value="Enviar">
         </form>
         <div id="respuesta-formulario-contacto"></div>
+
+        <script>
+        jQuery(document).ready(function($) {
+            $('#formulario-contacto').submit(function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#respuesta-formulario-contacto').html('<p style="color: green; background-color: white;">¡Consulta enviada con éxito! Nos podremos en contacto contigo lo antes posible</p>');
+                        $('#formulario-contacto')[0].reset(); // Limpia los campos del formulario
+                    },
+                    error: function(error) {
+                        $('#respuesta-formulario-contacto').html('<p style="color: red;">Ha ocurrido un error al enviar la consulta.</p>');
+                    }
+                });
+            });
+        });
+    </script>
+
     <?php
     return ob_get_clean();
 }   
+
+
 
 
 
