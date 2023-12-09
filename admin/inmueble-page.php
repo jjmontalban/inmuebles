@@ -1023,3 +1023,18 @@ function desactivar_quick_edit_inmueble($actions, $post) {
     return $actions;
 }
 add_filter('post_row_actions', 'desactivar_quick_edit_inmueble', 10, 2);
+
+
+
+/**
+ * Aplica el nombre del post inmuebble
+ */
+function inmuebles_custom_permalink($data, $postarr) {
+    if($data['post_type'] == 'inmueble') {
+        $tipo_inmueble = $postarr['tipo_inmueble'];
+        $nombre_calle = $postarr['nombre_calle'];
+        $data['post_name'] = sanitize_title($tipo_inmueble . ' ' . $nombre_calle);
+    }
+    return $data;
+}
+add_filter('wp_insert_post_data', 'inmuebles_custom_permalink', 10, 2);
