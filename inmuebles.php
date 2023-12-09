@@ -101,3 +101,16 @@ function inmuebles_load_styles() {
     wp_enqueue_style('inmuebles-style', plugin_dir_url(__FILE__) . 'css/style.css', array(), '2.0', 'all');
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_styles');
+
+
+
+//agregar el atributo enctype al formulario de edición de publicaciones utilizando JavaScript.
+function inmuebles_admin_scripts() {
+    echo '
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $("#post").attr("enctype", "multipart/form-data");
+        });
+    </script>';
+}
+add_action('admin_footer', 'inmuebles_admin_scripts');

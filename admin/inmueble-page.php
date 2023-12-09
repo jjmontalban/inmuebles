@@ -40,7 +40,7 @@ function obtener_campos_inmueble($post_id) {
         'num_dormitorios','num_banos','num_escap','calif_consumo_energ', 'num_plazas',
         'consumo_energ','cal_emis','emisiones','tipo_local','tipo_terreno',
         'ac','estado_cons','interior_ext','ascensor', 'calif_terreno',
-        'descripcion','ano_edificio','acceso_rodado',
+        'descripcion','ano_edificio','acceso_rodado', 'plano',
         'uso_excl','distribucion_oficina','aire_acond',
         'residencial_altura','residencial_unif',
         'terciario_ofi','terciario_com','terciario_hotel','industrial','dotaciones','otra',
@@ -163,6 +163,18 @@ function mostrar_campos_inmueble( $post ) {
             </td>
         </tr>
         <tr>
+    <th><label for="plano">Plano</label></th>
+    <td>
+        <input type="file" name="plano" id="plano">
+        <?php
+        $plano_url = get_post_meta($post->ID, 'plano', true);
+        if ($plano_url) {
+            echo '<img src="' . esc_url($plano_url) . '" width="150px">';
+            echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
+        }
+        ?>
+    </td>
+</tr>
             <th></th>
             <td><button class="btn btn-primary" type="button" id="validar_direccion">Validar Dirección</button></td>
         </tr>
@@ -849,6 +861,21 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['ano_edificio'])) {
         update_post_meta($post_id, 'ano_edificio', sanitize_text_field($_POST['ano_edificio']));
     }
+
+    //Campo plano
+    if (isset($_FILES['plano'])) {
+        $uploadedfile = $_FILES['plano'];
+    
+        $upload_overrides = array('test_form' => false);
+    
+        $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+        if ($movefile && !isset($movefile['error'])) {
+            update_post_meta($post_id, 'plano', $movefile['url']);
+        } else {
+            echo $movefile['error'];
+        }
+    }
+
     //Arrays
     // Verificamos si se han enviado los checkboxes y si el valor enviado es un array
     if ( isset( $_POST['galeria_imagenes'] ) ) {
