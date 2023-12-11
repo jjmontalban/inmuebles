@@ -33,8 +33,8 @@ jQuery(document).ready(function($) {
             { campo: 'campo_precio_venta', requerido: true },
             
             { campo: 'campo_bloque', requerido: false },
-            { campo: 'consumo', requerido: false },
-            { campo: 'emisiones', requerido: false },
+            { campo: 'campo_consumo', requerido: false },
+            { campo: 'campo_emisiones', requerido: false },
             { campo: 'campo_escalera', requerido: false },
             { campo: 'campo_urbanizacion', requerido: false },
             { campo: 'campo_caract_inm', requerido: false },
@@ -58,8 +58,8 @@ jQuery(document).ready(function($) {
             { campo: 'campo_m_parcela', requerido: false },
             { campo: 'campo_m_utiles', requerido: false },
             { campo: 'campo_num_plantas', requerido: false },
-            { campo: 'consumo', requerido: false },
-            { campo: 'emisiones', requerido: false },
+            { campo: 'campo_consumo', requerido: false },
+            { campo: 'campo_emisiones', requerido: false },
             { campo: 'campo_orientacion', requerido: false },
             { campo: 'campo_caract_inm', requerido: false },
             { campo: 'campo_otra_caract_inm', requerido: false },
@@ -78,6 +78,8 @@ jQuery(document).ready(function($) {
             
             { campo: 'campo_m_parcela', requerido: false },
             { campo: 'campo_m_utiles', requerido: false },
+            { campo: 'campo_consumo', requerido: false },
+            { campo: 'campo_emisiones', requerido: false },
             { campo: 'campo_num_plantas', requerido: false },
             { campo: 'campo_orientacion', requerido: false },
             { campo: 'campo_caract_inm', requerido: false },
@@ -97,6 +99,8 @@ jQuery(document).ready(function($) {
             
             { campo: 'campo_m_utiles', requerido: false },
             { campo: 'campo_m_lineales', requerido: false },
+            { campo: 'campo_consumo', requerido: false },
+            { campo: 'campo_emisiones', requerido: false },
             { campo: 'campo_num_estancias', requerido: false },
             { campo: 'campo_num_escap', requerido: false },
             { campo: 'campo_num_plantas', requerido: false },
@@ -120,6 +124,8 @@ jQuery(document).ready(function($) {
             { campo: 'campo_num_plazas', requerido: true },
             
             { campo: 'campo_num_banos', requerido: false },
+            { campo: 'campo_consumo', requerido: false },
+            { campo: 'campo_emisiones', requerido: false },
             { campo: 'campo_num_plantas', requerido: false },
             { campo: 'campo_m_utiles', requerido: false },
             { campo: 'campo_orientacion', requerido: false },

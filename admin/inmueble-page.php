@@ -370,7 +370,10 @@ function mostrar_campos_inmueble( $post ) {
                     <option value="exento" <?php selected($campos['calif_consumo'] ?? '', 'exento'); ?>>Exento</option>
                     <option value="tramite" <?php selected($campos['calif_consumo'] ?? '', 'tramite'); ?>>En Trámite</option>
                 </select>
+                <br>
             </td>
+        </tr>
+        <tr id="campo_consumo">
             <th><label for="consumo">Consumo de energía</label></th>
             <td><input type="text" name="consumo" id="consumo" value="<?php echo esc_attr($campos['consumo'] ?? ''); ?>" placeholder="kwh/m2 año"></td>
         </tr>
@@ -390,9 +393,11 @@ function mostrar_campos_inmueble( $post ) {
                     <option value="tramite" <?php selected($campos['calif_emis'] ?? '', 'tramite'); ?>>En trámite</option>
                 </select>
             </td>
+        </tr>      
+        <tr id="campo_emisiones">
             <th><label for="emisiones">Emisiones</label></th>
             <td><input type="text" name="emisiones" id="emisiones" value="<?php echo esc_attr($campos['emisiones'] ?? ''); ?>" placeholder="kg CO / m2 año"></td>
-        </tr>        
+        </tr>  
         
         <tr id="campo_acceso_rodado">
             <th>Acceso rodado*</th>
