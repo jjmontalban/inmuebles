@@ -40,7 +40,7 @@ function obtener_campos_inmueble($post_id) {
         'num_dormitorios','num_banos','num_escap','calif_consumo_energ', 'num_plazas',
         'consumo_energ','cal_emis','emisiones','tipo_local','tipo_terreno',
         'ac','estado_cons','interior_ext','ascensor', 'calif_terreno',
-        'descripcion','ano_edificio','acceso_rodado', 'plano',
+        'descripcion','ano_edificio','acceso_rodado', 'plano1', 'plano2', 'plano3', 'plano4',
         'uso_excl','distribucion_oficina','aire_acond',
         'residencial_altura','residencial_unif',
         'terciario_ofi','terciario_com','terciario_hotel','industrial','dotaciones','otra',
@@ -162,21 +162,9 @@ function mostrar_campos_inmueble( $post ) {
                 <label for="numero_obligatorio">Sin número</label>
             </td>
         </tr>
-        <tr>
-    <th><label for="plano">Plano</label></th>
-    <td>
-        <input type="file" name="plano" id="plano">
-        <?php
-        $plano_url = get_post_meta($post->ID, 'plano', true);
-        if ($plano_url) {
-            echo '<img src="' . esc_url($plano_url) . '" width="150px">';
-            echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
-        }
-        ?>
-    </td>
-</tr>
-            <th></th>
-            <td><button class="btn btn-primary" type="button" id="validar_direccion">Validar Dirección</button></td>
+        
+        <th></th>
+        <td><button class="btn btn-primary" type="button" id="validar_direccion">Validar Dirección</button></td>
         </tr>
         <div id="mapaModal" style="display: none;">
             <div id="mapa"></div>
@@ -582,7 +570,46 @@ function mostrar_campos_inmueble( $post ) {
             <th><label for="descripcion">Descripción de la propiedad</label></th>
             <td><textarea name="descripcion" id="descripcion"><?php echo esc_textarea( $campos['descripcion'] ?? '' ); ?></textarea></td>
         </tr>
-
+        <tr>
+            <th><label for="plano">Plano</label></th>
+            <td>
+                <input type="file" name="plano1" id="plano">
+                <?php
+                $plano1_url = get_post_meta($post->ID, 'plano1', true);
+                if ($plano1_url) {
+                    echo '<img src="' . esc_url($plano1_url) . '" width="150px">';
+                    echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
+                }
+                ?>
+                <br>
+                <input type="file" name="plano2" id="plano">
+                <?php
+                $plano2_url = get_post_meta($post->ID, 'plano2', true);
+                if ($plano2_url) {
+                    echo '<img src="' . esc_url($plano1_url) . '" width="150px">';
+                    echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
+                }
+                ?>
+                <br>
+                <input type="file" name="plano3" id="plano">
+                <?php
+                $plano3_url = get_post_meta($post->ID, 'plano3', true);
+                if ($plano3_url) {
+                    echo '<img src="' . esc_url($plano3_url) . '" width="150px">';
+                    echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
+                }
+                ?>
+                <br>
+                <input type="file" name="plano4" id="plano">
+                <?php
+                $plano4_url = get_post_meta($post->ID, 'plano4', true);
+                if ($plano1_url) {
+                    echo '<img src="' . esc_url($plano4_url) . '" width="150px">';
+                    echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
+                }
+                ?>
+            </td>
+        </tr>
         <!-- Campo de Galería de Imágenes -->
         <tr>
             <th>Galería de Imágenes</th>
@@ -862,15 +889,51 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'ano_edificio', sanitize_text_field($_POST['ano_edificio']));
     }
 
-    //Campo plano
-    if (isset($_FILES['plano'])) {
-        $uploadedfile = $_FILES['plano'];
+    //Campos plano
+    if (isset($_FILES['plano1'])) {
+        $uploadedfile = $_FILES['plano1'];
     
         $upload_overrides = array('test_form' => false);
     
         $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
         if ($movefile && !isset($movefile['error'])) {
-            update_post_meta($post_id, 'plano', $movefile['url']);
+            update_post_meta($post_id, 'plano1', $movefile['url']);
+        } else {
+            echo $movefile['error'];
+        }
+    }
+    if (isset($_FILES['plano2'])) {
+        $uploadedfile = $_FILES['plano2'];
+    
+        $upload_overrides = array('test_form' => false);
+    
+        $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+        if ($movefile && !isset($movefile['error'])) {
+            update_post_meta($post_id, 'plano2', $movefile['url']);
+        } else {
+            echo $movefile['error'];
+        }
+    }
+    if (isset($_FILES['plano3'])) {
+        $uploadedfile = $_FILES['plano3'];
+    
+        $upload_overrides = array('test_form' => false);
+    
+        $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+        if ($movefile && !isset($movefile['error'])) {
+            update_post_meta($post_id, 'plano3', $movefile['url']);
+        } else {
+            echo $movefile['error'];
+        }
+    }
+    if (isset($_FILES['plano4'])) {
+        $uploadedfile = $_FILES['plano4'];
+    
+        $upload_overrides = array('test_form' => false);
+    
+        $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+        if ($movefile && !isset($movefile['error'])) {
+            update_post_meta($post_id, 'plano4', $movefile['url']);
         } else {
             echo $movefile['error'];
         }
