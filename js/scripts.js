@@ -24,16 +24,16 @@ jQuery(document).ready(function($) {
             { campo: 'campo_num_dormitorios', requerido: true },
             { campo: 'campo_num_banos', requerido: true },
             { campo: 'campo_planta', requerido: true },
-            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_calif_consumo', requerido: true },
             { campo: 'campo_estado_cons', requerido: true },
             { campo: 'campo_int_ext', requerido: true },
             { campo: 'campo_planta', requerido: true },
             { campo: 'campo_ascensor', requerido: true },
-            { campo: 'campo_cal_emis', requerido: true },
+            { campo: 'campo_calif_emis', requerido: true },
             { campo: 'campo_precio_venta', requerido: true },
             
             { campo: 'campo_bloque', requerido: false },
-            { campo: 'consumo_energ', requerido: false },
+            { campo: 'consumo', requerido: false },
             { campo: 'emisiones', requerido: false },
             { campo: 'campo_escalera', requerido: false },
             { campo: 'campo_urbanizacion', requerido: false },
@@ -51,14 +51,14 @@ jQuery(document).ready(function($) {
             { campo: 'campo_m_construidos', requerido: true },
             { campo: 'campo_num_dormitorios', requerido: true },
             { campo: 'campo_num_banos', requerido: true },
-            { campo: 'campo_cal_emis', requerido: true },
-            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_calif_emis', requerido: true },
+            { campo: 'campo_calif_consumo', requerido: true },
             { campo: 'campo_estado_cons', requerido: true },
             
             { campo: 'campo_m_parcela', requerido: false },
             { campo: 'campo_m_utiles', requerido: false },
             { campo: 'campo_num_plantas', requerido: false },
-            { campo: 'consumo_energ', requerido: false },
+            { campo: 'consumo', requerido: false },
             { campo: 'emisiones', requerido: false },
             { campo: 'campo_orientacion', requerido: false },
             { campo: 'campo_caract_inm', requerido: false },
@@ -72,8 +72,8 @@ jQuery(document).ready(function($) {
             { campo: 'campo_m_construidos', requerido: true },
             { campo: 'campo_num_dormitorios', requerido: true },
             { campo: 'campo_num_banos', requerido: true },
-            { campo: 'campo_cal_emis', requerido: true },
-            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_calif_emis', requerido: true },
+            { campo: 'campo_calif_consumo', requerido: true },
             { campo: 'campo_estado_cons', requerido: true },
             
             { campo: 'campo_m_parcela', requerido: false },
@@ -90,8 +90,8 @@ jQuery(document).ready(function($) {
             { campo: 'campo_planta', requerido: true },
             { campo: 'campo_m_construidos', requerido: true },
             { campo: 'campo_tipo_local', requerido: true },
-            { campo: 'campo_cal_emis', requerido: true },
-            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_calif_emis', requerido: true },
+            { campo: 'campo_calif_consumo', requerido: true },
             { campo: 'campo_estado_cons', requerido: true },
             { campo: 'campo_ubicacion_local', requerido: true },
             
@@ -114,8 +114,8 @@ jQuery(document).ready(function($) {
             { campo: 'campo_int_ext', requerido: true },
             { campo: 'campo_distribucion_oficina', requerido: true },
             { campo: 'campo_aire_acond', requerido: true },
-            { campo: 'campo_cal_emis', requerido: true },
-            { campo: 'campo_calif_consumo_energ', requerido: true },
+            { campo: 'campo_calif_emis', requerido: true },
+            { campo: 'campo_calif_consumo', requerido: true },
             { campo: 'campo_num_ascensores', requerido: true },
             { campo: 'campo_num_plazas', requerido: true },
             
@@ -171,7 +171,7 @@ jQuery(document).ready(function($) {
                 }
 
                 // Agregar el if-else para el campo con id "emisiones"
-                if (campo.campo === 'emisiones' || campo.campo === 'consumo_energ') {
+                if (campo.campo === 'emisiones' || campo.campo === 'consumo') {
                     campoElement.find('input').prop('required', false);
                 }
             });

@@ -37,8 +37,8 @@ function obtener_campos_inmueble($post_id) {
         'visibilidad_direccion', 'tipo_operacion', 'precio_venta', 'planta',
         'gastos_comunidad', 'precio_alquiler', 'fianza', 'calefaccion', 'num_ascensores',
         'caract_inm', 'm_construidos','m_utiles','m_lineales','superf_terreno',
-        'num_dormitorios','num_banos','num_escap','calif_consumo_energ', 'num_plazas',
-        'consumo_energ','cal_emis','emisiones','tipo_local','tipo_terreno',
+        'num_dormitorios','num_banos','num_escap','calif_consumo', 'num_plazas',
+        'consumo','calif_emis','emisiones','tipo_local','tipo_terreno',
         'ac','estado_cons','interior_ext','ascensor', 'calif_terreno',
         'descripcion','ano_edificio','acceso_rodado', 'plano1', 'plano2', 'plano3', 'plano4',
         'uso_excl','distribucion_oficina','aire_acond',
@@ -355,43 +355,43 @@ function mostrar_campos_inmueble( $post ) {
             <th><label for="num_plazas">Número de plazas de garaje*</label></th>
             <td><input type="number" name="num_plazas" id="num_plazas" value="<?php echo esc_attr($campos['num_plazas'] ?? ''); ?>"></td>
         </tr>
-        <tr id="campo_calif_consumo_energ">
-            <th><label for="calif_consumo_energ">Calificación de consumo de energía*</label></th>
+        <tr id="campo_calif_consumo">
+            <th><label for="calif_consumo">Calificación de consumo de energía*</label></th>
             <td>
-                <select name="calif_consumo_energ" id="calif_consumo_energ" required>
+                <select name="calif_consumo" id="calif_consumo" required>
                     <option value="">Seleccionar</option>
-                    <option value="a" <?php selected($campos['calif_consumo_energ'] ?? '', 'a'); ?>>A</option>
-                    <option value="b" <?php selected($campos['calif_consumo_energ'] ?? '', 'b'); ?>>B</option>
-                    <option value="c" <?php selected($campos['calif_consumo_energ'] ?? '', 'c'); ?>>C</option>
-                    <option value="d" <?php selected($campos['calif_consumo_energ'] ?? '', 'd'); ?>>D</option>
-                    <option value="e" <?php selected($campos['calif_consumo_energ'] ?? '', 'e'); ?>>E</option>
-                    <option value="f" <?php selected($campos['calif_consumo_energ'] ?? '', 'f'); ?>>F</option>
-                    <option value="g" <?php selected($campos['calif_consumo_energ'] ?? '', 'g'); ?>>G</option>
-                    <option value="exento" <?php selected($campos['calif_consumo_energ'] ?? '', 'exento'); ?>>Exento</option>
-                    <option value="tramite" <?php selected($campos['calif_consumo_energ'] ?? '', 'tramite'); ?>>En Trámite</option>
+                    <option value="a" <?php selected($campos['calif_consumo'] ?? '', 'a'); ?>>A</option>
+                    <option value="b" <?php selected($campos['calif_consumo'] ?? '', 'b'); ?>>B</option>
+                    <option value="c" <?php selected($campos['calif_consumo'] ?? '', 'c'); ?>>C</option>
+                    <option value="d" <?php selected($campos['calif_consumo'] ?? '', 'd'); ?>>D</option>
+                    <option value="e" <?php selected($campos['calif_consumo'] ?? '', 'e'); ?>>E</option>
+                    <option value="f" <?php selected($campos['calif_consumo'] ?? '', 'f'); ?>>F</option>
+                    <option value="g" <?php selected($campos['calif_consumo'] ?? '', 'g'); ?>>G</option>
+                    <option value="exento" <?php selected($campos['calif_consumo'] ?? '', 'exento'); ?>>Exento</option>
+                    <option value="tramite" <?php selected($campos['calif_consumo'] ?? '', 'tramite'); ?>>En Trámite</option>
                 </select>
             </td>
-            <th><label for="consumo_energ">Consumo de energía</label></th>
-            <td><input type="number" name="consumo_energ" id="consumo_energ" value="<?php echo esc_attr($campos['consumo_energ'] ?? ''); ?>" placeholder="kwh/m2 año"></td>
+            <th><label for="consumo">Consumo de energía</label></th>
+            <td><input type="text" name="consumo" id="consumo" value="<?php echo esc_attr($campos['consumo'] ?? ''); ?>" placeholder="kwh/m2 año"></td>
         </tr>
-        <tr id="campo_cal_emis">
-            <th><label for="cal_emis">Calificación de Emisiones*</label></th>
+        <tr id="campo_calif_emis">
+            <th><label for="calif_emis">Calificación de Emisiones*</label></th>
             <td>
-                <select name="cal_emis" id="cal_emis" required>
+                <select name="calif_emis" id="calif_emis" required>
                     <option value="">Seleccionar</option>
-                    <option value="a" <?php selected($campos['cal_emis'] ?? '', 'a'); ?>>A</option>
-                    <option value="b" <?php selected($campos['cal_emis'] ?? '', 'b'); ?>>B</option>
-                    <option value="c" <?php selected($campos['cal_emis'] ?? '', 'c'); ?>>C</option>
-                    <option value="d" <?php selected($campos['cal_emis'] ?? '', 'd'); ?>>D</option>
-                    <option value="e" <?php selected($campos['cal_emis'] ?? '', 'e'); ?>>E</option>
-                    <option value="f" <?php selected($campos['cal_emis'] ?? '', 'f'); ?>>F</option>
-                    <option value="g" <?php selected($campos['cal_emis'] ?? '', 'g'); ?>>G</option>
-                    <option value="exento" <?php selected($campos['cal_emis'] ?? '', 'exento'); ?>>Exento</option>
-                    <option value="tramite" <?php selected($campos['cal_emis'] ?? '', 'tramite'); ?>>En trámite</option>
+                    <option value="a" <?php selected($campos['calif_emis'] ?? '', 'a'); ?>>A</option>
+                    <option value="b" <?php selected($campos['calif_emis'] ?? '', 'b'); ?>>B</option>
+                    <option value="c" <?php selected($campos['calif_emis'] ?? '', 'c'); ?>>C</option>
+                    <option value="d" <?php selected($campos['calif_emis'] ?? '', 'd'); ?>>D</option>
+                    <option value="e" <?php selected($campos['calif_emis'] ?? '', 'e'); ?>>E</option>
+                    <option value="f" <?php selected($campos['calif_emis'] ?? '', 'f'); ?>>F</option>
+                    <option value="g" <?php selected($campos['calif_emis'] ?? '', 'g'); ?>>G</option>
+                    <option value="exento" <?php selected($campos['calif_emis'] ?? '', 'exento'); ?>>Exento</option>
+                    <option value="tramite" <?php selected($campos['calif_emis'] ?? '', 'tramite'); ?>>En trámite</option>
                 </select>
             </td>
             <th><label for="emisiones">Emisiones</label></th>
-            <td><input type="number" name="emisiones" id="emisiones" value="<?php echo esc_attr($campos['emisiones'] ?? ''); ?>" placeholder="kg CO / m2 año"></td>
+            <td><input type="text" name="emisiones" id="emisiones" value="<?php echo esc_attr($campos['emisiones'] ?? ''); ?>" placeholder="kg CO / m2 año"></td>
         </tr>        
         
         <tr id="campo_acceso_rodado">
@@ -789,11 +789,11 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['m_plaza'])) {
         update_post_meta($post_id, 'm_plaza', sanitize_text_field($_POST['m_plaza']));
     }
-    if (isset($_POST['calif_consumo_energ'])) {
-        update_post_meta($post_id, 'calif_consumo_energ', sanitize_text_field($_POST['calif_consumo_energ']));
+    if (isset($_POST['calif_consumo'])) {
+        update_post_meta($post_id, 'calif_consumo', sanitize_text_field($_POST['calif_consumo']));
     }
-    if (isset($_POST['consumo_energ'])) {
-        update_post_meta($post_id, 'consumo_energ', sanitize_text_field($_POST['consumo_energ']));
+    if (isset($_POST['consumo'])) {
+        update_post_meta($post_id, 'consumo', sanitize_text_field($_POST['consumo']));
     }
     if (isset($_POST['cocina_equipada'])) {
         update_post_meta($post_id, 'cocina_equipada', sanitize_text_field($_POST['cocina_equipada']));
@@ -843,8 +843,8 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['estado_cons'])) {
         update_post_meta($post_id, 'estado_cons', sanitize_text_field($_POST['estado_cons']));
     }
-    if (isset($_POST['cal_emis'])) {
-        update_post_meta($post_id, 'cal_emis', sanitize_text_field($_POST['cal_emis']));
+    if (isset($_POST['calif_emis'])) {
+        update_post_meta($post_id, 'calif_emis', sanitize_text_field($_POST['calif_emis']));
     } 
     if (isset($_POST['m_parcela'])) {
         update_post_meta($post_id, 'm_parcela', sanitize_text_field($_POST['m_parcela']));
