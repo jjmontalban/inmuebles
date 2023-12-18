@@ -311,6 +311,7 @@ jQuery(document).ready(function($) {
     /**
      * MAPA
     */
+   var marcador;
     // Asigna el evento al botón "Validar Dirección"
     $('#validar_direccion').on('click', function(event) {
         event.preventDefault(); // Evita el comportamiento predeterminado del enlace
@@ -319,7 +320,6 @@ jQuery(document).ready(function($) {
         var nombreCalle = document.getElementById('nombre_calle').value;
         var numero = document.getElementById('numero').value;
         var localidad = document.getElementById('localidad').value;
-    
         // Verificar si algún campo está vacío
         if (nombreCalle === '' || numero === '' || localidad === '') {
             alert('Por favor, complete todos los campos de dirección.');
@@ -334,30 +334,43 @@ jQuery(document).ready(function($) {
     
         // Geocodifica la dirección para obtener la ubicación
         geocoder.geocode({ address: direccion }, function(results, status) {
-        if (status === 'OK' && results.length > 0) {
-            // Obtén la ubicación geográfica
-            var ubicacion = results[0].geometry.location;
-    
-            // Crea el mapa centrado en la ubicación
-            var mapa = new google.maps.Map(document.getElementById('mapa'), {
-            center: ubicacion,
-            zoom: 18
-            });
-    
-            // Agrega un marcador en la ubicación
-            var marcador = new google.maps.Marker({
-            position: ubicacion,
-            map: mapa,
-            title: 'Ubicación'
-            });
-    
-            // Muestra el modal con el mapa
-            $('#mapaModal').show();
-        } else {
-            // Maneja el error si la dirección no es válida
-            console.error('Error al geocodificar la dirección:', status);
-        }
+            if (status === 'OK' && results.length > 0) {
+                // Obtén la ubicación geográfica
+                var ubicacion = results[0].geometry.location;
+        
+                // Crea el mapa centrado en la ubicación
+                var mapa = new google.maps.Map(document.getElementById('mapa'), {
+                    center: ubicacion,
+                    zoom: 18
+                });
+        
+                // Agrega un marcador en la ubicación
+                marcador = new google.maps.Marker({
+                position: ubicacion,
+                map: mapa,
+                title: 'Ubicación'
+                });
+        
+                // Muestra el modal con el mapa
+                $('#mapaModal').show();
+            } else {
+                // Maneja el error si la dirección no es válida
+                console.error('Error al geocodificar la dirección:', status);
+            }
         });
+    });
+
+
+    // Asigna el evento al botón "El mapa está correcto"
+    $('#mapa_correcto').on('click', function() {
+        // Obtén la ubicación del marcador
+        var ubicacion = marcador.getPosition();
+
+        // Guarda la ubicación en el campo "campo_mapa"
+        $('#campo_mapa').val(ubicacion.lat() + ',' + ubicacion.lng());
+
+        // Oculta el modal
+        $('#mapaModal').hide();
     });
   
     // Asigna el evento al botón "Cerrar Modal"

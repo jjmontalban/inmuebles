@@ -894,6 +894,11 @@ function inmuebles_guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'ano_edificio', sanitize_text_field($_POST['ano_edificio']));
     }
 
+    //campo mapa
+    if (isset($_POST['campo_mapa'])) {
+        update_post_meta($post_id, 'campo_mapa', sanitize_text_field($_POST['campo_mapa']));
+    }
+    
     //Campos plano
     if (isset($_FILES['plano1'])) {
         $uploadedfile = $_FILES['plano1'];
