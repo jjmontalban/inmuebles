@@ -155,6 +155,12 @@ function mostrar_campos_inmueble( $post ) {
             <td><input type="text" name="nombre_calle" id="nombre_calle" value="<?php echo esc_attr( $campos['nombre_calle'] ?? '' ); ?>" required></td>
         </tr>
         <tr>
+            <th><label for="numero">Número*</label></th>
+            <td>
+                <input type="text" name="numero" id="numero" value="<?php echo esc_attr( $campos['numero'] ?? '' ); ?>" required>
+            </td>
+        </tr>
+        <tr>
             <th></th>
             <td>
                 <button class="btn btn-primary" type="button" id="validar_direccion">Validar Dirección</button>
