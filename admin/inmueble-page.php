@@ -34,7 +34,7 @@ $zonas_inmueble_map = array(
 function obtener_campos_inmueble($post_id) {
     $campos = array(
         'tipo_inmueble', 'zona_inmueble', 'localidad', 'nombre_calle', 'numero', 'numero_obligatorio',
-        'visibilidad_direccion', 'tipo_operacion', 'precio_venta', 'planta',
+        'visibilidad_direccion', 'tipo_operacion', 'precio_venta', 'planta', 'bloque',
         'gastos_comunidad', 'precio_alquiler', 'fianza', 'calefaccion', 'num_ascensores',
         'caract_inm', 'm_construidos','m_utiles','m_lineales','superf_terreno',
         'num_dormitorios','num_banos','num_escap','calif_consumo', 'num_plazas',
@@ -162,10 +162,13 @@ function mostrar_campos_inmueble( $post ) {
                 <label for="numero_obligatorio">Sin número</label>
             </td>
         </tr>
-        
-        <th></th>
-        <td><button class="btn btn-primary" type="button" id="validar_direccion">Validar Dirección</button></td>
+        <tr>
+            <th></th>
+            <td>
+                <button class="btn btn-primary" type="button" id="validar_direccion">Validar Dirección</button>
+            </td>
         </tr>
+        
         <div id="mapaModal" style="display: none;">
             <div id="mapa"></div>
             <button id="mapa_correcto">El mapa está correcto</button>
