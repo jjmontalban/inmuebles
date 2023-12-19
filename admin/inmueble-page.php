@@ -155,14 +155,6 @@ function mostrar_campos_inmueble( $post ) {
             <td><input type="text" name="nombre_calle" id="nombre_calle" value="<?php echo esc_attr( $campos['nombre_calle'] ?? '' ); ?>" required></td>
         </tr>
         <tr>
-            <th><label for="numero">Número*</label></th>
-            <td>
-                <input type="text" name="numero" id="numero" value="<?php echo esc_attr( $campos['numero'] ?? '' ); ?>" required>
-                <input type="checkbox" name="numero_obligatorio" id="numero_obligatorio" <?php checked( true, get_post_meta( $post->ID, 'numero_obligatorio', true ) ); ?>>
-                <label for="numero_obligatorio">Sin número</label>
-            </td>
-        </tr>
-        <tr>
             <th></th>
             <td>
                 <button class="btn btn-primary" type="button" id="validar_direccion">Validar Dirección</button>
@@ -576,7 +568,7 @@ function mostrar_campos_inmueble( $post ) {
         </tr>
         <tr>
             <th><label for="descripcion">Descripción de la propiedad</label></th>
-            <td><textarea name="descripcion" id="descripcion"><?php echo esc_textarea( $campos['descripcion'] ?? '' ); ?></textarea></td>
+            <td><textarea name="descripcion" id="descripcion" rows="10" cols="100"><?php echo esc_textarea( $campos['descripcion'] ?? '' ); ?></textarea></td>
         </tr>
         <tr>
             <th><label for="plano">Plano</label></th>
