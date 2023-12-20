@@ -592,7 +592,7 @@ function mostrar_campos_inmueble( $post ) {
                 <?php
                 $plano2_url = get_post_meta($post->ID, 'plano2', true);
                 if ($plano2_url) {
-                    echo '<img src="' . esc_url($plano1_url) . '" width="150px">';
+                    echo '<img src="' . esc_url($plano2_url) . '" width="150px">';
                     echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
                 }
                 ?>
@@ -609,7 +609,7 @@ function mostrar_campos_inmueble( $post ) {
                 <input type="file" name="plano4" id="plano">
                 <?php
                 $plano4_url = get_post_meta($post->ID, 'plano4', true);
-                if ($plano1_url) {
+                if ($plano4_url) {
                     echo '<img src="' . esc_url($plano4_url) . '" width="150px">';
                     echo '<p>Ya existe un plano para este inmueble. Si seleccionas un nuevo archivo, reemplazará el plano existente.</p>';
                 }
