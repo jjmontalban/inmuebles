@@ -28,7 +28,14 @@ function mostrar_datos_columnas_personalizadas_demanda($column, $post_id) {
             echo get_post_meta($post_id, 'email', true);
             break;
         case 'inmueble_interesado':
-            echo get_post_meta($post_id, 'inmueble_interesado', true);
+            $inmueble_interesado = get_post_meta($post_id, 'inmueble_interesado', true);
+            if (is_numeric($inmueble_interesado)) {
+                $tipo_inmueble = get_post_meta($inmueble_interesado, 'tipo_inmueble', true);
+                $nombre_calle = get_post_meta($inmueble_interesado, 'nombre_calle', true);
+                echo esc_html($tipo_inmueble . ' en ' . $nombre_calle);
+            } else {
+                echo esc_html($inmueble_interesado);
+            }
             break;
     }
 }
@@ -60,9 +67,17 @@ function mostrar_campos_demanda( $post ) {
     $email = get_post_meta($post->ID, 'email', true);
     $telefono = get_post_meta($post->ID, 'telefono', true);
     $email = get_post_meta($post->ID, 'email', true);
+    $notas = get_post_meta($post->ID, 'notas', true);
     $inmueble_interesado = get_post_meta($post->ID, 'inmueble_interesado', true);
     
+    // Obtiene la lista de inmuebles para el select
+    $args = array(
+        'post_type' => 'inmueble',
+        'posts_per_page' => -1,
+    );
+    $inmuebles = get_posts($args);
     ?>
+
     <table class="form-table">
         <tr>
             <th><label for="nombre">Nombre*</label></th>
@@ -77,10 +92,22 @@ function mostrar_campos_demanda( $post ) {
             <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr( $telefono ?? ''); ?>" required></td>
         </tr>
         <tr>
-            <th><label for="inmueble_interesado">Inmueble por el que se interesó</label></th>
+            <th><label for="inmueble_interesado">Inmueble interesado</label></th>
             <td>
-                <a href="<?php echo esc_url( get_permalink( $inmueble_interesado ) ); ?>">
-                <?php echo esc_html( get_the_title( $inmueble_interesado ) ); ?></a>
+                <select name="inmueble_interesado" id="inmueble_interesado">
+                    <option value="">Selecciona un inmueble</option>
+                    <?php foreach ($inmuebles as $inmueble) : ?>
+                        <?php
+                        $tipo_inmueble = get_post_meta($inmueble->ID, 'tipo_inmueble', true);
+                        $nombre_calle = get_post_meta($inmueble->ID, 'nombre_calle', true);
+                        $inmueble_id = $inmueble->ID;
+                        $selected = ($inmueble_id == $inmueble_interesado) ? 'selected' : '';
+                        ?>
+                        <option value="<?php echo esc_attr($inmueble_id); ?>" <?php echo esc_attr($selected); ?>>
+                            <?php echo esc_html($tipo_inmueble . ' en ' . $nombre_calle); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </td>
         </tr>
         <tr>

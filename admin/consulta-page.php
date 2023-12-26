@@ -8,10 +8,19 @@ function procesar_formulario_contacto() {
     $email = sanitize_email($_POST['email']);
     $telefono = sanitize_text_field($_POST['telefono']);
     $mensaje = sanitize_textarea_field($_POST['mensaje']);
+
+    // Verificar el campo oculto (honeypot)
+    if (!empty($_POST['extra_field'])) {
+        // Si el campo oculto está lleno, probablemente sea un bot
+        exit;
+    }
     
     // Inicializamos la variable del ID del inmueble en 0
     $inmueble_id = 0;
 
+    //el shortcode de formulario recibe "inmueble_id" si se usa desde un post de tipo inmueble
+    //en caso contrario recibe "tipo_formulario"
+    
     // Verificamos si se proporciona el ID del inmueble
     if (isset($_POST['inmueble_id'])) {
         $inmueble_id = intval($_POST['inmueble_id']);
@@ -20,9 +29,15 @@ function procesar_formulario_contacto() {
     // Creamos el título del post, usando el valor del campo 'tipo_formulario' si está presente
     $post_title = isset($_POST['tipo_formulario']) ? sanitize_text_field($_POST['tipo_formulario']) : '';
 
-    // Si el título sigue siendo vacío, usamos el título del inmueble si hay uno, de lo contrario, usamos 'Consulta'
+    // Si el título sigue siendo vacío, determinamos la fuente del formulario
     if (empty($post_title)) {
-        $post_title = $inmueble_id ? get_the_title($inmueble_id) : 'Contacto desde el sitio web';
+        if (is_singular('inmueble')) {
+            $post_title = 'Página de inmueble';
+        } elseif (is_post_type_archive('inmueble')) {
+            $post_title = 'Listado de inmuebles';
+        } else {
+            $post_title = 'Contacto desde el sitio web';
+        }
     }
 
     // Creamos el post
@@ -38,15 +53,34 @@ function procesar_formulario_contacto() {
         update_post_meta($consulta_id, 'telefono', $telefono);
         update_post_meta($consulta_id, 'mensaje', $mensaje);
 
-        // Solo actualizamos el campo 'inmueble_interesado' si se proporciona el ID del inmueble
+        // Actualizamos el campo 'inmueble_interesado' con la información relevante según la fuente del formulario
         if ($inmueble_id) {
             update_post_meta($consulta_id, 'inmueble_interesado', $inmueble_id);
+        } elseif (is_post_type_archive('inmueble')) {
+            update_post_meta($consulta_id, 'inmueble_interesado', 'Listado de inmuebles');
+        } else {
+            update_post_meta($consulta_id, 'inmueble_interesado', 'Contacto desde el sitio web');
         }
 
-        // Si el formulario se envió desde la página de tipo 'page', limpiamos el campo 'inmueble_interesado'
-        if (isset($_POST['tipo_formulario']) && $_POST['tipo_formulario'] === 'desde pagina') {
-            delete_post_meta($consulta_id, 'inmueble_interesado');
+
+        // Envío de correo electrónico a los usuarios con rol "editor"
+        $args = array(
+            'role' => 'editor',
+        );
+        $editores = get_users($args);
+
+        $consulta_permalink = get_permalink($consulta_id);
+
+        foreach ($editores as $editor) {
+            $editor_email = $editor->user_email;
+            $subject = 'Mensaje recibido desde el sitio web';
+            $message = 'Se ha recibido un mensaje desde el sitio web. Puedes ver la consulta aquí: ' . $consulta_permalink;
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            
+            wp_mail($editor_email, $subject, $message, $headers);
         }
+
+
     }
 
     wp_redirect($_SERVER['HTTP_REFERER']); // Redireccionar de nuevo a la página del formulario
@@ -129,12 +163,12 @@ function mostrar_metabox_consulta($post) {
     echo "<strong>Email:</strong> $email<br>";
     echo "<strong>Teléfono:</strong> $telefono<br>";
     echo "<strong>Mensaje:</strong> $mensaje<br>";
-    echo "<strong>Inmueble por el que se interesó:</strong> <a href='" . esc_url($inmueble_link) . "'>" . esc_html($inmueble_title) . "</a><br>";
+    echo "<strong>Inmueble interesado:</strong> <a href='" . esc_url($inmueble_link) . "'>" . esc_html($inmueble_title) . "</a><br>";
 }
 
 
 /**
- * Cambiar texto editar por ver
+ * Cambiar texto editar por ver en el listado
  */
 function modificar_texto_accion_consulta($actions, $post) {
     // Solo modificar para el tipo de publicación 'consulta'
@@ -176,25 +210,11 @@ function ocultar_boton_anadir_nueva_consulta() {
 
     if ($post->post_type === 'consulta') {
         echo '<style type="text/css">
-            .page-title-action { display: none; }
+            .page-title-action { display: none !important; }
         </style>';
     }
 }
 add_action('admin_head', 'ocultar_boton_anadir_nueva_consulta');
-
-
-// Eliminar el botón "Añadir nueva" desde la página de edición de consulta
-function ocultar_boton_anadir_nueva_consulta_edit() {
-    global $post_type_object;
-
-    if ($post_type_object && $post_type_object->name == 'consulta') {
-        $post_type_object->labels->add_new = '';
-    }
-}
-add_action('in_admin_header', 'ocultar_boton_anadir_nueva_consulta_edit');
-
-
-
 
 
 //crear un CPT "demanda"
@@ -218,15 +238,24 @@ function rellenar_campos_demanda( $post_id ) {
         $email = get_post_meta($consulta_id, 'email', true);
         $inmueble_interesado = get_post_meta($consulta_id, 'inmueble_interesado', true);
         
+        // Verificar si inmueble_interesado contiene una cadena específica
+        if ($inmueble_interesado === 'Listado de inmuebles') {
+            $inmueble_demanda = 'Listado de inmuebles';
+        } elseif ($inmueble_interesado === 'Contacto desde el sitio web') {
+            $inmueble_demanda = 'Contacto desde el sitio web';
+        } else {
+            $inmueble_demanda = get_the_title($inmueble_interesado);
+        }
+        
         error_log("Nombre: $nombre");
         error_log("Telefono: $telefono");
         error_log("Email: $email");
         error_log("Inmueble Interesado: $inmueble_interesado");
-        
+
         update_post_meta($post_id, 'nombre', $nombre);
         update_post_meta($post_id, 'telefono', $telefono);
         update_post_meta($post_id, 'email', $email);
-        update_post_meta($post_id, 'inmueble_interesado', $inmueble_interesado);
+        update_post_meta($post_id, 'inmueble_interesado', $inmueble_demanda);
     }
 }
 add_action('save_post_demanda', 'rellenar_campos_demanda', 10, 1);

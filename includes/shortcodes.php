@@ -1,5 +1,7 @@
 <?php 
 
+
+
 function formulario_contacto_shortcode() {
     ob_start();
     ?>
@@ -50,6 +52,7 @@ function formulario_contacto_shortcode() {
             cursor: pointer;
         }
     </style>
+   
 
     <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-contacto">
         <input type="hidden" name="action" value="procesar_formulario_contacto">
@@ -70,22 +73,50 @@ function formulario_contacto_shortcode() {
         <input type="tel" name="telefono" placeholder="Teléfono" required>
         <textarea name="mensaje" placeholder="Mensaje (opcional)" style="height: 100px;"></textarea>
         <input type="submit" value="Enviar" class="submit-button">
+
+        <!-- Agregar un campo oculto en el formulario -->
+        <input type="text" name="extra_field" style="display: none;">
+
     </form>
     <div id="respuesta-formulario-contacto"></div>
     
-    <!-- Botón de WhatsApp con icono -->
-    <a class="contact-link whatsapp-link" href="https://api.whatsapp.com/send?phone=+346232969 00&text=Hola,%20estoy%20interesado%20en%20obtener%20más%20información." target="_blank" rel="nofollow">
-        <i class="fab fa-whatsapp"></i>
-        <span class="button-text">Envíanos un WhatsApp</span>
-    </a>
+    <!-- Para mostrar los dos últimos enlaces solo en las páginas de tipo de publicación "inmueble" o en la página de archivo de tipo "inmueble" -->
+    <?php if (is_singular('inmueble') || is_post_type_archive('inmueble')) : ?>
 
-    <!-- Botón de contacto por teléfono con icono -->
-    <a class="contact-link phone-link" href="tel:+34648736312">
-        <i class="fa fa-phone"></i>
-        <span class="button-text">Llámanos!</span>
-    </a>
+        <!-- Botón de WhatsApp con icono -->
+        <a class="contact-link whatsapp-link" href="https://api.whatsapp.com/send?phone=+346232969 00&text=Hola,%20estoy%20interesado%20en%20obtener%20más%20información." target="_blank" rel="nofollow">
+            <i class="fab fa-whatsapp"></i>
+            <span class="button-text">Envíanos un WhatsApp</span>
+        </a>
 
+        <!-- Botón de contacto por teléfono con icono -->
+        <a class="contact-link phone-link" href="tel:+34648736312">
+            <i class="fa fa-phone"></i>
+            <span class="button-text">Llámanos!</span>
+        </a>
 
+    <?php endif; ?>
+
+    <script>
+        jQuery(document).ready(function($) {
+            $('#formulario-contacto').submit(function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#respuesta-formulario-contacto').html('<p style="color: green; background-color: white;">¡Consulta enviada con éxito! Nos pondremos en contacto contigo lo antes posible.</p>');
+                        $('#formulario-contacto')[0].reset(); // Limpia los campos del formulario
+                    },
+                    error: function(error) {
+                        $('#respuesta-formulario-contacto').html('<p style="color: red;">Ha ocurrido un error al enviar la consulta.</p>');
+                    }
+                });
+            });
+        });
+    </script>
 
     <?php
     return ob_get_clean();
