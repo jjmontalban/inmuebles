@@ -70,6 +70,11 @@ function formulario_contacto_shortcode()
         <input type="email" name="email" placeholder="Email (opcional)">
         <input type="tel" name="telefono" placeholder="Teléfono" required>
         <textarea name="mensaje" placeholder="Mensaje (opcional)" style="height: 100px;"></textarea>
+
+        <input type="checkbox" name="aceptar_condiciones" required>
+        <label for="aceptar_condiciones" style="font-size: 0.8em;">Usando este formulario estás aceptando nuestra <a target="blank" href="<?php echo esc_url(get_permalink(get_page_by_path('aviso-legal'))); ?>">política de privacidad</a></label>
+
+
         <input type="submit" value="Enviar" class="submit-button">
 
         <!-- Agregar un campo oculto en el formulario -->
@@ -100,6 +105,12 @@ function formulario_contacto_shortcode()
         jQuery(document).ready(function($) {
             $('#formulario-contacto').submit(function(e) {
                 e.preventDefault();
+
+                // Verificar si el checkbox está marcado
+                if (!$('#aceptar_condiciones').is(':checked')) {
+                    $('#respuesta-formulario-contacto').html('<p style="color: red;">Debes aceptar las condiciones generales para enviar el formulario.</p>');
+                    return;
+                }
 
                 $.ajax({
                     type: 'POST',
