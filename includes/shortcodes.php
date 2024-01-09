@@ -82,7 +82,7 @@ function formulario_contacto_shortcode()
         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
 
         <!-- Agregar un campo oculto en el formulario -->
-        <input type="text" name="campo_trampa" style="display: none;">
+        <input type="text" name="extra_field" style="display: none;">
     </form>
 
     <div id="respuesta-formulario-contacto"></div>
