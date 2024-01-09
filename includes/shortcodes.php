@@ -13,15 +13,13 @@ function formulario_contacto_shortcode()
         .contact-link,
         .submit-button {
             display: block;
-            width: 75%;
+            width: 100%;
             text-decoration: none;
             text-align: center;
             color: #fff;
             padding: 10px 0;
             border-radius: 5px;
             margin-top: 10px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .submit-button {
@@ -45,13 +43,10 @@ function formulario_contacto_shortcode()
             background-color: #ccc;
         }
 
+
         .contact-link i {
             margin-right: 5px;
             vertical-align: middle;
-        }
-
-        input{
-            border-radius: 5px;
         }
 
     </style>
