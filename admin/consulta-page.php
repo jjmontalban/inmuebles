@@ -21,6 +21,37 @@ function procesar_formulario_contacto() {
         wp_redirect($_SERVER['HTTP_REFERER'] . '?spam=true'); // Redireccionar con una indicación de spam
         exit;
     }
+
+    // Validación del CAPTCHA
+
+    // Obtener la clave de API almacenada
+    $recaptcha_secret_key = get_option('inmuebles_google_maps_api_key', '');
+    $recaptcha_response = $_POST['g-recaptcha-response'];
+
+    $recaptcha_url = "https://www.google.com/recaptcha/api/siteverify";
+    $recaptcha_data = [
+        'secret'   => $recaptcha_secret_key,
+        'response' => $recaptcha_response,
+        'remoteip' => $_SERVER['REMOTE_ADDR'],
+    ];
+
+    $options = [
+            'http' => [
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($recaptcha_data),
+            ],
+        ];
+
+    $context  = stream_context_create($options);
+    $result = file_get_contents($recaptcha_url, false, $context);
+    $recaptcha_result = json_decode($result);
+
+    if (!$recaptcha_result->success) {
+        // Fallo en la validación del CAPTCHA, puedes manejarlo aquí
+        echo "Fallo en la validación del CAPTCHA.";
+        return;
+    }
     
     // Inicializamos la variable del ID del inmueble en 0
     $inmueble_id = 0;
