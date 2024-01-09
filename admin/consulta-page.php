@@ -4,14 +4,21 @@
  * Crea una nueva consulta al usar el formulario del front
  */
 function procesar_formulario_contacto() {
+
     $nombre = sanitize_text_field($_POST['nombre']);
     $email = sanitize_email($_POST['email']);
     $telefono = sanitize_text_field($_POST['telefono']);
     $mensaje = sanitize_textarea_field($_POST['mensaje']);
 
     // Verificar el campo oculto (honeypot)
-    if (!empty($_POST['extra_field'])) {
+    if (!empty($_POST['campo_trampa'])) {
         // Si el campo oculto está lleno, probablemente sea un bot
+        exit;
+    }
+    // Verificar si el campo de mensaje contiene una URL
+    if (preg_match('/(?:https?|ftp):\/\/[\n\S]+/i', $mensaje)) {
+        // Si el mensaje contiene una URL, podría ser spam, así que lo descartamos
+        wp_redirect($_SERVER['HTTP_REFERER'] . '?spam=true'); // Redireccionar con una indicación de spam
         exit;
     }
     
@@ -61,7 +68,6 @@ function procesar_formulario_contacto() {
         } else {
             update_post_meta($consulta_id, 'inmueble_interesado', 'Contacto desde el sitio web');
         }
-
 
         // Envío de correo electrónico a los usuarios con rol "editor"
         $args = array(
@@ -208,7 +214,7 @@ add_action('admin_menu', 'eliminar_submenu_consultas');
 function ocultar_boton_anadir_nueva_consulta() {
     global $post;
 
-    if ($post->post_type === 'consulta') {
+    if (isset($post) && $post->post_type === 'consulta') {
         echo '<style type="text/css">
             .page-title-action { display: none !important; }
         </style>';

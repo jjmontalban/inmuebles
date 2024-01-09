@@ -83,7 +83,7 @@ function formulario_contacto_shortcode()
         <input type="submit" value="Enviar" class="submit-button">
 
         <!-- Agregar un campo oculto en el formulario -->
-        <input type="text" name="extra_field" style="display: none;">
+        <input type="text" name="campo_trampa" style="display: none;">
     </form>
 
     <div id="respuesta-formulario-contacto"></div>
