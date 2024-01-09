@@ -15,13 +15,7 @@ function procesar_formulario_contacto() {
         // Si el campo oculto está lleno, probablemente sea un bot
         exit;
     }
-    // Verificar si el campo de mensaje contiene una URL
-    if (preg_match('/(?:https?|ftp):\/\/[\n\S]+/i', $mensaje)) {
-        // Si el mensaje contiene una URL, podría ser spam, así que lo descartamos
-        wp_redirect($_SERVER['HTTP_REFERER'] . '?spam=true'); // Redireccionar con una indicación de spam
-        exit;
-    }
-
+    
     // Validación del CAPTCHA
 
     // Obtener la clave de API almacenada
