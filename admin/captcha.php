@@ -47,7 +47,7 @@ function inmuebles_google_captcha_api_page() {
 /**
 * Guardar la Configuración
 */
-function inmuebles_settings_catcha() {
+function inmuebles_settings_captcha() {
     register_setting('inmuebles_settings_group', 'inmuebles_google_captcha_api_key');
 }
-add_action('admin_init', 'inmuebles_settings_catcha');
+add_action('admin_init', 'inmuebles_settings_captcha');

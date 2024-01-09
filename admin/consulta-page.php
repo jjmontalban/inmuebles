@@ -17,8 +17,6 @@ function procesar_formulario_contacto() {
     }
     
     // Validación del CAPTCHA
-
-    // Obtener la clave de API almacenada
     $recaptcha_secret_key = get_option('inmuebles_google_maps_api_key', '');
     $recaptcha_response = $_POST['g-recaptcha-response'];
 
@@ -42,7 +40,6 @@ function procesar_formulario_contacto() {
     $recaptcha_result = json_decode($result);
 
     if (!$recaptcha_result->success) {
-        // Fallo en la validación del CAPTCHA, puedes manejarlo aquí
         echo "Fallo en la validación del CAPTCHA.";
         return;
     }
