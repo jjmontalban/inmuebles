@@ -37,6 +37,7 @@ function inmuebles_google_captcha_api_page() {
             <label for="inmuebles_google_captcha_api_key">Clave de API de Google Captcha:</label>
             <input type="text" name="inmuebles_google_captcha_api_key" value="<?php echo esc_attr($api_key); ?>" style="width: 100%;">
             <p>Obtén una clave de API de Google Captcha en <a href="https://www.google.com/recaptcha/about/" target="_blank">https://www.google.com/recaptcha/about/</a></p>
+            <p>debes introducir la Clave del Sitio (Site Key)</p>
             <?php submit_button('Guardar'); ?>
         </form>
     </div>

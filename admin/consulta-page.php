@@ -17,7 +17,7 @@ function procesar_formulario_contacto() {
     }
     
     // Validación del CAPTCHA
-    $recaptcha_secret_key = get_option('inmuebles_google_maps_api_key', '');
+    $recaptcha_secret_key = get_option('inmuebles_google_captcha_api_key', '');
     $recaptcha_response = $_POST['g-recaptcha-response'];
 
     $recaptcha_url = "https://www.google.com/recaptcha/api/siteverify";
