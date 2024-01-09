@@ -49,9 +49,6 @@ function formulario_contacto_shortcode()
         }
 
     </style>
-   
-    <!-- Agregar un campo RECAPTCHA -->
-    <?php $recaptcha_site_key = get_option('inmuebles_google_captcha_api_key', ''); ?>
 
     <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-contacto">
         <input type="hidden" name="action" value="procesar_formulario_contacto">
@@ -76,10 +73,6 @@ function formulario_contacto_shortcode()
         <label for="aceptar_condiciones" style="font-size: 0.8em;">Usando este formulario estás aceptando nuestra <a target="blank" href="<?php echo esc_url(get_permalink(get_page_by_path('aviso-legal'))); ?>">política de privacidad</a></label>
 
         <input type="submit" value="Enviar" class="submit-button">
-
-        <!-- Campo oculto para almacenar el token reCAPTCHA -->
-        <div id="recaptcha-container" class="g-recaptcha" data-sitekey="<?php echo esc_attr($recaptcha_site_key); ?>" data-callback="capturaRespuestaRecaptcha"></div>
-        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
 
         <!-- Agregar un campo oculto en el formulario -->
         <input type="text" name="extra_field" style="display: none;">
@@ -107,12 +100,6 @@ function formulario_contacto_shortcode()
     <script>
 
         jQuery(document).ready(function($) {
-
-            // Función para capturar la respuesta del reCAPTCHA
-            function capturaRespuestaRecaptcha(token) {
-                // Asigna el valor del token al campo oculto del formulario
-                $('#g-recaptcha-response').val(token);
-            }
 
             $('#formulario-contacto').submit(function(e) {
                 e.preventDefault();
