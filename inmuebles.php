@@ -67,6 +67,7 @@ require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/cita-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
+require_once plugin_dir_path(__FILE__) . 'admin/recaptcha.php';
 
 /**
  * Carga librerias js necesarias
@@ -85,6 +86,12 @@ function inmuebles_load_scripts() {
     $api_key = get_option('inmuebles_google_maps_api_key', '');
     // Cargar la biblioteca de Google Maps JavaScript API con la clave
     wp_enqueue_script('google-maps', "https://maps.googleapis.com/maps/api/js?key={$api_key}", array(), null, true);
+
+    // Obtener la clave almacenada
+    $recaptcha_site_key = get_option('inmuebles_recaptcha_site_key', '');
+    // Cargar la biblioteca de Google Recaptcha con la clave del sitio
+    wp_enqueue_script('google-recaptcha', "https://www.google.com/recaptcha/api.js?render={$recaptcha_site_key}", array(), null, true);
+
 
     // Registrar el script personalizado
     wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '2.0', true);

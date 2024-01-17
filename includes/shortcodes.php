@@ -76,6 +76,10 @@ function formulario_contacto_shortcode()
 
         <!-- Agregar un campo oculto en el formulario -->
         <input type="text" name="extra_field" style="display: none;">
+
+        <!-- Agregar un campo oculto para almacenar el token de reCAPTCHA v3 -->
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="">
+
     </form>
 
     <div id="respuesta-formulario-contacto"></div>
@@ -100,6 +104,24 @@ function formulario_contacto_shortcode()
     <script>
 
         jQuery(document).ready(function($) {
+
+            // Encolar el script de reCAPTCHA v3
+            $.ajax({
+                url: 'https://www.google.com/recaptcha/api.js?render=6LcLmEspAAAAAPdAfv_Sn7axtiYTwqQ9IZjrHKyV',
+                dataType: 'script',
+                cache: true,
+                success: function() {
+                    // Callback cuando el script de reCAPTCHA se ha cargado
+                    grecaptcha.ready(function() {
+                        // Ejecutar reCAPTCHA al cargar la página
+                        grecaptcha.execute('<?php echo get_option('inmuebles_recaptcha_site_key', ''); ?>', { action: 'formulario_contacto' })
+                            .then(function(token) {
+                                // Almacenar el token en el campo oculto antes de enviar el formulario
+                                $('#g-recaptcha-response').val(token);
+                            });
+                    });
+                }
+            });
 
             $('#formulario-contacto').submit(function(e) {
                 e.preventDefault();

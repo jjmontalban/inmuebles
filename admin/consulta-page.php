@@ -20,7 +20,19 @@ function procesar_formulario_contacto() {
         wp_redirect($_SERVER['HTTP_REFERER'] . '?spam=true'); // Redireccionar con una indicación de spam
         exit;
     }
-    
+
+    //Google recaptcha
+    $recaptcha_response = $_POST['g-recaptcha-response'];
+    $secret_key = get_option('inmuebles_recaptcha_secret_key', '');
+
+    $recaptcha_url = "https://www.google.com/recaptcha/api/siteverify?secret={$secret_key}&response={$recaptcha_response}";
+    $recaptcha_response_data = json_decode(file_get_contents($recaptcha_url));
+
+    if (!$recaptcha_response_data->success) {
+        wp_redirect($_SERVER['HTTP_REFERER'] . '?recaptcha_error=true');
+        exit;
+    }
+
     // Inicializamos la variable del ID del inmueble en 0
     $inmueble_id = 0;
 
