@@ -56,13 +56,12 @@ function inmuebles_deactivate_plugin() {
 
 // Incluimos los archivos secundarios
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-inmueble.php';
-require_once plugin_dir_path(__FILE__) . 'includes/cpt-propietario.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-consulta.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-demanda.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-cita.php';
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
 require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php';
-require_once plugin_dir_path(__FILE__) . 'admin/propietario-page.php';
+require_once plugin_dir_path(__FILE__) . 'admin/propietario.php';
 require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/cita-page.php';
@@ -121,3 +120,29 @@ function inmuebles_admin_scripts() {
     </script>';
 }
 add_action('admin_footer', 'inmuebles_admin_scripts');
+
+
+
+
+function cambiar_texto_boton_publicar($translated_text, $text, $domain) {
+    global $pagenow, $post;
+
+    if (is_admin() && $pagenow == 'post-new.php') {
+        switch($post->post_type) {
+            case 'propietario':
+                if($translated_text === 'Publish') {
+                    return 'Crear Propietario';
+                }
+                break;
+
+            case 'otro_cpt':
+                if($translated_text === 'Publish'){
+                    return 'Crear Otro CPT';
+                }
+                break;
+        }
+    }
+    return $translated_text;
+}
+
+add_filter('gettext_with_context', 'cambiar_texto_boton_publicar', 10, 3);
