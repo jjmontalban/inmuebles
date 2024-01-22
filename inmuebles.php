@@ -58,13 +58,12 @@ function inmuebles_deactivate_plugin() {
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-inmueble.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-consulta.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt-demanda.php';
-require_once plugin_dir_path(__FILE__) . 'includes/cpt-cita.php';
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
 require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php';
+require_once plugin_dir_path(__FILE__) . 'admin/cita.php';
 require_once plugin_dir_path(__FILE__) . 'admin/propietario.php';
 require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
-require_once plugin_dir_path(__FILE__) . 'admin/cita-page.php';
 require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
 require_once plugin_dir_path(__FILE__) . 'admin/recaptcha.php';
 
