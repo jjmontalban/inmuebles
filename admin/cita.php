@@ -150,21 +150,40 @@ class Cita
        $demanda_id = get_post_meta($post_id, 'demanda_id', true);
        $fecha = get_post_meta($post_id, 'fecha', true);
        $hora = get_post_meta($post_id, 'hora', true); 
-       $admin_email = get_option('admin_email');
        $demanda_email = get_post_meta($demanda_id, 'email', true);
+
+
+       // Obtener información del inmueble
+        $inmueble_info = '';
+        if ($inmueble_id) {
+            $tipo_inmueble = get_post_meta($inmueble_id, 'tipo_inmueble', true);
+            $nombre_calle = get_post_meta($inmueble_id, 'nombre_calle', true);
+            $inmueble_info = $tipo_inmueble . "en" .  $nombre_calle;
+        }
    
-       $subject = 'Nueva cita agendada desde chipicasa.com';
-       $message = "Se ha agendado una nueva cita:\n";
-       $message .= "Fecha: $fecha\n";
-       $message .= "Hora: $hora\n";
-       $message .= "Inmueble ID: $inmueble_id\n";
-       $message .= "Demanda ID: $demanda_id\n";
+        // Obtener el nombre de la demanda
+        $demanda_info = '';
+        if ($demanda_id) {
+            $demanda_info = get_the_title($demanda_id);
+        }
+
+        $subject = 'Nueva cita agendada desde chipicasa.com';
+        $message = "Se ha agendado una nueva cita:\n";
+        $message .= "Fecha: $fecha\n";
+        $message .= "Hora: $hora\n";
+        $message .= "Inmueble ID: $inmueble_info\n";
+        $message .= "Demanda ID: $demanda_info\n";
    
-       // Enviar correo electrónico al administrador del sitio
-       wp_mail($admin_email, $subject, $message);
+        // Enviar correo electrónico a los editores del sitio
+        $editores = get_users(array('role' => 'editor'));
+        // Enviar correo electrónico a cada editor
+        foreach ($editores as $editor) {
+            $editor_email = $editor->user_email;
+            wp_mail($editor_email, $subject, $message);
+        }
    
-       // Enviar correo electrónico a la demanda
-       wp_mail($demanda_email, $subject, $message);
+        // Enviar correo electrónico a la demanda
+        wp_mail($demanda_email, $subject, $message);
     }
 
     public function agregar_columnas_personalizadas_cita($columns)
