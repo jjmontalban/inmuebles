@@ -162,17 +162,14 @@ class Cita
         }
    
         // Obtener el nombre de la demanda
-        $demanda_info = '';
-        if ($demanda_id) {
-            $demanda_info = get_the_title($demanda_id);
-        }
+        $demanda_info = get_post_meta($demanda_id, 'nombre', true);
 
         $subject = 'Nueva cita agendada desde chipicasa.com';
         $message = "Se ha agendado una nueva cita:\n";
         $message .= "Fecha: $fecha\n";
         $message .= "Hora: $hora\n";
-        $message .= "Inmueble ID: $inmueble_info\n";
-        $message .= "Demanda ID: $demanda_info\n";
+        $message .= "Inmueble: $inmueble_info\n";
+        $message .= "Demanda: $demanda_info\n";
    
         // Enviar correo electrónico a los editores del sitio
         $editores = get_users(array('role' => 'editor'));
