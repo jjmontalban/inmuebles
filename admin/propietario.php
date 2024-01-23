@@ -173,4 +173,4 @@ class Propietario {
     }
 }
 
-$new_propietario = new Propietario();
+new Propietario();

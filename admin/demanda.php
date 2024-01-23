@@ -191,5 +191,4 @@ class Demanda
     }
 }
 
-// Declaramos la clase cuando el archivo es requerido
 new Demanda();

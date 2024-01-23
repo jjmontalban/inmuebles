@@ -311,3 +311,5 @@ class Consulta
 
 
 }
+
+new Consulta();
