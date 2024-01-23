@@ -13,7 +13,6 @@ class Cita
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_cita'], 10, 2);
     }
 
-    // Registrar cpt Cita
     public function registrar_cpt_cita() {
         $labels = array(
             'name' => 'Citas',
@@ -60,14 +59,13 @@ class Cita
         $demanda_id = get_post_meta($post->ID, 'demanda_id', true);
         $fecha = get_post_meta($post->ID, 'fecha', true);
         
-        // Obtiene la lista de inmuebles para el select
+        
         $args = array(
-            'post_type' => 'inmueble', // El nombre de tu CPT de inmuebles
+            'post_type' => 'inmueble',
             'posts_per_page' => -1,
         );
         $inmuebles = get_posts($args);
         
-        // Obtiene la lista de demandas para el select
         $args = array(
             'post_type' => 'demanda', // El nombre de tu CPT de demandas
             'posts_per_page' => -1,
@@ -124,6 +122,13 @@ class Cita
 
     public function guardar_campos_cita($post_id)
     {
+       if (empty($_POST) || defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return $post_id;
+       }
+       // Verificar que realmente se está guardando la cita
+       if ($_POST['action'] != 'editpost' && $_POST['action'] != 'post.php') {
+            return $post_id;
+       }
        if ( get_post_type($post_id) !== 'cita') {
            return;
        }
@@ -144,16 +149,11 @@ class Cita
        $inmueble_id = get_post_meta($post_id, 'inmueble_id', true);
        $demanda_id = get_post_meta($post_id, 'demanda_id', true);
        $fecha = get_post_meta($post_id, 'fecha', true);
-       $hora = get_post_meta($post_id, 'hora', true);
-   
-       // Obtener la dirección de correo electrónico del administrador del sitio
+       $hora = get_post_meta($post_id, 'hora', true); 
        $admin_email = get_option('admin_email');
-   
-       // Obtener la dirección de correo electrónico de la demanda
        $demanda_email = get_post_meta($demanda_id, 'email', true);
    
-       // Asunto y contenido del correo electrónico
-       $subject = 'Nueva cita agendada';
+       $subject = 'Nueva cita agendada desde chipicasa.com';
        $message = "Se ha agendado una nueva cita:\n";
        $message .= "Fecha: $fecha\n";
        $message .= "Hora: $hora\n";
