@@ -642,6 +642,13 @@ class Inmueble
                     </select>
                 </td>
             </tr>
+            <tr>
+                <th>Visitas:</th>
+                <td>
+                    <span id="visitas"><?php echo esc_html(get_post_meta($post->ID, 'visitas', true) ?? ''); ?></span>
+                </td>
+            </tr>
+
 
         </table>
         

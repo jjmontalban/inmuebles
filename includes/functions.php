@@ -31,7 +31,7 @@ function obtener_campos_inmueble($post_id) {
         'residencial_altura','residencial_unif',
         'terciario_ofi','terciario_com','terciario_hotel','industrial','dotaciones','otra',
         'm_parcela','m_fachada','tipologia_chalet','tipo_rustica','num_plantas',
-        'num_estancias','ubicacion_local','tipo_plaza','m_plaza'
+        'num_estancias','ubicacion_local','tipo_plaza','m_plaza', 'visitas'
     );
 
     $valores = array();
@@ -113,3 +113,23 @@ function inmuebles_cambiar_boton_publicar($translated_text, $text, $domain) {
     return $translated_text;
 }
 add_filter('gettext', 'inmuebles_cambiar_boton_publicar', 10, 3);
+
+
+
+/* Cuenta las visitas de los inmueble  */
+function contar_visitas_inmueble() {
+    if (is_singular('inmueble')) { 
+        $inmueble_id = get_the_ID(); 
+
+        $visitas = get_post_meta($inmueble_id, 'visitas', true);
+
+        if (empty($visitas)) {
+            $visitas = 1;
+        } else {
+            $visitas++;
+        }
+
+        update_post_meta($inmueble_id, 'visitas', $visitas);
+    }
+}
+add_action('wp_footer', 'contar_visitas_inmueble');
