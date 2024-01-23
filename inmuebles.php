@@ -123,21 +123,22 @@ add_action('admin_footer', 'inmuebles_admin_scripts');
 function cambiar_texto_boton_publicar($translated_text, $text, $domain) {
     global $pagenow, $post;
 
-    if (is_admin() && $pagenow == 'post-new.php') {
-        switch($post->post_type) {
+    if (is_admin() && $pagenow == 'post-new.php' && isset($post) && $post instanceof WP_Post) {
+        switch ($post->post_type) {
             case 'propietario':
-                if($translated_text === 'Publish') {
+                if ($translated_text === 'Publish') {
                     return 'Crear Propietario';
                 }
                 break;
 
             case 'otro_cpt':
-                if($translated_text === 'Publish'){
+                if ($translated_text === 'Publish') {
                     return 'Crear Otro CPT';
                 }
                 break;
         }
     }
+
     return $translated_text;
 }
 
