@@ -158,7 +158,7 @@ class Cita
         if ($inmueble_id) {
             $tipo_inmueble = get_post_meta($inmueble_id, 'tipo_inmueble', true);
             $nombre_calle = get_post_meta($inmueble_id, 'nombre_calle', true);
-            $inmueble_info = $tipo_inmueble . "en" .  $nombre_calle;
+            $inmueble_info = $tipo_inmueble . " en " .  $nombre_calle;
         }
    
         // Obtener el nombre de la demanda
