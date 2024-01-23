@@ -18,6 +18,7 @@ class Demanda
             'name' => 'Demandas',
             'singular_name' => 'Demanda',
             'add_new' => 'Añadir Demanda',
+            'add_new_item' => 'Añadir Nueva Demanda',
             'menu_name' => 'Demandas',
             'name_admin_bar' => 'Demanda',
             'edit_item' => 'Ver Demanda',

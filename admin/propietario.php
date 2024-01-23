@@ -11,8 +11,6 @@ class Propietario {
         add_filter('post_row_actions', array($this, 'modificar_texto_accion_propietario'), 10, 2);
     }
 
-    
-    // registrar_cpt_propietario
     public function registrar_cpt_propietario() {
         $labels = array(
             'name' => 'Propietario',
@@ -25,13 +23,14 @@ class Propietario {
             'edit_item' => 'Editar Propietario',
             'view_item' => 'Ver Propietario',
             'all_items' => 'Todos los Propietarios',
-            'search_items' => 'Buscar Propietarios',
+            'search_items' => 'Buscar Propietario',
+            'not_found' => 'No se encontraron Propietarios',
         );
     
         $args = array(
             'labels' => $labels,
             'public' => false,
-            'show_ui' => true, //solo desde el admin
+            'show_ui' => true,
             'has_archive' => true,
             'rewrite' => array( 'slug' => 'propietario' ),
             'menu_icon' => 'dashicons-admin-users',

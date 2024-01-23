@@ -273,7 +273,7 @@ function ultimos_inmuebles_shortcode()
                                 <?php endif; ?>
                             </p>
                         </div>
-                        <h5><?php echo $tipos_inmueble_map[$campos['tipo_inmueble']] . ' en ' . $campos['nombre_calle'] . ', ' . $campos['localidad']; ?></h5>
+                        <h5><?php echo $tipos_inmueble_map[$campos['tipo_inmueble']] . ' en ' . $campos['nombre_calle']; ?></h5>
                         <div class="inmueble-info">
                             <span><?php echo $campos['m_construidos'] . ' m2'; ?></span>
                             <span><?php echo $campos['num_dormitorios'] . ' Dorm'; ?></span>
