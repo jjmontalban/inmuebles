@@ -50,7 +50,7 @@ class Consulta
     {
          add_meta_box('datos_consulta', 
                  'Datos de la Consulta', 
-                 'mostrar_metabox_consulta', 
+                 array($this, 'mostrar_metabox_consulta'),
                  'consulta', 
                  'normal', 
                  'high');
@@ -61,7 +61,7 @@ class Consulta
      * Muestra los campos de la consulta en la página de consulta.
      * @param WP_Post $post El objeto de entrada actual.
      */
-    function mostrar_metabox_consulta($post) {
+    public function mostrar_metabox_consulta($post) {
         $nombre = get_post_meta($post->ID, 'nombre', true);
         $email = get_post_meta($post->ID, 'email', true);
         $telefono = get_post_meta($post->ID, 'telefono', true);
@@ -173,8 +173,8 @@ class Consulta
     
             foreach ($editores as $editor) {
                 $editor_email = $editor->user_email;
-                $subject = 'Mensaje recibido desde el sitio web';
-                $message = 'Se ha recibido un mensaje desde el sitio web. Puedes ver la consulta aquí: ' . $consulta_permalink;
+                $subject = 'Mensaje recibido desde chipicasa.com';
+                $message = 'Se ha recibido un mensaje desde el sitio web. Puedes ver la consulta <a target="_blank" href="' . $consulta_permalink . '">pinchando aquí</a>.';
                 $headers = array('Content-Type: text/html; charset=UTF-8');
                 
                 wp_mail($editor_email, $subject, $message, $headers);

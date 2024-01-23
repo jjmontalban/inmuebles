@@ -83,7 +83,7 @@ class Inmueble
     public function inmuebles_agregar_mb_campos_inmueble() {
         add_meta_box( 'inmueble_campos_inmueble', 
                     'Datos del inmueble', 
-                    'mostrar_campos_inmueble', 
+                    array($this, 'mostrar_campos_inmueble'),
                     'inmueble', 
                     'normal', 
                     'high' );

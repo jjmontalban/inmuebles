@@ -41,7 +41,7 @@ class Demanda
     public function demanda_meta_box() {
         add_meta_box('demanda_info', 
         'Información de la demanda', 
-        'mostrar_campos_demanda', 
+        array($this, 'mostrar_campos_demanda'),
         'demanda',
         'normal',
         'high' );
