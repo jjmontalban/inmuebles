@@ -29,7 +29,6 @@ class Consulta
             'menu_name'             => _x('Consultas', 'Admin Menu text', 'textdomain'),
             'name_admin_bar'        => _x('Consulta', 'Add New on Toolbar', 'textdomain'),
             'edit_item'             => __('Ver consulta', 'textdomain'), 
-        
         );
     
         $args = array(
@@ -161,20 +160,18 @@ class Consulta
             } else {
                 update_post_meta($consulta_id, 'inmueble_interesado', 'Contacto desde el sitio web');
             }
-    
-    
+
             // Envío de correo electrónico a los usuarios con rol "editor"
             $args = array(
                 'role' => 'editor',
             );
             $editores = get_users($args);
-    
-            $consulta_permalink = get_permalink($consulta_id);
-    
+            $admin_url = admin_url("post.php?post=$consulta_id&action=edit");
+
             foreach ($editores as $editor) {
                 $editor_email = $editor->user_email;
                 $subject = 'Mensaje recibido desde chipicasa.com';
-                $message = 'Se ha recibido un mensaje desde el sitio web. Puedes ver la consulta <a target="_blank" href="' . $consulta_permalink . '">pinchando aquí</a>.';
+                $message = 'Se ha recibido un mensaje desde el sitio web. Puedes ver la consulta <a target="_blank" href="' . esc_url($admin_url) . '">pinchando aquí</a>.';
                 $headers = array('Content-Type: text/html; charset=UTF-8');
                 
                 wp_mail($editor_email, $subject, $message, $headers);
