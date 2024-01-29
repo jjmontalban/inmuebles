@@ -704,13 +704,14 @@ class Inmueble
      * Aplica el nombre del post inmuebble
      */
     public function inmuebles_custom_permalink($data, $postarr) {
-        if($data['post_type'] == 'inmueble') {
-            $tipo_inmueble = $postarr['tipo_inmueble'];
-            $nombre_calle = $postarr['nombre_calle'];
+        if ($data['post_type'] == 'inmueble') {
+            $tipo_inmueble = isset($postarr['tipo_inmueble']) ? $postarr['tipo_inmueble'] : '';
+            $nombre_calle = isset($postarr['nombre_calle']) ? $postarr['nombre_calle'] : '';
             $data['post_name'] = sanitize_title($tipo_inmueble . ' ' . $nombre_calle);
         }
         return $data;
     }
+    
 
 
     
