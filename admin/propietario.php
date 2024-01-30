@@ -57,31 +57,58 @@ class Propietario {
      * Muestra los campos del propietario en el formulario de edición de propietarios.
      * @param WP_Post $post El objeto de entrada actual.
      */
-    public function mostrar_campos_propietario( $post ) {  
+    public function mostrar_campos_propietario($post) {
         $nombre = get_post_meta($post->ID, 'nombre', true);
         $apellidos = get_post_meta($post->ID, 'apellidos', true);
         $email = get_post_meta($post->ID, 'email', true);
         $telefono = get_post_meta($post->ID, 'telefono', true);
-        
+        $inmuebles_asignados = get_post_meta($post->ID, 'inmuebles_asignados', true);
+        $inmuebles_asignados = is_array($inmuebles_asignados) ? $inmuebles_asignados : array();
+
+    
+        // Obtener todos los Inmuebles
+        $args = array(
+            'post_type' => 'inmueble',
+            'posts_per_page' => -1,
+        );
+        $inmuebles = get_posts($args);
         ?>
         <div id="contenedor-propietario">
             <table class="form-table">
                 <tr>
                     <th><label for="nombre">Nombre*</label></th>
-                    <td><input type="text" name="nombre" id="nombre" value="<?php echo esc_attr( $nombre ?? ''); ?>" required></td>
+                    <td><input type="text" name="nombre" id="nombre" value="<?php echo esc_attr($nombre ?? ''); ?>" required></td>
                 </tr>
                 <tr>
                     <th><label for="apellidos">Apellidos</label></th>
-                    <td><input type="text" name="apellidos" id="apellidos" value="<?php echo esc_attr( $apellidos ?? ''); ?>"></td>
+                    <td><input type="text" name="apellidos" id="apellidos" value="<?php echo esc_attr($apellidos ?? ''); ?>"></td>
                 </tr>
                 <tr>
                     <th><label for="email">Email*</label></th>
-                    <td><input type="text" name="email" id="email" value="<?php echo esc_attr( $email ?? ''); ?>" required></td>
+                    <td><input type="text" name="email" id="email" value="<?php echo esc_attr($email ?? ''); ?>" required></td>
                 </tr>
                 <tr>
                     <th><label for="telefono">Teléfono*</label></th>
-                    <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr( $telefono ?? ''); ?>" required></td>
+                    <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr($telefono ?? ''); ?>" required></td>
                 </tr>
+                <!-- Nuevo campo para seleccionar Inmuebles -->
+                <tr>
+                    <th><label for="inmuebles_asignados">Inmuebles Asignados</label></th>
+                    <td>
+                        <?php foreach ($inmuebles as $inmueble) : ?>
+                            <?php
+                            $tipo_inmueble = get_post_meta($inmueble->ID, 'tipo_inmueble', true);
+                            $nombre_calle = get_post_meta($inmueble->ID, 'nombre_calle', true);
+                            $nombre_inmueble = $tipo_inmueble . ' en ' . $nombre_calle;
+                            ?>
+                            <label>
+                                <input type="checkbox" name="inmuebles_asignados[]" value="<?php echo esc_attr($inmueble->ID); ?>" <?php checked(in_array($inmueble->ID, $inmuebles_asignados), true); ?>>
+                                <?php echo esc_html($nombre_inmueble); ?>
+                            </label><br>
+                        <?php endforeach; ?>
+                    </td>
+                </tr>
+
             </table>
         </div>
         <?php 
@@ -92,7 +119,7 @@ class Propietario {
      * Guarda los valores de los campos personalizados al guardar un propietario.
      * @param int $post_id ID del propietario actual.
      */
-    public function inmuebles_guardar_campos_propietario( $post_id ) {
+    public function inmuebles_guardar_campos_propietario($post_id) {
         if (array_key_exists('nombre', $_POST)) {
             update_post_meta($post_id, 'nombre', sanitize_text_field($_POST['nombre']));
         }
@@ -105,8 +132,13 @@ class Propietario {
         if (array_key_exists('telefono', $_POST)) {
             update_post_meta($post_id, 'telefono', sanitize_text_field($_POST['telefono']));
         }
-    }
+        // Guardar Inmuebles Asignados
+        if (array_key_exists('inmuebles_asignados', $_POST)) {
+            $inmuebles_asignados = array_map('sanitize_text_field', $_POST['inmuebles_asignados']);
+            update_post_meta($post_id, 'inmuebles_asignados', $inmuebles_asignados);
+        }
 
+    }
 
     /**
      * Agregar columnas personalizadas a la lista de entradas de "Propietario"
