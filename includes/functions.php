@@ -137,3 +137,18 @@ add_action('wp_footer', 'contar_visitas_inmueble');
 
 
 
+/**
+ * Oculta opciones del menú para usuarios con rol de Editor
+ */
+function ocultar_opciones_menu_para_editor() {
+    // Verifica si el usuario actual es un Editor
+    if (current_user_can('editor')) {
+        // Oculta el enlace del perfil
+        remove_menu_page('profile.php');
+        // Oculta la opción de Yoast SEO
+        remove_menu_page('wpseo_workouts');
+        // Oculta el enlace del Dashboard
+        remove_menu_page('index.php');
+    }
+}
+add_action('admin_menu', 'ocultar_opciones_menu_para_editor');

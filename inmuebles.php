@@ -89,6 +89,30 @@ add_action('admin_enqueue_scripts', 'inmuebles_load_styles');
 
 
 
+/**
+ * Página de administracion del plugin
+ */
+add_action('admin_menu', 'inmuebles_add_admin_menu');
 
+function inmuebles_add_admin_menu() {
+    add_menu_page(
+        'Inmuebles',           
+        'CRM',          
+        'edit_others_posts',     
+        'inmuebles_main_page',
+        'inmuebles_main_page_content',
+        'dashicons-building',  
+        1                
+    );
+    
+}
 
+function inmuebles_main_page_content() {
+    ?>
+    <div class="wrap">
+        <h1>Bienvenido a la Página Principal del CRM Chipicasa</h1>
+        <p>Agregar tu contenido principal.</p>
+    </div>
+    <?php
+}
 
