@@ -82,108 +82,111 @@ class Consulta
 
 
     /**
-     * Crea una nueva consulta al usar el formulario del front
-     */
-    public function procesar_formulario_contacto()
-    {
-        $nombre = sanitize_text_field($_POST['nombre']);
-        $email = sanitize_email($_POST['email']);
-        $telefono = sanitize_text_field($_POST['telefono']);
-        $mensaje = sanitize_textarea_field($_POST['mensaje']);
-    
-        // Verificar el campo oculto (honeypot)
-        if (!empty($_POST['extra_field'])) {
-            // Si el campo oculto está lleno, probablemente sea un bot
-            exit;
-        }
-        // Verificar si el campo de mensaje contiene una URL
-        if (preg_match('/(?:https?|ftp):\/\/[\n\S]+/i', $mensaje)) {
-            // Si el mensaje contiene una URL, podría ser spam, así que lo descartamos
-            wp_redirect($_SERVER['HTTP_REFERER'] . '?spam=true'); // Redireccionar con una indicación de spam
-            exit;
-        }
-    
-        //Google recaptcha
-        $recaptcha_response = $_POST['g-recaptcha-response'];
-        $secret_key = get_option('inmuebles_recaptcha_secret_key', '');
-    
-        $recaptcha_url = "https://www.google.com/recaptcha/api/siteverify?secret={$secret_key}&response={$recaptcha_response}";
-        $recaptcha_response_data = json_decode(file_get_contents($recaptcha_url));
-    
-        if (!$recaptcha_response_data->success) {
-            wp_redirect($_SERVER['HTTP_REFERER'] . '?recaptcha_error=true');
-            exit;
-        }
-    
-        // Inicializamos la variable del ID del inmueble en 0
-        $inmueble_id = 0;
-    
-        //el shortcode de formulario recibe "inmueble_id" si se usa desde un post de tipo inmueble
-        //en caso contrario recibe "tipo_formulario"
-        
-        // Verificamos si se proporciona el ID del inmueble
-        if (isset($_POST['inmueble_id'])) {
-            $inmueble_id = intval($_POST['inmueble_id']);
-        }
-    
-        // Creamos el título del post, usando el valor del campo 'tipo_formulario' si está presente
-        $post_title = isset($_POST['tipo_formulario']) ? sanitize_text_field($_POST['tipo_formulario']) : '';
-    
-        // Si el título sigue siendo vacío, determinamos la fuente del formulario
-        if (empty($post_title)) {
-            if (is_singular('inmueble')) {
-                $post_title = 'Página de inmueble';
-            } elseif (is_post_type_archive('inmueble')) {
-                $post_title = 'Listado de inmuebles';
-            } else {
-                $post_title = 'Contacto desde el sitio web';
-            }
-        }
-    
-        // Creamos el post
-        $consulta_id = wp_insert_post(array(
-            'post_type' => 'consulta',
-            'post_title' => $post_title,
-            'post_status' => 'publish',
-        ));
-    
-        if ($consulta_id) {
-            update_post_meta($consulta_id, 'nombre', $nombre);
-            update_post_meta($consulta_id, 'email', $email);
-            update_post_meta($consulta_id, 'telefono', $telefono);
-            update_post_meta($consulta_id, 'mensaje', $mensaje);
-    
-            // Actualizamos el campo 'inmueble_interesado' con la información relevante según la fuente del formulario
-            if ($inmueble_id) {
-                update_post_meta($consulta_id, 'inmueble_interesado', $inmueble_id);
-            } elseif (is_post_type_archive('inmueble')) {
-                update_post_meta($consulta_id, 'inmueble_interesado', 'Listado de inmuebles');
-            } else {
-                update_post_meta($consulta_id, 'inmueble_interesado', 'Contacto desde el sitio web');
-            }
+ * Crea una nueva consulta al usar el formulario del front
+ */
+public function procesar_formulario_contacto()
+{
+    $nombre = sanitize_text_field($_POST['nombre']);
+    $email = sanitize_email($_POST['email']);
+    $telefono = sanitize_text_field($_POST['telefono']);
+    $mensaje = sanitize_textarea_field($_POST['mensaje']);
 
-            // Envío de correo electrónico a los usuarios con rol "editor"
-            $args = array(
-                'role' => 'editor',
-            );
-            $editores = get_users($args);
-            $admin_url = admin_url("post.php?post=$consulta_id&action=edit");
-
-            foreach ($editores as $editor) {
-                $editor_email = $editor->user_email;
-                $subject = 'Mensaje recibido desde chipicasa.com';
-                $message = 'Se ha recibido un mensaje desde el sitio web. Puedes ver la consulta <a target="_blank" href="' . esc_url($admin_url) . '">pinchando aquí</a>.';
-                $headers = array('Content-Type: text/html; charset=UTF-8');
-                
-                wp_mail($editor_email, $subject, $message, $headers);
-            }
-    
-    
-        }
-    
-        wp_redirect($_SERVER['HTTP_REFERER']); // Redireccionar de nuevo a la página del formulario
+    // Verificar el campo oculto (honeypot)
+    if (!empty($_POST['extra_field'])) {
+        // Si el campo oculto está lleno, probablemente sea un bot
         exit;
     }
+    // Verificar si el campo de mensaje contiene una URL
+    if (preg_match('/(?:https?|ftp):\/\/[\n\S]+/i', $mensaje)) {
+        // Si el mensaje contiene una URL, podría ser spam, así que lo descartamos
+        wp_redirect($_SERVER['HTTP_REFERER'] . '?spam=true'); // Redireccionar con una indicación de spam
+        exit;
+    }
+
+    // Google recaptcha
+    $recaptcha_response = $_POST['g-recaptcha-response'];
+    $secret_key = get_option('inmuebles_recaptcha_secret_key', '');
+
+    $recaptcha_url = "https://www.google.com/recaptcha/api/siteverify?secret={$secret_key}&response={$recaptcha_response}";
+    $recaptcha_response_data = json_decode(file_get_contents($recaptcha_url));
+
+    if (!$recaptcha_response_data->success) {
+        wp_redirect($_SERVER['HTTP_REFERER'] . '?recaptcha_error=true');
+        exit;
+    }
+
+    // Inicializamos la variable del ID del inmueble en 0
+    $inmueble_id = 0;
+
+    // El shortcode de formulario recibe "inmueble_id" si se usa desde un post de tipo inmueble
+    // En caso contrario recibe "tipo_formulario"
+    
+    // Verificamos si se proporciona el ID del inmueble
+    if (isset($_POST['inmueble_id'])) {
+        $inmueble_id = intval($_POST['inmueble_id']);
+    }
+
+    // Creamos el título del post, usando el valor del campo 'tipo_formulario' si está presente
+    $post_title = isset($_POST['tipo_formulario']) ? sanitize_text_field($_POST['tipo_formulario']) : '';
+
+// Si el título sigue siendo vacío, determinamos la fuente del formulario
+if (empty($post_title)) {
+    if ( $inmueble_id ) {
+        // Obtener el título del inmueble y agregarlo al post title
+        $inmueble_title = get_the_title($inmueble_id);
+        $post_title = $inmueble_title ? "INFO x $inmueble_title" : 'Contacto desde el sitio web';
+    } elseif (is_post_type_archive('inmueble') && !$inmueble_id) {
+        $post_title = 'Listado de inmuebles';
+    } else {
+        $post_title = 'Contacto desde el sitio web';
+    }
+}
+
+
+
+    // Creamos el post
+    $consulta_id = wp_insert_post(array(
+        'post_type' => 'consulta',
+        'post_title' => $post_title,
+        'post_status' => 'publish',
+    ));
+
+    if ($consulta_id) {
+        update_post_meta($consulta_id, 'nombre', $nombre);
+        update_post_meta($consulta_id, 'email', $email);
+        update_post_meta($consulta_id, 'telefono', $telefono);
+        update_post_meta($consulta_id, 'mensaje', $mensaje);
+
+        // Actualizamos el campo 'inmueble_interesado' con la información relevante según la fuente del formulario
+        if ($inmueble_id) {
+            update_post_meta($consulta_id, 'inmueble_interesado', $inmueble_id);
+        } elseif (is_post_type_archive('inmueble')) {
+            update_post_meta($consulta_id, 'inmueble_interesado', 'Listado de inmuebles');
+        } else {
+            update_post_meta($consulta_id, 'inmueble_interesado', 'Contacto desde el sitio web');
+        }
+
+        // Envío de correo electrónico a los usuarios con rol "editor"
+        $args = array(
+            'role' => 'editor',
+        );
+        $editores = get_users($args);
+        $admin_url = admin_url("post.php?post=$consulta_id&action=edit");
+
+        foreach ($editores as $editor) {
+            $editor_email = $editor->user_email;
+            $subject = 'Mensaje recibido desde chipicasa.com';
+            $message = 'Se ha recibido un mensaje desde el sitio web. Puedes ver la consulta <a target="_blank" href="' . esc_url($admin_url) . '">pinchando aquí</a>.';
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            
+            wp_mail($editor_email, $subject, $message, $headers);
+        }
+    }
+
+    wp_redirect($_SERVER['HTTP_REFERER']); // Redireccionar de nuevo a la página del formulario
+    exit;
+}
+
 
 
     /**
