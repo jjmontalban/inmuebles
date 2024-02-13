@@ -14,7 +14,9 @@ class Inmueble
         add_filter('the_title', [$this, 'modificar_valor_columna_title'], 1, 2);        
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_inmueble'], 10, 2);
         add_filter('wp_insert_post_data', [$this, 'inmuebles_custom_permalink'], 10, 2);
-        add_action( 'save_post', [$this, 'inmuebles_guardar_campos_inmueble']);    
+        add_action( 'save_post', [$this, 'inmuebles_guardar_campos_inmueble']);   
+        add_action('add_meta_boxes', array($this, 'inmuebles_agregar_mb_informe_inmueble')); 
+        add_action('admin_menu', array($this, 'registrar_informe_inmueble_page'));
     }
 
 
@@ -96,6 +98,8 @@ class Inmueble
      * Guarda la taxonomía 'tipo de inmueble' cada vez que se guarde un inmueble cogiendo el valor del campo personalizado "tipo_inmueble"
      */
     public function asignar_tipo_inmueble_taxonomia($post_id) {
+        global $tipos_inmueble_map;
+        
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) 
             return $post_id;
         
@@ -106,8 +110,11 @@ class Inmueble
         // Obtiene el valor del campo personalizado "tipo_inmueble"
         $tipo_inmueble = get_post_meta($post_id, 'tipo_inmueble', true);
         
+        // Mapea el valor del tipo de inmueble si existe en el mapa
+        $tipo_inmueble_mapped = isset($tipos_inmueble_map[$tipo_inmueble]) ? $tipos_inmueble_map[$tipo_inmueble] : $tipo_inmueble;
+        
         // Actualiza los términos de taxonomía
-        wp_set_post_terms($post_id, $tipo_inmueble, 'tipo_inmueble', false);
+        wp_set_post_terms($post_id, $tipo_inmueble_mapped, 'tipo_inmueble', false);
     }
 
     /**
@@ -155,6 +162,91 @@ class Inmueble
         return $data;
     }
     
-}
+    
+    /**
+     * Página de informe
+     */
+    public function registrar_informe_inmueble_page() {
+        add_submenu_page(
+            'edit.php?post_type=inmueble', // Slug del menú padre
+            'Informe del Inmueble', // Título de la página
+            'Informe del Inmueble', // Título del menú
+            'manage_options', // Capacidad requerida para ver la página
+            'informe-inmueble', // Slug de la página
+            array($this, 'mostrar_informe_inmueble_page') // Función de devolución de llamada para mostrar el contenido de la página
+        );
+    }
+    
+    public function mostrar_informe_inmueble_page() {
+        global $tipos_inmueble_map;
+        global $zonas_inmueble_map;
+    
+        // Aquí puedes agregar el código para mostrar los datos del inmueble
+        // Puedes obtener el ID del inmueble desde la URL
+        $inmueble_id = isset($_GET['inmueble_id']) ? intval($_GET['inmueble_id']) : 0;
+        if ($inmueble_id > 0) {
+            echo '<h1>' . ucfirst(get_post_meta($inmueble_id, 'nombre_calle', true)) . '</h1>'; // Muestra el nombre del inmueble
+    
+            // Mostrar otros campos personalizados
+            $tipo_inmueble_key = get_post_meta($inmueble_id, 'tipo_inmueble', true);
+            $tipo_inmueble = isset($tipos_inmueble_map[$tipo_inmueble_key]) ? $tipos_inmueble_map[$tipo_inmueble_key] : $tipo_inmueble_key;
+    
+            $tipo_operacion = get_post_meta($inmueble_id, 'tipo_operacion', true);
+            $precio = ($tipo_operacion === 'venta') ? get_post_meta($inmueble_id, 'precio_venta', true) : get_post_meta($inmueble_id, 'precio_alquiler', true);
+            $metros_construidos = get_post_meta($inmueble_id, 'm_construidos', true);
+            $metros_utiles = get_post_meta($inmueble_id, 'm_utiles', true);
+            $num_dormitorios = get_post_meta($inmueble_id, 'num_dormitorios', true);
+            $num_banos = get_post_meta($inmueble_id, 'num_banos', true);
+    
+            $zona_inmueble_key = get_post_meta($inmueble_id, 'zona_inmueble', true);
+            $zona_inmueble = isset($zonas_inmueble_map[$zona_inmueble_key]) ? $zonas_inmueble_map[$zona_inmueble_key] : $zona_inmueble_key;
+    
+            echo '<p><strong>Tipo de Inmueble:</strong> ' . $tipo_inmueble . '</p>';
+            echo '<p><strong>Tipo de Operación:</strong> ' . ucfirst($tipo_operacion) . '</p>';
+            echo '<p><strong>Precio:</strong> ' . $precio . '</p>';
+            echo '<p><strong>Metros Construidos:</strong> ' . $metros_construidos . '</p>';
+            echo '<p><strong>Metros Útiles:</strong> ' . $metros_utiles . '</p>';
+            echo '<p><strong>Número de Dormitorios:</strong> ' . $num_dormitorios . '</p>';
+            echo '<p><strong>Número de Baños:</strong> ' . $num_banos . '</p>';
+            echo '<p><strong>Zona del Inmueble:</strong> ' . $zona_inmueble . '</p>';
+    
+            // Contar el número de inmuebles en la misma zona
+            $query = new WP_Query(array(
+                'post_type' => 'inmueble',
+                'posts_per_page' => -1,
+                'meta_query' => array(
+                    array(
+                        'key' => 'zona_inmueble',
+                        'value' => $zona_inmueble_key, // Utiliza la clave de la zona del inmueble
+                    )
+                )
+            ));
+            $num_inmuebles_zona = $query->found_posts;
+            echo '<p><strong>Número de Inmuebles en la Misma Zona:</strong> ' . $num_inmuebles_zona . '</p>';
+        }
+    }
+    
 
+    
+    /**
+     * Informe de inmueble
+     */
+    public function inmuebles_agregar_mb_informe_inmueble() {
+        add_meta_box(
+            'inmueble_informe_inmueble',
+            'Informe de Inmueble',
+            array($this, 'mostrar_informe_inmueble'), // Callback
+            'inmueble', // Donde se mostrará
+            'side', // Contexto
+            'default' // Prioridad
+        );
+    }
+    
+    public function mostrar_informe_inmueble($post) {
+        $informe_url = admin_url('edit.php?post_type=inmueble&page=informe-inmueble&inmueble_id=' . $post->ID);
+        echo '<button type="button" class="button button-primary button-large" onclick="window.location.href=\'' . esc_url($informe_url) . '\'">Crear Informe de Inmueble</button>';
+    }
+    
+    
+}
 new Inmueble();

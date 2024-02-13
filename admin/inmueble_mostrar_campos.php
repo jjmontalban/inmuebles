@@ -1,11 +1,15 @@
 <?php 
 
+require_once 'inmueble.php';
+
 /**
  * Muestra los campos del inmueble en el formulario de edición de inmuebles.
  * @param WP_Post $post El objeto de entrada actual.
  */
 function mostrar_campos_inmueble( $post ) {  
 
+    global $tipos_inmueble_map;
+    global $zonas_inmueble_map;
     //Usamos nuestra función para obtener todos los valores del inmueble.
     $campos = obtener_campos_inmueble($post->ID);
     
@@ -15,18 +19,14 @@ function mostrar_campos_inmueble( $post ) {
     ?>
 
     <table class="form-table">
-        <tr>
+    <tr>
             <th><label for="tipo_inmueble">Tipo de Inmueble*</label></th>
             <td>
                 <select name="tipo_inmueble" id="tipo_inmueble" required>
                     <option value="">Seleccionar</option>
-                    <option value="piso" <?php selected(  $campos['tipo_inmueble'] ?? '', 'piso' ); ?>>Piso</option>
-                    <option value="casa_chalet" <?php selected( $campos['tipo_inmueble'] ?? '', 'casa_chalet' ); ?>>Casa / Chalet</option>
-                    <option value="casa_rustica" <?php selected( $campos['tipo_inmueble'] ?? '', 'casa_rustica' ); ?>>Casa Rústica</option>
-                    <option value="local" <?php selected( $campos['tipo_inmueble'] ?? '', 'local' ); ?>>Local o Nave</option>
-                    <option value="garaje" <?php selected( $campos['tipo_inmueble'] ?? '', 'garaje' ); ?>>Garaje</option>
-                    <option value="oficina" <?php selected( $campos['tipo_inmueble'] ?? '', 'oficina' ); ?>>Oficina</option>
-                    <option value="terreno" <?php selected( $campos['tipo_inmueble'] ?? '', 'terreno' ); ?>>Terreno</option>
+                    <?php foreach ($tipos_inmueble_map as $key => $value): ?>
+                        <option value="<?php echo $key; ?>" <?php selected($campos['tipo_inmueble'] ?? '', $key); ?>><?php echo $value; ?></option>
+                    <?php endforeach; ?>
                 </select>
             </td>
         </tr>   
@@ -35,14 +35,9 @@ function mostrar_campos_inmueble( $post ) {
             <td>
                 <select name="zona_inmueble" id="zona_inmueble" required>
                     <option value="">Seleccionar</option>
-                    <option value="centro" <?php selected(  $campos['zona_inmueble'] ?? '', 'centro' ); ?>>Centro</option>
-                    <option value="regla" <?php selected( $campos['zona_inmueble'] ?? '', 'regla' ); ?>>Regla</option>
-                    <option value="cruz_mar" <?php selected( $campos['zona_inmueble'] ?? '', 'cruz_mar' ); ?>>Curz del Mar</option>
-                    <option value="faro" <?php selected( $campos['zona_inmueble'] ?? '', 'faro' ); ?>>Faro</option>
-                    <option value="muelle" <?php selected( $campos['zona_inmueble'] ?? '', 'muelle' ); ?>>Muelle</option>
-                    <option value="alcancia" <?php selected( $campos['zona_inmueble'] ?? '', 'alcancia' ); ?>>La Alcancía</option>
-                    <option value="pinar" <?php selected( $campos['zona_inmueble'] ?? '', 'pinar' ); ?>>Pinar</option>
-                    <option value="laguna" <?php selected( $campos['zona_inmueble'] ?? '', 'laguna' ); ?>>La Laguna</option>
+                    <?php foreach ($zonas_inmueble_map as $key => $value): ?>
+                        <option value="<?php echo $key; ?>" <?php selected($campos['zona_inmueble'] ?? '', $key); ?>><?php echo $value; ?></option>
+                    <?php endforeach; ?>
                 </select>
             </td>
         </tr>   
