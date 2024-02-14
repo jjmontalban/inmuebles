@@ -162,16 +162,15 @@ class Inmueble
         return $data;
     }
     
-    
     /**
-     * Página de informe
-     */
+    * Página de informe
+    */
     public function registrar_informe_inmueble_page() {
         add_submenu_page(
             'edit.php?post_type=inmueble', // Slug del menú padre
             'Informe del Inmueble', // Título de la página
             'Informe del Inmueble', // Título del menú
-            'manage_options', // Capacidad requerida para ver la página
+            'edit_posts', // Capacidad requerida para ver la página
             'informe-inmueble', // Slug de la página
             array($this, 'mostrar_informe_inmueble_page') // Función de devolución de llamada para mostrar el contenido de la página
         );
@@ -181,8 +180,7 @@ class Inmueble
         global $tipos_inmueble_map;
         global $zonas_inmueble_map;
     
-        // Aquí puedes agregar el código para mostrar los datos del inmueble
-        // Puedes obtener el ID del inmueble desde la URL
+        // Obtener el ID del inmueble desde la URL
         $inmueble_id = isset($_GET['inmueble_id']) ? intval($_GET['inmueble_id']) : 0;
         if ($inmueble_id > 0) {
             echo '<h1>' . ucfirst(get_post_meta($inmueble_id, 'nombre_calle', true)) . '</h1>'; // Muestra el nombre del inmueble
@@ -209,25 +207,39 @@ class Inmueble
             echo '<p><strong>Número de Dormitorios:</strong> ' . $num_dormitorios . '</p>';
             echo '<p><strong>Número de Baños:</strong> ' . $num_banos . '</p>';
             echo '<p><strong>Zona del Inmueble:</strong> ' . $zona_inmueble . '</p>';
-    
-            // Contar el número de inmuebles en la misma zona
+
+            // Mostrar el listado de visitas y sus fechas
+            $visitas = get_post_meta($inmueble_id, 'visitas', true);
+            $fechas_visitas = get_post_meta($inmueble_id, 'fechas_visitas', true);
+
+            if (!empty($visitas) && !empty($fechas_visitas)) {
+                echo '<h2>Listado de Visitas</h2>';
+                echo '<ul>';
+                for ($i = 0; $i < count($fechas_visitas); $i++) {
+                    echo '<li>Visita ' . ($i + 1) . ' - Fecha: ' . $fechas_visitas[$i] . '</li>';
+                }
+                echo '</ul>';
+            } else {
+                echo '<p>No hay visitas registradas aún.</p>';
+            }
+
+            // Nº de inmuebles en la misma zona
             $query = new WP_Query(array(
                 'post_type' => 'inmueble',
                 'posts_per_page' => -1,
                 'meta_query' => array(
                     array(
                         'key' => 'zona_inmueble',
-                        'value' => $zona_inmueble_key, // Utiliza la clave de la zona del inmueble
+                        'value' => $zona_inmueble_key,
                     )
                 )
             ));
             $num_inmuebles_zona = $query->found_posts;
-            echo '<p><strong>Número de Inmuebles en la Misma Zona:</strong> ' . $num_inmuebles_zona . '</p>';
+            echo '<p><strong>Número de inmuebles en la misma zona:</strong> ' . $num_inmuebles_zona . '</p>';
         }
     }
     
 
-    
     /**
      * Informe de inmueble
      */
@@ -246,7 +258,40 @@ class Inmueble
         $informe_url = admin_url('edit.php?post_type=inmueble&page=informe-inmueble&inmueble_id=' . $post->ID);
         echo '<button type="button" class="button button-primary button-large" onclick="window.location.href=\'' . esc_url($informe_url) . '\'">Crear Informe de Inmueble</button>';
     }
-    
-    
+
 }
 new Inmueble();
+
+
+/* Cuenta las visitas de los inmuebles y registra la fecha de cada visita */
+function contar_visitas_inmueble() {
+    // Verificar si la página es un inmueble individual y si el usuario no es administrador ni editor
+    if (is_singular('inmueble') && !current_user_can('activate_plugins') && !current_user_can('edit_others_posts')) { 
+        $inmueble_id = get_the_ID(); 
+
+        // Obtener el número de visitas y las fechas anteriores (si existen)
+        $visitas = get_post_meta($inmueble_id, 'visitas', true);
+        $fechas_visitas = get_post_meta($inmueble_id, 'fechas_visitas', true);
+
+        // Asegurarse de que $fechas_visitas sea un array
+        if (!is_array($fechas_visitas)) {
+            $fechas_visitas = array();
+        }
+
+        // Incrementar el número de visitas
+        $visitas = empty($visitas) ? 1 : $visitas + 1;
+
+        // Registrar la fecha de la visita actual
+        $fecha_actual = current_time('mysql');
+        $fechas_visitas[] = $fecha_actual;
+
+        // Actualizar los metadatos del inmueble
+        update_post_meta($inmueble_id, 'visitas', $visitas);
+        update_post_meta($inmueble_id, 'fechas_visitas', $fechas_visitas);
+    }
+}
+
+// Asegúrate de que la función esté agregada a la acción wp_footer
+add_action('wp_footer', 'contar_visitas_inmueble');
+
+

@@ -113,29 +113,6 @@ function inmuebles_cambiar_boton_publicar($translated_text, $text, $domain) {
 }
 add_filter('gettext', 'inmuebles_cambiar_boton_publicar', 10, 3);
 
-
-
-/* Cuenta las visitas de los inmueble  */
-function contar_visitas_inmueble() {
-    // Verificar si la página es un inmueble individual y si el usuario no es administrador ni editor
-    if (is_singular('inmueble') && !current_user_can('activate_plugins') && !current_user_can('edit_others_posts')) { 
-        $inmueble_id = get_the_ID(); 
-
-        $visitas = get_post_meta($inmueble_id, 'visitas', true);
-
-        if (empty($visitas)) {
-            $visitas = 1;
-        } else {
-            $visitas++;
-        }
-
-        update_post_meta($inmueble_id, 'visitas', $visitas);
-    }
-}
-add_action('wp_footer', 'contar_visitas_inmueble');
-
-
-
 /**
  * Oculta opciones del menú para usuarios con rol de Editor
  */
