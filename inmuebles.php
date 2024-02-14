@@ -89,30 +89,39 @@ add_action('admin_enqueue_scripts', 'inmuebles_load_styles');
 
 
 
+
 /**
- * Página de administracion del plugin
+ * Personalizar la página principal del panel de administración de WordPress para diferentes roles de usuario
  */
-add_action('admin_menu', 'inmuebles_add_admin_menu');
+add_action('admin_menu', 'inmuebles_custom_admin_dashboard');
 
-function inmuebles_add_admin_menu() {
-    add_menu_page(
-        'Inmuebles',           
-        'CRM',          
-        'edit_others_posts',     
-        'inmuebles_main_page',
-        'inmuebles_main_page_content',
-        'dashicons-building',  
-        1                
-    );
-    
+function inmuebles_custom_admin_dashboard() {
+    // Para usuarios no administradores
+    if (!current_user_can('administrator')) {
+        remove_meta_box('dashboard_activity', 'dashboard', 'normal');
+        remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
+        remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
+        remove_meta_box('dashboard_incoming_links', 'dashboard', 'normal');
+        remove_meta_box('dashboard_plugins', 'dashboard', 'normal');
+        remove_meta_box('wpseo-wincher-dashboard-overview', 'dashboard', 'normal');
+        remove_meta_box('wpseo-dashboard-overview', 'dashboard', 'normal');
+        remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
+        remove_meta_box('dashboard_primary', 'dashboard', 'side');
+        remove_meta_box('dashboard_secondary', 'dashboard', 'side');
+        add_action('admin_notices', 'inmuebles_admin_dashboard_content');
+    }
 }
 
-function inmuebles_main_page_content() {
-    ?>
-    <div class="wrap">
-        <h1>Bienvenido a la Página Principal del CRM Chipicasa</h1>
-        <p>Agregar tu contenido principal.</p>
-    </div>
-    <?php
-}
+function inmuebles_admin_dashboard_content() {
+    global $pagenow;
 
+    // Verifica que estemos en la página principal del panel de administración
+    if ($pagenow === 'index.php') {
+        ?>
+        <div class="wrap">
+            <h1>Bienvenido a la Página Principal del CRM Chipicasa</h1>
+            <p>Agregar tu contenido principal.</p>
+        </div>
+        <?php
+    }
+}

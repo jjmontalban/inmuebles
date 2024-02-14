@@ -146,8 +146,6 @@ function ocultar_opciones_menu_para_editor() {
         remove_menu_page('profile.php');
         // Oculta la opción de Yoast SEO
         remove_menu_page('wpseo_workouts');
-        // Oculta el enlace del Dashboard
-        remove_menu_page('index.php');
     }
 }
 add_action('admin_menu', 'ocultar_opciones_menu_para_editor');
