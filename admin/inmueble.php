@@ -337,3 +337,15 @@ function contar_visitas_inmueble() {
 add_action('wp_footer', 'contar_visitas_inmueble');
 
 
+
+/**
+ * Elimina columnas YOAST del listado de inmuebles
+ */
+function eliminar_columna_yoast_seo($columns) {
+    unset($columns['wpseo-linked']);
+    unset($columns['wpseo-links']);
+    unset($columns['wpseo-score-readability']);
+    unset($columns['wpseo-score']);
+    return $columns;
+}
+add_filter('manage_edit-inmueble_columns', 'eliminar_columna_yoast_seo');
