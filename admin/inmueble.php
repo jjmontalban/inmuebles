@@ -350,3 +350,18 @@ function eliminar_columna_yoast_seo($columns) {
     return $columns;
 }
 add_filter('manage_edit-inmueble_columns', 'eliminar_columna_yoast_seo');
+
+
+/**
+ * Añade titulo personalizado a entrada de tipo inmueble a YOAST
+ */
+function modificar_titulo_seo_inmueble($title) {
+    if (is_singular('inmueble')) {
+        $post_id = get_queried_object_id();
+        $titulo_personalizado = get_post_meta($post_id, 'nombre_calle', true) . ' ' . get_post_meta($post_id, 'precio_venta', true);
+        $title = $titulo_personalizado;
+    }
+    
+    return $title;
+}
+add_filter('wpseo_title', 'modificar_titulo_seo_inmueble');
