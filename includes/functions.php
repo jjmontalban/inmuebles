@@ -126,3 +126,15 @@ function ocultar_opciones_menu_para_editor() {
     }
 }
 add_action('admin_menu', 'ocultar_opciones_menu_para_editor');
+
+
+
+
+function pdf_action() {
+    $post_id = intval($_POST['post_id']);    
+    $inmueble = new Inmueble();
+    $inmueble->inmuebles_generar_pdf($post_id);
+    
+    wp_die();
+}
+add_action('wp_ajax_my_action', 'pdf_action');

@@ -250,54 +250,54 @@ jQuery(document).ready(function($) {
     }
 
     
-   /**
+    /**
      * Galeria de imagenes
     */
-   $(function() {
-    function actualizarOrden() {
-        $('#sortable').sortable({
-            update: function(event, ui) {
-                $(this).children().each(function(index) {
-                    $(this).find('input').attr('name', 'galeria_imagenes[]').eq(index).val($(this).find('img').attr('src'));
-                });
-            }
-        }).disableSelection();
-    }
+    $(function() {
+        function actualizarOrden() {
+            $('#sortable').sortable({
+                update: function(event, ui) {
+                    $(this).children().each(function(index) {
+                        $(this).find('input').attr('name', 'galeria_imagenes[]').eq(index).val($(this).find('img').attr('src'));
+                    });
+                }
+            }).disableSelection();
+        }
 
-    // Inicializar sortable y capturar cambios de orden
-    actualizarOrden();
+        // Inicializar sortable y capturar cambios de orden
+        actualizarOrden();
 
-    // Habilitar la funcionalidad de agregar imágenes
-    $('.agregar-imagen').on('click', function() {
-        var frame = wp.media({
-            title: 'Seleccionar Imagen',
-            multiple: true,
-            library: { type: 'image' },
-            button: { text: 'Usar Imagen(es)' },
+        // Habilitar la funcionalidad de agregar imágenes
+        $('.agregar-imagen').on('click', function() {
+            var frame = wp.media({
+                title: 'Seleccionar Imagen',
+                multiple: true,
+                library: { type: 'image' },
+                button: { text: 'Usar Imagen(es)' },
+            });
+
+            frame.on('select', function() {
+                var attachments = frame.state().get('selection').toArray();
+
+                for (var i = 0; i < attachments.length; i++) {
+                    var attachment = attachments[i];
+                    var imageUrl = attachment.attributes.url;
+
+                    var galeriaImagen = $('<li class="ui-state-default">\
+                        <img src="' + imageUrl + '" alt="Imagen">\
+                        <input type="hidden" name="galeria_imagenes[]" value="' + imageUrl + '">\
+                        <button type="button" class="remove-imagen button-link">Eliminar</button>\
+                    </li>');
+
+                    $('#sortable').append(galeriaImagen);
+                }
+
+                // Reinicializar sortable después de agregar imágenes
+                actualizarOrden();
+            });
+
+            frame.open();
         });
-
-        frame.on('select', function() {
-            var attachments = frame.state().get('selection').toArray();
-
-            for (var i = 0; i < attachments.length; i++) {
-                var attachment = attachments[i];
-                var imageUrl = attachment.attributes.url;
-
-                var galeriaImagen = $('<li class="ui-state-default">\
-                    <img src="' + imageUrl + '" alt="Imagen">\
-                    <input type="hidden" name="galeria_imagenes[]" value="' + imageUrl + '">\
-                    <button type="button" class="remove-imagen button-link">Eliminar</button>\
-                </li>');
-
-                $('#sortable').append(galeriaImagen);
-            }
-
-            // Reinicializar sortable después de agregar imágenes
-            actualizarOrden();
-        });
-
-        frame.open();
-    });
 
         // Eliminar imagen
         $(document).on('click', '.remove-imagen', function() {
@@ -408,5 +408,16 @@ jQuery(document).ready(function($) {
         document.getElementById('mapaModal').style.display = 'none';
     });
     
+    // Código para generar el PDF
+    $('#generar-pdf').click(function() {
+        var data = {
+            'action': 'my_action',
+            'post_id': $('#post_ID').val()
+        };
 
+        $.post(ajaxurl, data, function(response) {
+            alert('Got this from the server: ' + response);
+        });
+    });
+    
 });

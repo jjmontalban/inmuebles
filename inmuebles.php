@@ -11,6 +11,9 @@
  * Text Domain: inmuebles
  */
 
+ // Requerir el autoload.php de Composer
+require __DIR__ . '/vendor/autoload.php';
+
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
 require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 require_once plugin_dir_path(__FILE__) . 'admin/inmueble.php';
