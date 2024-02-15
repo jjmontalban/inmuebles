@@ -16,9 +16,9 @@ class Inmueble
         add_filter('wp_insert_post_data', [$this, 'inmuebles_custom_permalink'], 10, 2);
         add_action( 'save_post', [$this, 'inmuebles_guardar_campos_inmueble']);   
         add_action('add_meta_boxes', array($this, 'inmuebles_agregar_mb_informe_inmueble')); 
+        add_action('add_meta_boxes', array($this, 'inmuebles_agregar_mb_pdf_inmueble')); 
         add_action('admin_menu', array($this, 'registrar_informe_inmueble_page'));
     }
-
 
     /**
     * Registra el tipo de entrada personalizado 'inmueble'.
@@ -97,25 +97,27 @@ class Inmueble
     /**
      * Guarda la taxonomía 'tipo de inmueble' cada vez que se guarde un inmueble cogiendo el valor del campo personalizado "tipo_inmueble"
      */
-    public function asignar_tipo_inmueble_taxonomia($post_id) {
+    function asignar_tipo_inmueble_taxonomia($post_id) {
         global $tipos_inmueble_map;
-        
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) 
-            return $post_id;
-        
-        // Verifica si el tipo de entrada es "inmueble"
-        if ('inmueble' != get_post_type($post_id)) 
-            return $post_id;
-        
-        // Obtiene el valor del campo personalizado "tipo_inmueble"
+    
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+    
         $tipo_inmueble = get_post_meta($post_id, 'tipo_inmueble', true);
-        
-        // Mapea el valor del tipo de inmueble si existe en el mapa
-        $tipo_inmueble_mapped = isset($tipos_inmueble_map[$tipo_inmueble]) ? $tipos_inmueble_map[$tipo_inmueble] : $tipo_inmueble;
-        
-        // Actualiza los términos de taxonomía
-        wp_set_post_terms($post_id, $tipo_inmueble_mapped, 'tipo_inmueble', false);
+    
+        if (isset($tipos_inmueble_map[$tipo_inmueble])) {
+            // Añadir un prefijo o sufijo único al slug del término
+            $slug = $tipo_inmueble . '_' . uniqid();
+    
+            wp_insert_term($tipos_inmueble_map[$tipo_inmueble], 'tipo_inmueble', array(
+                'slug' => $slug
+            ));
+    
+            wp_set_object_terms($post_id, $slug, 'tipo_inmueble', false);
+        }
     }
+    
 
     /**
      * Guarda los valores de los campos personalizados al guardar un inmueble.
@@ -253,10 +255,50 @@ class Inmueble
             'default' // Prioridad
         );
     }
-    
+
     public function mostrar_informe_inmueble($post) {
         $informe_url = admin_url('edit.php?post_type=inmueble&page=informe-inmueble&inmueble_id=' . $post->ID);
         echo '<button type="button" class="button button-primary button-large" onclick="window.location.href=\'' . esc_url($informe_url) . '\'">Crear Informe de Inmueble</button>';
+    }
+
+
+    /**
+     * PDF de inmueble
+     */
+    public function inmuebles_agregar_mb_pdf_inmueble() {
+        add_meta_box(
+            'inmueble_pdf_inmueble',
+            'PDF de Inmueble',
+            array($this, 'inmuebles_boton_pdf'), // Callback
+            'inmueble', // Donde se mostrará
+            'side', // Contexto
+            'default' // Prioridad
+        );
+    }
+
+    public function inmuebles_boton_pdf($post) {
+        echo '<button id="generar-pdf" type="button" class="button button-primary button-large">Crear PDF anuncio de Inmueble</button>';
+    }
+    
+
+    public function inmuebles_generar_pdf($post_id) {
+        // Obtén los detalles de la vivienda
+        $vivienda = get_post($post_id);
+        $campos = get_post_meta($post_id);
+
+        // Crea una nueva instancia de TCPDF
+        $pdf = new TCPDF();
+
+        // Añade una página
+        $pdf->AddPage();
+
+        // Escribe los detalles de la vivienda en el PDF
+        $pdf->SetFont('helvetica', '', 12);
+        $pdf->Write(0, $vivienda->post_title, '', 0, 'L', true, 0, false, false, 0);
+        // Repite este paso para cada campo que quieras añadir al PDF
+
+        // Cierra y genera el PDF
+        $pdf->Output('vivienda.pdf', 'I');
     }
 
 }
