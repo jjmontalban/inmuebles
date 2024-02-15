@@ -346,6 +346,7 @@ function eliminar_columna_yoast_seo($columns) {
     unset($columns['wpseo-links']);
     unset($columns['wpseo-score-readability']);
     unset($columns['wpseo-score']);
+    unset($columns['wpseo-cornerstone']);
     return $columns;
 }
 add_filter('manage_edit-inmueble_columns', 'eliminar_columna_yoast_seo');
