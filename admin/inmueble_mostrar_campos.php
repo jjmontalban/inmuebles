@@ -15,7 +15,17 @@ function mostrar_campos_inmueble( $post ) {
     
     //Relativo al propietario
     $selected = get_post_meta($post->ID, 'propietario_id', true);
-    $propietarios = get_posts(array('post_type' => 'propietario', 'numberposts' => -1));
+    $propietarios = get_posts(array(
+        'post_type' => 'propietario',
+        'numberposts' => -1,
+        'meta_query' => array(
+            array(
+                'key' => 'propietario_id',
+                'compare' => 'NOT EXISTS' // Esto excluye los inmuebles que ya tienen un propietario asignado
+            )
+        )
+    ));
+    
     ?>
 
     <table class="form-table">

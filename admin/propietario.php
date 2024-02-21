@@ -62,10 +62,9 @@ class Propietario {
         $apellidos = get_post_meta($post->ID, 'apellidos', true);
         $email = get_post_meta($post->ID, 'email', true);
         $telefono = get_post_meta($post->ID, 'telefono', true);
+        $dni = get_post_meta($post->ID, 'dni', true);
         $inmuebles_asignados = get_post_meta($post->ID, 'inmuebles_asignados', true);
         $inmuebles_asignados = is_array($inmuebles_asignados) ? $inmuebles_asignados : array();
-
-    
         // Obtener todos los Inmuebles
         $args = array(
             'post_type' => 'inmueble',
@@ -91,12 +90,18 @@ class Propietario {
                     <th><label for="telefono">Teléfono*</label></th>
                     <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr($telefono ?? ''); ?>" required></td>
                 </tr>
+                <tr>
+                    <th><label for="dni">DNI</label></th>
+                    <td><input type="text" name="dni" id="dni" value="<?php echo esc_attr($dni ?? ''); ?>"></td>
+                </tr>
                 <!-- Nuevo campo para seleccionar Inmuebles -->
                 <tr>
                     <th><label for="inmuebles_asignados">Inmuebles Asignados</label></th>
                     <td>
-                        <?php foreach ($inmuebles as $inmueble) : ?>
-                            <?php
+                    <?php foreach ($inmuebles as $inmueble) : ?>
+                        <?php
+                        $propietario_asignado = get_post_meta($inmueble->ID, 'propietario_id', true);
+                        if (!$propietario_asignado || $propietario_asignado == $post->ID) {
                             $tipo_inmueble = get_post_meta($inmueble->ID, 'tipo_inmueble', true);
                             $nombre_calle = get_post_meta($inmueble->ID, 'nombre_calle', true);
                             $nombre_inmueble = $tipo_inmueble . ' en ' . $nombre_calle;
@@ -105,7 +110,8 @@ class Propietario {
                                 <input type="checkbox" name="inmuebles_asignados[]" value="<?php echo esc_attr($inmueble->ID); ?>" <?php checked(in_array($inmueble->ID, $inmuebles_asignados), true); ?>>
                                 <?php echo esc_html($nombre_inmueble); ?>
                             </label><br>
-                        <?php endforeach; ?>
+                        <?php } ?>
+                    <?php endforeach; ?>
                     </td>
                 </tr>
 
@@ -120,6 +126,51 @@ class Propietario {
      * @param int $post_id ID del propietario actual.
      */
     public function inmuebles_guardar_campos_propietario($post_id) {
+        // Validar que el email, teléfono y DNI sean únicos
+        $email = sanitize_text_field($_POST['email']);
+        $telefono = sanitize_text_field($_POST['telefono']);
+        $dni = sanitize_text_field($_POST['dni']);
+    
+        $args = array(
+            'post_type' => 'propietario',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                'relation' => 'AND',
+                array(
+                    'key' => 'email',
+                    'value' => $email,
+                    'compare' => '=',
+                ),
+                array(
+                    'key' => 'telefono',
+                    'value' => $telefono,
+                    'compare' => '=',
+                ),
+                array(
+                    'key' => 'dni',
+                    'value' => $dni,
+                    'compare' => '=',
+                ),
+            ),
+        );
+    
+        $propietarios = get_posts($args);
+        // Verificar si el propietario encontrado es el mismo que se está editando
+        $esPropietarioDuplicado = false;
+        foreach ($propietarios as $propietario) {
+            if ($propietario->ID != $post_id) {
+                $esPropietarioDuplicado = true;
+                break;
+            }
+        }
+        // Si se encontró algún propietario con el mismo email, teléfono o DNI, no guardar los metadatos
+        if ($esPropietarioDuplicado) {
+            // Mostrar un mensaje de error
+            set_transient('propietario_datos_duplicados', true, 5);
+            return;
+        }
+    
+        // Guardar los metadatos del propietario
         if (array_key_exists('nombre', $_POST)) {
             update_post_meta($post_id, 'nombre', sanitize_text_field($_POST['nombre']));
         }
@@ -132,13 +183,31 @@ class Propietario {
         if (array_key_exists('telefono', $_POST)) {
             update_post_meta($post_id, 'telefono', sanitize_text_field($_POST['telefono']));
         }
+        if (array_key_exists('dni', $_POST)) {
+            update_post_meta($post_id, 'dni', sanitize_text_field($_POST['dni']));
+        }
+        // Obtén los inmuebles previamente asignados
+        $inmuebles_previos = get_post_meta($post_id, 'inmuebles_asignados', true);
+        $inmuebles_previos = is_array($inmuebles_previos) ? $inmuebles_previos : array();
+        // Desasigna el propietario de los inmuebles previamente asignados
+        foreach ($inmuebles_previos as $inmueble_id) {
+            delete_post_meta($inmueble_id, 'propietario_asignado');
+        }
         // Guardar Inmuebles Asignados
         if (array_key_exists('inmuebles_asignados', $_POST)) {
             $inmuebles_asignados = array_map('sanitize_text_field', $_POST['inmuebles_asignados']);
             update_post_meta($post_id, 'inmuebles_asignados', $inmuebles_asignados);
+            // Asigna el propietario a los nuevos inmuebles
+            foreach ($inmuebles_asignados as $inmueble_id) {
+                update_post_meta($inmueble_id, 'propietario_id', $post_id);
+            }
+        } else {
+            // Si no se seleccionó ningún inmueble, guardar un array vacío
+            update_post_meta($post_id, 'inmuebles_asignados', array());
         }
-
     }
+    
+    
 
     /**
      * Agregar columnas personalizadas a la lista de entradas de "Propietario"
@@ -205,3 +274,17 @@ class Propietario {
 }
 
 new Propietario();
+
+
+ // Mensaje de error de cliente duplicado
+ function mostrar_error_propietario_datos_duplicados() {
+    if (get_transient('propietario_datos_duplicados')) {
+        ?>
+        <div class="notice notice-error">
+            <p><?php _e('El email, teléfono o DNI ingresados ya existen en otro propietario.', 'text-domain'); ?></p>
+        </div>
+        <?php
+        delete_transient('propietario_datos_duplicados');
+    }
+}
+add_action('admin_notices', 'mostrar_error_propietario_datos_duplicados');

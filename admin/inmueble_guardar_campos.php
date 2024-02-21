@@ -9,7 +9,6 @@ function guardar_campos_inmueble( $post_id ) {
     if ( get_post_type( $post_id ) !== 'inmueble' ) {
         return;
     }
-
     // Guardar los valores de los campos personalizados del inmueble
     if ( isset( $_POST['tipo_inmueble'] ) ) {
         update_post_meta( $post_id, 'tipo_inmueble', sanitize_text_field( $_POST['tipo_inmueble'] ) );
@@ -26,7 +25,6 @@ function guardar_campos_inmueble( $post_id ) {
     if ( isset( $_POST['numero'] ) ) {
         update_post_meta( $post_id, 'numero', sanitize_text_field( $_POST['numero'] ) );
     }
-    
     // Comprueba si el checkbox 'numero_obligatorio' está marcado
     $numero_obligatorio = isset($_POST['numero_obligatorio']) ? '1' : '0';
     update_post_meta($post_id, 'numero_obligatorio', $numero_obligatorio);
@@ -232,18 +230,14 @@ function guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['ano_edificio'])) {
         update_post_meta($post_id, 'ano_edificio', sanitize_text_field($_POST['ano_edificio']));
     }
-
     //campo mapa
     if (isset($_POST['campo_mapa'])) {
         update_post_meta($post_id, 'campo_mapa', sanitize_text_field($_POST['campo_mapa']));
     }
-    
     //Campos plano
     if (isset($_FILES['plano1'])) {
         $uploadedfile = $_FILES['plano1'];
-    
         $upload_overrides = array('test_form' => false);
-    
         $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
         if ($movefile && !isset($movefile['error'])) {
             update_post_meta($post_id, 'plano1', $movefile['url']);
@@ -287,7 +281,6 @@ function guardar_campos_inmueble( $post_id ) {
             echo $movefile['error'];
         }
     }
-
     //Arrays
     // Verificamos si se han enviado los checkboxes y si el valor enviado es un array
     if ( isset( $_POST['galeria_imagenes'] ) ) {
@@ -328,58 +321,38 @@ function guardar_campos_inmueble( $post_id ) {
     } else {
         update_post_meta($post_id, 'caract_garaje', array());
     }
+    // Obtén el propietario previamente asignado
+    $propietario_previo = get_post_meta($post_id, 'propietario_id', true);
 
-    //Relativo al propietario
-    $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
-    $apellidos = isset($_POST['apellidos']) ? $_POST['apellidos'] : '';
-    $email = isset($_POST['email']) ? $_POST ['email'] : '';
-    $telefono = isset($_POST['telefono']) ? $_POST['telefono'] : '';
+    // Si se seleccionó un propietario
+    if (isset($_POST['propietario_id'])) {
+        $propietario_id = $_POST['propietario_id'];
 
-    // Guardando un propietario desde la página de inmueble
-    if ($nombre && $email && $telefono) {
-        // Verificar si es una nueva publicación de inmueble
-        $es_nuevo_inmueble = empty(get_post_meta($post_id, 'propietario_id', true));
+        // Actualizar el propietario del inmueble
+        update_post_meta($post_id, 'propietario_id', $propietario_id);
 
-        // Buscar si ya existe un propietario con el mismo telefono
-        $args = array(
-            'post_type' => 'propietario',
-            'meta_query' => array(
-                array(
-                    'key' => 'telefono',
-                    'value' => $telefono,
-                    'compare' => '=',
-                )
-            )
-        );
-        $query = new WP_Query($args);
+        // Obtener los inmuebles asignados al propietario
+        $inmuebles_asignados = get_post_meta($propietario_id, 'inmuebles_asignados', true);
+        $inmuebles_asignados = is_array($inmuebles_asignados) ? $inmuebles_asignados : array();
 
-        if ($es_nuevo_inmueble && !$query->have_posts()) {
-            // Crear una nueva entrada de propietario solo si es un inmueble nuevo y no existe un propietario con el mismo telefono
-            $propietario_id = wp_insert_post(array(
-                'post_type' => 'propietario',
-                'post_status' => 'publish'
-            ));
-
-            if ($propietario_id) {
-                // Establecer los campos personalizados del propietario
-                update_post_meta($propietario_id, 'nombre', $nombre);
-                update_post_meta($propietario_id, 'apellidos', $apellidos);
-                update_post_meta($propietario_id, 'email', $email);
-                update_post_meta($propietario_id, 'telefono', $telefono);
-
-                // Establecer este propietario al inmueble actual
-                update_post_meta($post_id, 'propietario_id', $propietario_id);
-            }
-        } else if ($query->have_posts()) {
-            // Si ya existe un propietario con el mismo telefono, asignarlo al inmueble actual
-            $propietario_existente = $query->posts[0];
-            update_post_meta($post_id, 'propietario_id', $propietario_existente->ID);
+        // Añadir el inmueble a la lista de inmuebles asignados del propietario
+        if (!in_array($post_id, $inmuebles_asignados)) {
+            $inmuebles_asignados[] = $post_id;
+            update_post_meta($propietario_id, 'inmuebles_asignados', $inmuebles_asignados);
         }
     }
 
-    // Guardar el propietario seleccionado del dropdown en la meta del inmueble
-    if (isset($_POST['propietario_id'])) {
-        update_post_meta($post_id, 'propietario_id', $_POST['propietario_id']);
-    }
+    // Si se desasignó el propietario
+    if ($propietario_previo && (!isset($_POST['propietario_id']) || $_POST['propietario_id'] != $propietario_previo)) {
+        // Obtener los inmuebles asignados al propietario previo
+        $inmuebles_asignados = get_post_meta($propietario_previo, 'inmuebles_asignados', true);
+        $inmuebles_asignados = is_array($inmuebles_asignados) ? $inmuebles_asignados : array();
 
+        // Eliminar el inmueble de la lista de inmuebles asignados del propietario previo
+        $index = array_search($post_id, $inmuebles_asignados);
+        if ($index !== false) {
+            unset($inmuebles_asignados[$index]);
+            update_post_meta($propietario_previo, 'inmuebles_asignados', $inmuebles_asignados);
+        }
+    }
 }

@@ -49,7 +49,7 @@ function inmuebles_deactivate_plugin() {
 }
 
 /**
- * Carga librerias js necesarias
+ * Carga librerias js necesarias para el admin
  */
 function inmuebles_load_scripts() {
     // Registrar jQuery UI
@@ -73,19 +73,48 @@ function inmuebles_load_scripts() {
 
 
     // Registrar el script personalizado
-    wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '2.0', true);
+    wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/admin-scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '2.0', true);
     
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_scripts');
 
 
 /**
- * Carga css personalizado
+ * Carga librerías js necesarias para el front
  */
-function inmuebles_load_styles() {
-    wp_enqueue_style('inmuebles-style', plugin_dir_url(__FILE__) . 'css/style.css', array(), '2.0', 'all');
+function inmuebles_load_front_scripts() {
+    // Registrar el script personalizado
+    wp_enqueue_script('inmuebles-front-script', plugin_dir_url(__FILE__) . 'js/front-scripts.js', array('jquery'), '1.0', true);
+    // Obtén la clave de la base de datos
+    $recaptcha_site_key = get_option('inmuebles_recaptcha_site_key', '');
+    // Pasa la clave a tu script JavaScript
+    wp_localize_script('inmuebles-front-script', 'inmuebles_vars', array(
+        'recaptcha_site_key' => $recaptcha_site_key,
+    ));
+    // Cargar Font Awesome
+    wp_enqueue_style('font-awesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 }
-add_action('admin_enqueue_scripts', 'inmuebles_load_styles');
+add_action('wp_enqueue_scripts', 'inmuebles_load_front_scripts');
+
+
+
+
+
+/**
+ * Carga css personalizado para el frontend
+ */
+function inmuebles_load_styles_front() {
+    wp_enqueue_style('inmuebles-style-front', plugin_dir_url(__FILE__) . 'css/style-front.css', array(), '2.0', 'all');
+}
+add_action('wp_enqueue_scripts', 'inmuebles_load_styles_front');
+
+/**
+ * Carga css personalizado para el backend
+ */
+function inmuebles_load_styles_admin() {
+    wp_enqueue_style('inmuebles-style-admin', plugin_dir_url(__FILE__) . 'css/style-admin.css', array(), '2.0', 'all');
+}
+add_action('admin_enqueue_scripts', 'inmuebles_load_styles_admin');
 
 
 

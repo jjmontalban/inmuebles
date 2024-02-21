@@ -1,5 +1,4 @@
 <?php 
-
 /**
  * Shortcode contacto [formulario_contacto]
  */
@@ -7,52 +6,8 @@ function formulario_contacto_shortcode()
 {
     ob_start();
     ?>
-
-    <style>
-
-        .contact-link,
-        .submit-button {
-            display: block;
-            width: 100%;
-            text-decoration: none;
-            text-align: center;
-            color: #fff;
-            padding: 10px 0;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        .submit-button {
-            background-color: #eb5d0b;
-            margin-top: 20px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .contact-link:hover,
-        .submit-button:hover {
-            opacity: 0.8;
-        }
-
-        .whatsapp-link {
-            background-color: #25d366;
-            margin-top: 25%;
-        }
-
-        .phone-link {
-            background-color: #ccc;
-        }
-
-        .contact-link i {
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-
-    </style>
-
     <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-contacto">
         <input type="hidden" name="action" value="procesar_formulario_contacto">
-
         <?php if (is_singular('inmueble')) : ?>
             <h5>¿Te intenresa este inmueble?</h5>
             <input type="hidden" name="inmueble_id" value="<?php echo get_the_ID(); ?>">
@@ -63,95 +18,116 @@ function formulario_contacto_shortcode()
             <h5>Dinos quién eres y te contactamos:</h5>
             <input type="hidden" name="tipo_formulario" value="desde pagina">
         <?php endif; ?>
-
-        <input type="text" name="nombre" placeholder="Nombre" required>
-        <input type="email" name="email" placeholder="Email (opcional)">
-        <input type="tel" name="telefono" placeholder="Teléfono" required>
+        <input type="text" name="nombre" placeholder="Nombre y Apellidos*" required>
+        <input type="email" name="email" placeholder="Email*" required>
+        <input type="tel" name="telefono" placeholder="Teléfono*" required>
         <textarea name="mensaje" placeholder="Mensaje (opcional)" style="height: 100px;"></textarea>
-
         <input type="checkbox" name="aceptar_condiciones" required>
         <label for="aceptar_condiciones" style="font-size: 0.8em;">Usando este formulario estás aceptando nuestra <a target="blank" href="<?php echo esc_url(get_permalink(get_page_by_path('aviso-legal'))); ?>">política de privacidad</a></label>
-
-        <input type="submit" value="Enviar" class="submit-button">
-
+        <button type="submit" class="submit-button">
+            Enviar
+            <span class="spinner" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>
+        </button>
         <!-- Agregar un campo oculto en el formulario -->
         <input type="text" name="extra_field" style="display: none;">
-
         <!-- Agregar un campo oculto para almacenar el token de reCAPTCHA v3 -->
         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="">
-
     </form>
 
     <div id="respuesta-formulario-contacto"></div>
-    
     <!-- Para mostrar los dos últimos botones solo en las páginas de inmueble, archivo de inmuebles y -->
     <?php if (is_singular('inmueble') || is_post_type_archive('inmueble')) : ?>
-
         <!-- Botón de WhatsApp con icono -->
         <a class="contact-link whatsapp-link" href="https://api.whatsapp.com/send?phone=+346232969 00&text=Hola,%20estoy%20interesado%20en%20obtener%20más%20información." target="_blank" rel="nofollow">
             <i class="fab fa-whatsapp"></i>
             <span class="button-text">Envíanos un WhatsApp</span>
         </a>
-
         <!-- Botón de contacto por teléfono con icono -->
         <a class="contact-link phone-link" href="tel:+34648736312">
             <i class="fa fa-phone"></i>
             <span class="button-text">Llámanos!</span>
         </a>
-
-    <?php endif; ?>
-
-    <script>
-
-        jQuery(document).ready(function($) {
-
-            // Encolar el script de reCAPTCHA v3
-            $.ajax({
-                url: 'https://www.google.com/recaptcha/api.js?render=6LcLmEspAAAAAPdAfv_Sn7axtiYTwqQ9IZjrHKyV',
-                dataType: 'script',
-                cache: true,
-                success: function() {
-                    // Callback cuando el script de reCAPTCHA se ha cargado
-                    grecaptcha.ready(function() {
-                        // Ejecutar reCAPTCHA al cargar la página
-                        grecaptcha.execute('<?php echo get_option('inmuebles_recaptcha_site_key', ''); ?>', { action: 'formulario_contacto' })
-                            .then(function(token) {
-                                // Almacenar el token en el campo oculto antes de enviar el formulario
-                                $('#g-recaptcha-response').val(token);
-                            });
-                    });
-                }
-            });
-
-            $('#formulario-contacto').submit(function(e) {
-                e.preventDefault();
-
-                // Verificar si el checkbox está marcado
-                if (!$('input[name="aceptar_condiciones"]').prop('checked')) {
-                    $('#respuesta-formulario-contacto').html('<p style="color: red;">Debes aceptar las condiciones generales para enviar el formulario.</p>');
-                    return;
-                }
-
-                $.ajax({
-                    type: 'POST',
-                    url: $(this).attr('action'),
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        $('#respuesta-formulario-contacto').html('<p style="color: green; background-color: white;">¡Consulta enviada con éxito! Nos pondremos en contacto contigo lo antes posible.</p>');
-                        $('#formulario-contacto')[0].reset();
-                    },
-                    error: function(error) {
-                        $('#respuesta-formulario-contacto').html('<p style="color: red;">Ha ocurrido un error al enviar la consulta.</p>');
-                    }
-                });
-            });
-        });
-    </script>
-
-    <?php
+    <?php endif;
     return ob_get_clean();
 }   
 add_shortcode('formulario_contacto', 'formulario_contacto_shortcode');
+
+
+/**
+ * Shortcode contacto [formulario_comprar]
+ */
+function formulario_comprar_shortcode()
+{
+    ob_start();
+    ?>
+    <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-comprar">
+        <input type="hidden" name="action" value="procesar_formulario_contacto">
+        <input type="hidden" name="tipo_formulario" value="comprar">
+        <h5 class="form-ppal">Rellena el siguiente formulario y obtén un plano informativo con las últimas transacciones de inmuebles realizadas en Chipiona</h5>
+        <input type="text" name="nombre" placeholder="Nombre y apellidos*" required>
+        <input type="email" name="email" placeholder="Email*" required>
+        <input type="tel" name="telefono" placeholder="Teléfono*" required>
+        <select name="zona">
+            <option value="" selected>Zona deseada</option>
+            <?php 
+            global $zonas_inmueble_map;
+            foreach ($zonas_inmueble_map as $key => $value) {
+                echo '<option value="' . esc_attr($key) . '">' . esc_html($value) . '</option>';
+            }
+            ?>
+        </select>
+        <input type="text" name="presupuesto" placeholder="Presupuesto">
+        <textarea name="mensaje" placeholder="Mensaje (opcional)" style="height: 100px;"></textarea>
+        <input type="checkbox" name="aceptar_condiciones" required>
+        <label for="aceptar_condiciones" style="font-size: 0.8em;">Usando este formulario estás aceptando nuestra <a target="blank" href="<?php echo esc_url(get_permalink(get_page_by_path('aviso-legal'))); ?>">política de privacidad</a></label>
+        <button type="submit" class="submit-button">
+            Enviar
+            <span class="spinner" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>
+        </button>
+        <!-- Agregar un campo oculto en el formulario -->
+        <input type="text" name="extra_field" style="display: none;">
+        <!-- Agregar un campo oculto para almacenar el token de reCAPTCHA v3 -->
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response-comprar" value="">
+    </form>
+    <div id="respuesta-formulario-comprar"></div>
+    <?php
+    return ob_get_clean();
+}   
+add_shortcode('formulario_comprar', 'formulario_comprar_shortcode');
+
+
+/**
+ * Shortcode contacto [formulario_vender]
+ */
+function formulario_vender_shortcode()
+{
+    ob_start();
+    ?>
+    <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-vender">
+        <input type="hidden" name="action" value="procesar_formulario_contacto">
+        <input type="hidden" name="tipo_formulario" value="vender">
+        <h5 class="form-ppal">Rellena el siguiente formulario y obtén un plano informativo con las últimas transacciones de inmuebles realizadas en Chipiona</h5>
+        <input type="text" name="nombre" placeholder="Nombre y apellidos*" required>
+        <input type="email" name="email" placeholder="Email*" required>
+        <input type="tel" name="telefono" placeholder="Teléfono*" required>
+        <input type="text" name="direccion" placeholder="dirección de la vivienda">
+        <textarea name="mensaje" placeholder="Mensaje (opcional)" style="height: 100px;"></textarea>
+        <input type="checkbox" name="aceptar_condiciones" required>
+        <label for="aceptar_condiciones" style="font-size: 0.8em;">Usando este formulario estás aceptando nuestra <a target="blank" href="<?php echo esc_url(get_permalink(get_page_by_path('aviso-legal'))); ?>">política de privacidad</a></label>
+        <button type="submit" class="submit-button">
+            Enviar
+            <span class="spinner" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>
+        </button>
+        <!-- Agregar un campo oculto en el formulario -->
+        <input type="text" name="extra_field" style="display: none;">
+        <!-- Agregar un campo oculto para almacenar el token de reCAPTCHA v3 -->
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response-vender" value="">
+    </form>
+    <div id="respuesta-formulario-vender"></div>
+    <?php
+    return ob_get_clean();
+}   
+add_shortcode('formulario_vender', 'formulario_vender_shortcode');
 
 
 
@@ -162,87 +138,6 @@ function ultimos_inmuebles_shortcode()
 {
     ob_start();
     ?>
-
-    <style>
-        .latest-inmuebles {
-            padding-top: 2%;
-            text-align: center;
-            
-        }
-
-        .latest-inmuebles .inmueble-row {
-            flex-wrap: wrap;
-            display: flex;
-            justify-content: space-between;
-        }
-    
-        .inmueble-item {
-            width: 32%;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: box-shadow 0.3s ease;
-            overflow: hidden;
-            height: 400px;
-        }
-
-        .inmueble-item img {
-            width: 100%;
-            height: 40%;
-            object-fit: cover; 
-            margin-bottom: inherit;
-        }
-    
-        .inmueble-precio {
-            position: absolute;
-            border-radius: 5px;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.7);
-            font-weight: bold;
-            padding: 5px 10px; 
-        }
-    
-        .inmueble-info {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .btn-inmueble {
-            display: block;
-            background-color: #333;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 0.8em;
-            width: 50%;
-            margin-left: 25%;
-            text-align: center;
-            padding: 5px 10px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-            margin-bottom: 4%;
-        }
-    
-        .btn-inmueble:hover {
-            color: #fff;
-            background-color: #eb5d0b;
-        }
-    
-        @media (max-width: 768px) {
-            .inmueble-item {
-                width: 100%;
-            }
-            .info-item {
-                width: 100%;
-            }
-        }
-    
-    </style>
-
     <section class="latest-inmuebles">
         <h3>Últimos inmuebles añadidos</h3>
         <?php
