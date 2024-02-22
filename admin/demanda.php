@@ -57,6 +57,7 @@ class Demanda
         $email = get_post_meta($post->ID, 'email', true);
         $telefono = get_post_meta($post->ID, 'telefono', true);
         $email = get_post_meta($post->ID, 'email', true);
+        $dni = get_post_meta($post->ID, 'dni', true);
         $notas = get_post_meta($post->ID, 'notas', true);
         $inmueble_interesado = get_post_meta($post->ID, 'inmueble_interesado', true);
         
@@ -82,6 +83,10 @@ class Demanda
                 <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr( $telefono ?? ''); ?>" required></td>
             </tr>
             <tr>
+                <th><label for="dni">DNI</label></th>
+                <td><input type="text" name="dni" id="dni" value="<?php echo esc_attr( $dni ?? ''); ?>"></td>
+            </tr>
+            <tr>
                 <th><label for="inmueble_interesado">Inmueble interesado</label></th>
                 <td>
                     <select name="inmueble_interesado" id="inmueble_interesado">
@@ -102,7 +107,7 @@ class Demanda
             </tr>
             <tr>
                 <th><label for="notas">Notas</label></th>
-                <td><input type="text" name="notas" id="notas" value="<?php echo esc_attr( $notas ?? ''); ?>"></td>
+                <td><textarea name="notas" id="notas" rows="10" cols="100"><?php echo esc_textarea( $notas ?? ''); ?></textarea></td>
             </tr>
         </table>
         <?php 
@@ -121,6 +126,9 @@ class Demanda
         }
         if (array_key_exists('telefono', $_POST)) {
             update_post_meta($post_id, 'telefono', sanitize_text_field($_POST['telefono']));
+        }
+        if (array_key_exists('dni', $_POST)) {
+            update_post_meta($post_id, 'dni', sanitize_text_field($_POST['dni']));
         }
         if (array_key_exists('notas', $_POST)) {
             update_post_meta($post_id, 'notas', sanitize_text_field($_POST['notas']));
