@@ -201,3 +201,31 @@ class Demanda
 }
 
 new Demanda();
+
+//Amplia la busqueda en campos personalizados de demandas 
+add_filter('posts_search', 'buscar_en_campos_demanda', 10, 2);
+function buscar_en_campos_demanda($search, $wp_query) {
+    global $wpdb;
+    if (!empty($search) && !empty($wp_query->query_vars['search_terms'])) {
+        // Obtener términos de búsqueda
+        $terms = $wp_query->query_vars['search_terms'];
+        // Campos meta que deseas buscar
+        $meta_keys = array('nombre', 'email', 'telefono');
+        // Inicializar la cláusula de búsqueda de campos meta
+        $meta_search = '';
+        foreach ($meta_keys as $meta_key) {
+            // Agregar cláusula para cada campo meta
+            $meta_search .= " OR EXISTS (
+                SELECT * FROM {$wpdb->postmeta} 
+                WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id 
+                AND {$wpdb->postmeta}.meta_key = '{$meta_key}' 
+                AND {$wpdb->postmeta}.meta_value LIKE '%" . implode("%' OR {$wpdb->postmeta}.meta_value LIKE '%", $terms) . "%'
+            )";
+        }
+        // Agregar la cláusula de búsqueda de campo meta a la consulta principal
+        $search .= $meta_search;
+    }
+    return $search;
+}
+
+
