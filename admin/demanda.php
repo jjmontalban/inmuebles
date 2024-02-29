@@ -58,8 +58,14 @@ class Demanda
         $telefono = get_post_meta($post->ID, 'telefono', true);
         $email = get_post_meta($post->ID, 'email', true);
         $dni = get_post_meta($post->ID, 'dni', true);
+        $operacion = get_post_meta($post->ID, 'operacion', true);
+        $tipo_inmueble = get_post_meta($post->ID, 'tipo_inmueble', true);
+        $zona_deseada = unserialize(get_post_meta($post->ID, 'zona_deseada', true));
+        $presupuesto = get_post_meta($post->ID, 'presupuesto', true);
         $notas = get_post_meta($post->ID, 'notas', true);
         $inmueble_interesado = get_post_meta($post->ID, 'inmueble_interesado', true);
+        global $zonas_inmueble_map;
+
         
         // Obtiene la lista de inmuebles para el select
         $args = array(
@@ -86,6 +92,51 @@ class Demanda
                 <th><label for="dni">DNI</label></th>
                 <td><input type="text" name="dni" id="dni" value="<?php echo esc_attr( $dni ?? ''); ?>"></td>
             </tr>
+            
+            <tr>
+                <th><label for="operacion">Operación</label></th>
+                <td>
+                <select name="operacion" id="operacion">
+                    <option value="">Selecciona una operación</option>
+                    <option value="alquiler" <?php echo ($operacion == 'alquiler') ? 'selected' : ''; ?>>Alquiler</option>
+                    <option value="compra" <?php echo ($operacion == 'compra') ? 'selected' : ''; ?>>Compra</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="tipo_inmueble">Tipo de inmueble</label></th>
+                <td>
+                <select name="tipo_inmueble" id="tipo_inmueble">
+                    <option value="">Selecciona un tipo de inmueble</option>
+                    <?php
+                    global $tipos_inmueble_map;
+                    foreach ($tipos_inmueble_map as $key => $value) {
+                        $selected = ($key == $tipo_inmueble) ? 'selected' : '';
+                        echo '<option value="' . esc_attr($key) . '" ' . $selected . '>' . esc_html($value) . '</option>';
+                    }
+                    ?>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="zona_deseada">Zona deseada</label></th>
+                <td>
+                    <select name="zona_deseada[]" id="zona_deseada" multiple size="<?php echo count($zonas_inmueble_map); ?>">
+                        <?php
+                        if (is_array($zonas_inmueble_map)) {
+                            foreach ($zonas_inmueble_map as $key => $value) {
+                                $selected = (is_array($zona_deseada) && in_array($key, $zona_deseada)) ? 'selected' : '';
+                                echo '<option value="' . esc_attr($key) . '" ' . $selected . '>' . esc_html($value) . '</option>';
+                            }
+                        }
+                        ?>
+                    </select>
+            </tr>
+            
+            <tr>
+                <th><label for="presupuesto">Presupuesto</label></th>
+                <td><input type="text" name="presupuesto" id="presupuesto" value="<?php echo esc_attr( $presupuesto ?? ''); ?>"></td>
+            </tr>
             <tr>
                 <th><label for="inmueble_interesado">Inmueble interesado</label></th>
                 <td>
@@ -97,6 +148,11 @@ class Demanda
                             $nombre_calle = get_post_meta($inmueble->ID, 'nombre_calle', true);
                             $inmueble_id = $inmueble->ID;
                             $selected = ($inmueble_id == $inmueble_interesado) ? 'selected' : '';
+                            // Aquí es donde mapeas $tipo_inmueble a su valor correspondiente en $tipos_inmueble_map
+                            global $tipos_inmueble_map;
+                            if (array_key_exists($tipo_inmueble, $tipos_inmueble_map)) {
+                                $tipo_inmueble = $tipos_inmueble_map[$tipo_inmueble];
+                            }
                             ?>
                             <option value="<?php echo esc_attr($inmueble_id); ?>" <?php echo esc_attr($selected); ?>>
                                 <?php echo esc_html($tipo_inmueble . ' en ' . $nombre_calle); ?>
@@ -130,11 +186,25 @@ class Demanda
         if (array_key_exists('dni', $_POST)) {
             update_post_meta($post_id, 'dni', sanitize_text_field($_POST['dni']));
         }
+        if (array_key_exists('zona_deseada', $_POST)) {
+            update_post_meta($post_id, 'zona_deseada', serialize($_POST['zona_deseada']));
+        }        
+        if (array_key_exists('operacion', $_POST)) {
+            update_post_meta($post_id, 'operacion', sanitize_text_field($_POST['operacion']));
+        }
+        if (array_key_exists('tipo_inmueble', $_POST)) {
+            update_post_meta($post_id, 'tipo_inmueble', sanitize_text_field($_POST['tipo_inmueble']));
+        }
+        if (array_key_exists('presupuesto', $_POST)) {
+            update_post_meta($post_id, 'presupuesto', sanitize_text_field($_POST['presupuesto']));
+        }
         if (array_key_exists('notas', $_POST)) {
             update_post_meta($post_id, 'notas', sanitize_text_field($_POST['notas']));
         }
+        if (array_key_exists('inmueble_interesado', $_POST)) {
+            update_post_meta($post_id, 'inmueble_interesado', sanitize_text_field($_POST['inmueble_interesado']));
+        }
     }
-
     
     /**
      * Cambiar texto editar por ver en el menu de acciones
@@ -191,6 +261,11 @@ class Demanda
                 if (is_numeric($inmueble_interesado)) {
                     $tipo_inmueble = get_post_meta($inmueble_interesado, 'tipo_inmueble', true);
                     $nombre_calle = get_post_meta($inmueble_interesado, 'nombre_calle', true);
+                    // Mapeo de $tipo_inmueble
+                    global $tipos_inmueble_map;
+                    if (array_key_exists($tipo_inmueble, $tipos_inmueble_map)) {
+                        $tipo_inmueble = $tipos_inmueble_map[$tipo_inmueble];
+                    }
                     echo esc_html($tipo_inmueble . ' en ' . $nombre_calle);
                 } else {
                     echo esc_html($inmueble_interesado);
@@ -198,6 +273,7 @@ class Demanda
                 break;
         }
     }
+    
 }
 
 new Demanda();
