@@ -304,4 +304,48 @@ function buscar_en_campos_demanda($search, $wp_query) {
     return $search;
 }
 
+/**
+ * Valida
+ */
+function validar_datos_demanda($post_ID, $data) {
+    if ('demanda' !== $data['post_type']) return;
+    
+    $dni = isset($_POST['dni']) ? sanitize_text_field($_POST['dni']) : '';
+    $email = isset($_POST['email']) ? sanitize_text_field($_POST['email']) : '';
+    $telefono = isset($_POST['telefono']) ? sanitize_text_field($_POST['telefono']) : '';
+    
+    $meta_query = array('relation' => 'OR');
+    
+    if (!empty($dni)) {
+        $meta_query[] = array(
+            'key' => 'dni',
+            'value' => $dni,
+            'compare' => '='
+        );
+    }
+    
+    $meta_query[] = array(
+        'key' => 'email',
+        'value' => $email,
+        'compare' => '='
+    );
+    
+    $meta_query[] = array(
+        'key' => 'telefono',
+        'value' => $telefono,
+        'compare' => '='
+    );
+    
+    $exists_demanda = get_posts(array(
+        'post_type' => 'demanda',
+        'post_status' => 'publish',
+        'meta_query' => $meta_query,
+    ));
+    
+    if (!empty($exists_demanda)) {
+        wp_die('Ya existe una demanda con el mismo DNI, teléfono o email. <br> <a href="javascript:history.back()">Volver</a>', 'Error', array('response' => 400));
+        
+    }
+}
+add_action('pre_post_update', 'validar_datos_demanda', 10, 2);
 
