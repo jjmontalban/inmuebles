@@ -121,94 +121,49 @@ class Propietario {
     }
 
 
-    /**
-     * Guarda los valores de los campos personalizados al guardar un propietario.
-     * @param int $post_id ID del propietario actual.
-     */
-    public function inmuebles_guardar_campos_propietario($post_id) {
-        // Validar que el email, teléfono y DNI sean únicos
-        $email = sanitize_text_field($_POST['email']);
-        $telefono = sanitize_text_field($_POST['telefono']);
-        $dni = sanitize_text_field($_POST['dni']);
-    
-        $args = array(
-            'post_type' => 'propietario',
-            'posts_per_page' => -1,
-            'meta_query' => array(
-                'relation' => 'AND',
-                array(
-                    'key' => 'email',
-                    'value' => $email,
-                    'compare' => '=',
-                ),
-                array(
-                    'key' => 'telefono',
-                    'value' => $telefono,
-                    'compare' => '=',
-                ),
-                array(
-                    'key' => 'dni',
-                    'value' => $dni,
-                    'compare' => '=',
-                ),
-            ),
-        );
-    
-        $propietarios = get_posts($args);
-        // Verificar si el propietario encontrado es el mismo que se está editando
-        $esPropietarioDuplicado = false;
-        foreach ($propietarios as $propietario) {
-            if ($propietario->ID != $post_id) {
-                $esPropietarioDuplicado = true;
-                break;
-            }
-        }
-        // Si se encontró algún propietario con el mismo email, teléfono o DNI, no guardar los metadatos
-        if ($esPropietarioDuplicado) {
-            // Mostrar un mensaje de error
-            set_transient('propietario_datos_duplicados', true, 5);
-            return;
-        }
-    
-        // Guardar los metadatos del propietario
-        if (array_key_exists('nombre', $_POST)) {
-            update_post_meta($post_id, 'nombre', sanitize_text_field($_POST['nombre']));
-        }
-        if (array_key_exists('apellidos', $_POST)) {
-            update_post_meta($post_id, 'apellidos', sanitize_text_field($_POST['apellidos']));
-        }
-        if (array_key_exists('email', $_POST)) {
-            update_post_meta($post_id, 'email', sanitize_text_field($_POST['email']));
-        }
-        if (array_key_exists('telefono', $_POST)) {
-            update_post_meta($post_id, 'telefono', sanitize_text_field($_POST['telefono']));
-        }
-        if (array_key_exists('dni', $_POST)) {
-            update_post_meta($post_id, 'dni', sanitize_text_field($_POST['dni']));
-        }
-        // Obtén los inmuebles previamente asignados
-        $inmuebles_previos = get_post_meta($post_id, 'inmuebles_asignados', true);
-        $inmuebles_previos = is_array($inmuebles_previos) ? $inmuebles_previos : array();
-        // Desasigna el propietario de los inmuebles previamente asignados
-        foreach ($inmuebles_previos as $inmueble_id) {
-            delete_post_meta($inmueble_id, 'propietario_asignado');
-        }
-        // Guardar Inmuebles Asignados
-        if (array_key_exists('inmuebles_asignados', $_POST)) {
-            $inmuebles_asignados = array_map('sanitize_text_field', $_POST['inmuebles_asignados']);
-            update_post_meta($post_id, 'inmuebles_asignados', $inmuebles_asignados);
-            // Asigna el propietario a los nuevos inmuebles
-            foreach ($inmuebles_asignados as $inmueble_id) {
-                update_post_meta($inmueble_id, 'propietario_id', $post_id);
-            }
-        } else {
-            // Si no se seleccionó ningún inmueble, guardar un array vacío
-            update_post_meta($post_id, 'inmuebles_asignados', array());
-        }
-    }
-    
-    
+/**
+ * Saves custom field values when saving an propietario
+ * @param int $post_id ID of the current propietario
+ */
+function inmuebles_guardar_campos_propietario($post_id) {
 
+    // Guardar los metadatos del propietario
+    if (array_key_exists('nombre', $_POST)) {
+        update_post_meta($post_id, 'nombre', sanitize_text_field($_POST['nombre']));
+    }
+    if (array_key_exists('apellidos', $_POST)) {
+        update_post_meta($post_id, 'apellidos', sanitize_text_field($_POST['apellidos']));
+    }
+    if (array_key_exists('email', $_POST)) {
+        update_post_meta($post_id, 'email', sanitize_text_field($_POST['email']));
+    }
+    if (array_key_exists('telefono', $_POST)) {
+        update_post_meta($post_id, 'telefono', sanitize_text_field($_POST['telefono']));
+    }
+    if (array_key_exists('dni', $_POST)) {
+        update_post_meta($post_id, 'dni', sanitize_text_field($_POST['dni']));
+    }
+    // Obtén los inmuebles previamente asignados
+    $inmuebles_previos = get_post_meta($post_id, 'inmuebles_asignados', true);
+    $inmuebles_previos = is_array($inmuebles_previos) ? $inmuebles_previos : array();
+    // Desasigna el propietario de los inmuebles previamente asignados
+    foreach ($inmuebles_previos as $inmueble_id) {
+        delete_post_meta($inmueble_id, 'propietario_asignado');
+    }
+    // Guardar Inmuebles Asignados
+    if (array_key_exists('inmuebles_asignados', $_POST)) {
+        $inmuebles_asignados = array_map('sanitize_text_field', $_POST['inmuebles_asignados']);
+        update_post_meta($post_id, 'inmuebles_asignados', $inmuebles_asignados);
+        // Asigna el propietario a los nuevos inmuebles
+        foreach ($inmuebles_asignados as $inmueble_id) {
+            update_post_meta($inmueble_id, 'propietario_id', $post_id);
+        }
+    } else {
+        // Si no se seleccionó ningún inmueble, guardar un array vacío
+        update_post_meta($post_id, 'inmuebles_asignados', array());
+    }
+     
+}
     /**
      * Agregar columnas personalizadas a la lista de entradas de "Propietario"
      * @param int $columns
@@ -275,23 +230,9 @@ class Propietario {
 
 new Propietario();
 
-
- // Mensaje de error de cliente duplicado
- function mostrar_error_propietario_datos_duplicados() {
-    if (get_transient('propietario_datos_duplicados')) {
-        ?>
-        <div class="notice notice-error">
-            <p><?php _e('El email, teléfono o DNI ingresados ya existen en otro propietario.', 'text-domain'); ?></p>
-        </div>
-        <?php
-        delete_transient('propietario_datos_duplicados');
-    }
-}
-add_action('admin_notices', 'mostrar_error_propietario_datos_duplicados');
-
-
-//Amplia la busqueda en campos personalizados de propietario 
-add_filter('posts_search', 'buscar_en_campos_propietario', 10, 2);
+/**
+ * Amplia la busqueda en campos personalizados de propietario 
+ */
 function buscar_en_campos_propietario($search, $wp_query) {
     global $wpdb;
     if (!empty($search) && !empty($wp_query->query_vars['search_terms'])) {
@@ -310,11 +251,58 @@ function buscar_en_campos_propietario($search, $wp_query) {
                     WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
                     AND {$wpdb->postmeta}.meta_key = '{$meta_key}'
                     AND {$wpdb->postmeta}.meta_value LIKE '%" . implode("%' OR {$wpdb->postmeta}.meta_value LIKE '%", $terms) . "%'
-                )";
-            }
-            // Agregar la cláusula de búsqueda de campo meta a la consulta principal
-            $search .= $meta_search;
+                    )";
+                }
+                // Agregar la cláusula de búsqueda de campo meta a la consulta principal
+                $search .= $meta_search;
         }
     }
     return $search;
 }
+add_filter('posts_search', 'buscar_en_campos_propietario', 10, 2);
+
+/**
+ * Valida
+ */
+function validar_datos_propietario($post_ID, $data) {
+    if ('propietario' !== $data['post_type']) return;
+    
+    $dni = isset($_POST['dni']) ? sanitize_text_field($_POST['dni']) : '';
+    $email = isset($_POST['email']) ? sanitize_text_field($_POST['email']) : '';
+    $telefono = isset($_POST['telefono']) ? sanitize_text_field($_POST['telefono']) : '';
+    
+    $meta_query = array('relation' => 'OR');
+    
+    if (!empty($dni)) {
+        $meta_query[] = array(
+            'key' => 'dni',
+            'value' => $dni,
+            'compare' => '='
+        );
+    }
+    
+    $meta_query[] = array(
+        'key' => 'email',
+        'value' => $email,
+        'compare' => '='
+    );
+    
+    $meta_query[] = array(
+        'key' => 'telefono',
+        'value' => $telefono,
+        'compare' => '='
+    );
+    
+    $exists_propietario = get_posts(array(
+        'post_type' => 'propietario',
+        'post_status' => 'publish',
+        'meta_query' => $meta_query,
+    ));
+    
+    if (!empty($exists_propietario)) {
+        wp_die('Ya existe un propietario con el mismo DNI, teléfono o email. <br> <a href="javascript:history.back()">Volver</a>', 'Error', array('response' => 400));
+        
+    }
+}
+add_action('pre_post_update', 'validar_datos_propietario', 10, 2);
+
