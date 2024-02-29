@@ -78,6 +78,10 @@ $zonas_inmueble_map = array(
     'alcancia' => 'La Alcancía',
     'laguna' => 'La Laguna',
     'pinar' => 'Pinar',
+    'rota' => 'Avda. Rota',
+    'ballena' => 'Costa Ballena',
+    '3_piedras' => 'Las 3 Piedras',
+    'estacion' => 'Estación autobuses',
 );
 
 /* Ocultar las opciones de publicación y visibilidad para los CPT personalizados */

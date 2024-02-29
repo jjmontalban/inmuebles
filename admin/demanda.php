@@ -85,8 +85,8 @@ class Demanda
                 <td><input type="text" name="email" id="email" value="<?php echo esc_attr( $email ?? ''); ?>" ></td>
             </tr>
             <tr>
-                <th><label for="telefono">Teléfono*</label></th>
-                <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr( $telefono ?? ''); ?>" required></td>
+                <th><label for="telefono">Teléfono</label></th>
+                <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr( $telefono ?? ''); ?>"></td>
             </tr>
             <tr>
                 <th><label for="dni">DNI</label></th>
@@ -330,11 +330,13 @@ function validar_datos_demanda($post_ID, $data) {
         'compare' => '='
     );
     
-    $meta_query[] = array(
-        'key' => 'telefono',
-        'value' => $telefono,
-        'compare' => '='
-    );
+    if (!empty($telefono)) {
+        $meta_query[] = array(
+            'key' => 'telefono',
+            'value' => $telefono,
+            'compare' => '='
+        );
+    }
     
     $exists_demanda = get_posts(array(
         'post_type' => 'demanda',
