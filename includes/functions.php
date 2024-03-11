@@ -118,6 +118,43 @@ function inmuebles_cambiar_boton_publicar($translated_text, $text, $domain) {
 }
 add_filter('gettext', 'inmuebles_cambiar_boton_publicar', 10, 3);
 
+
+/**
+ * Personalizar la página principal del panel de administración de WordPress para diferentes roles de usuario
+ */
+add_action('admin_menu', 'inmuebles_custom_admin_dashboard');
+
+function inmuebles_custom_admin_dashboard() {
+    // no admin
+    if (!current_user_can('administrator')) {
+        remove_meta_box('dashboard_activity', 'dashboard', 'normal');
+        remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
+        remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
+        remove_meta_box('dashboard_incoming_links', 'dashboard', 'normal');
+        remove_meta_box('dashboard_plugins', 'dashboard', 'normal');
+        remove_meta_box('wpseo-wincher-dashboard-overview', 'dashboard', 'normal');
+        remove_meta_box('wpseo-dashboard-overview', 'dashboard', 'normal');
+        remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
+        remove_meta_box('dashboard_primary', 'dashboard', 'side');
+        remove_meta_box('dashboard_secondary', 'dashboard', 'side');
+        add_action('admin_notices', 'inmuebles_admin_dashboard_content');
+    }
+}
+
+function inmuebles_admin_dashboard_content() {
+    global $pagenow;
+
+    if ($pagenow === 'index.php') {
+        ?>
+        <div class="wrap">
+            <h1>Bienvenido a la Página Principal del CRM Chipicasa</h1>
+            <p>Agregar tu contenido principal.</p>
+        </div>
+        <?php
+    }
+}
+
+
 /**
  * Oculta opciones del menú para usuarios con rol de Editor
  */

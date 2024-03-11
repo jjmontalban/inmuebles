@@ -35,7 +35,6 @@ function inmuebles_activate_plugin() {
 function inmuebles_uninstall_plugin() {
     delete_option('inmuebles_google_maps_api_key');
     remove_menu_page('inmuebles');
-    // Eliminar tipos de contenido personalizados (CPT)
     unregister_post_type('inmueble');
     unregister_post_type('propietario');
     unregister_post_type('consulta');
@@ -49,59 +48,39 @@ function inmuebles_deactivate_plugin() {
 }
 
 /**
- * Carga librerias js necesarias para el admin
+ *   js admin
  */
 function inmuebles_load_scripts() {
-    // Registrar jQuery UI
     wp_enqueue_script('jquery-ui-sortable');
-
-    // Registrar el script 'media' de WordPress
     wp_enqueue_media();
-
-    // Agregar la página de configuración en el menú de administración
     add_action('admin_menu', 'inmuebles_add_settings_page');
     
-    // Obtener la clave de API almacenada
+    // Google Maps API
     $api_key = get_option('inmuebles_google_maps_api_key', '');
-    // Cargar la biblioteca de Google Maps JavaScript API con la clave
     wp_enqueue_script('google-maps', "https://maps.googleapis.com/maps/api/js?key={$api_key}", array(), null, true);
-
-    // Obtener la clave almacenada
+    // Google Recaptcha
     $recaptcha_site_key = get_option('inmuebles_recaptcha_site_key', '');
-    // Cargar la biblioteca de Google Recaptcha con la clave del sitio
     wp_enqueue_script('google-recaptcha', "https://www.google.com/recaptcha/api.js?render={$recaptcha_site_key}", array(), null, true);
 
-
-    // Registrar el script personalizado
     wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/admin-scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '2.0', true);
-    
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_scripts');
 
-
 /**
- * Carga librerías js necesarias para el front
+ *   js front
  */
 function inmuebles_load_front_scripts() {
-    // Registrar el script personalizado
     wp_enqueue_script('inmuebles-front-script', plugin_dir_url(__FILE__) . 'js/front-scripts.js', array('jquery'), '1.0', true);
-    // Obtén la clave de la base de datos
     $recaptcha_site_key = get_option('inmuebles_recaptcha_site_key', '');
-    // Pasa la clave a tu script JavaScript
-    wp_localize_script('inmuebles-front-script', 'inmuebles_vars', array(
-        'recaptcha_site_key' => $recaptcha_site_key,
-    ));
-    // Cargar Font Awesome
+    // Google Recaptcha
+    wp_localize_script('inmuebles-front-script', 'inmuebles_vars', array( 'recaptcha_site_key' => $recaptcha_site_key, ));
+    // Font Awesome
     wp_enqueue_style('font-awesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 }
 add_action('wp_enqueue_scripts', 'inmuebles_load_front_scripts');
 
-
-
-
-
 /**
- * Carga css personalizado para el frontend
+ * css frontend
  */
 function inmuebles_load_styles_front() {
     wp_enqueue_style('inmuebles-style-front', plugin_dir_url(__FILE__) . 'css/style-front.css', array(), '2.0', 'all');
@@ -109,48 +88,9 @@ function inmuebles_load_styles_front() {
 add_action('wp_enqueue_scripts', 'inmuebles_load_styles_front');
 
 /**
- * Carga css personalizado para el backend
+ * css backend
  */
 function inmuebles_load_styles_admin() {
     wp_enqueue_style('inmuebles-style-admin', plugin_dir_url(__FILE__) . 'css/style-admin.css', array(), '2.0', 'all');
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_styles_admin');
-
-
-
-
-/**
- * Personalizar la página principal del panel de administración de WordPress para diferentes roles de usuario
- */
-add_action('admin_menu', 'inmuebles_custom_admin_dashboard');
-
-function inmuebles_custom_admin_dashboard() {
-    // Para usuarios no administradores
-    if (!current_user_can('administrator')) {
-        remove_meta_box('dashboard_activity', 'dashboard', 'normal');
-        remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
-        remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
-        remove_meta_box('dashboard_incoming_links', 'dashboard', 'normal');
-        remove_meta_box('dashboard_plugins', 'dashboard', 'normal');
-        remove_meta_box('wpseo-wincher-dashboard-overview', 'dashboard', 'normal');
-        remove_meta_box('wpseo-dashboard-overview', 'dashboard', 'normal');
-        remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
-        remove_meta_box('dashboard_primary', 'dashboard', 'side');
-        remove_meta_box('dashboard_secondary', 'dashboard', 'side');
-        add_action('admin_notices', 'inmuebles_admin_dashboard_content');
-    }
-}
-
-function inmuebles_admin_dashboard_content() {
-    global $pagenow;
-
-    // Verifica que estemos en la página principal del panel de administración
-    if ($pagenow === 'index.php') {
-        ?>
-        <div class="wrap">
-            <h1>Bienvenido a la Página Principal del CRM Chipicasa</h1>
-            <p>Agregar tu contenido principal.</p>
-        </div>
-        <?php
-    }
-}

@@ -67,7 +67,7 @@ class Cita
         $inmuebles = get_posts($args);
         
         $args = array(
-            'post_type' => 'demanda', // El nombre de tu CPT de demandas
+            'post_type' => 'demanda',
             'posts_per_page' => -1,
         );
         $demandas = get_posts($args);
@@ -125,7 +125,6 @@ class Cita
        if (empty($_POST) || defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return $post_id;
        }
-       // Verificar que realmente se está guardando la cita
        if ($_POST['action'] != 'editpost' && $_POST['action'] != 'post.php') {
             return $post_id;
        }
