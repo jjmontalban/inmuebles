@@ -82,6 +82,7 @@ $zonas_inmueble_map = array(
     'ballena' => 'Costa Ballena',
     '3_piedras' => 'Las 3 Piedras',
     'estacion' => 'Estación autobuses',
+    'lagunilla' => 'La Lagunilla',
 );
 
 /* Ocultar las opciones de publicación y visibilidad para los CPT personalizados */
