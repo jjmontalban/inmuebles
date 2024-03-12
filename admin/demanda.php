@@ -308,7 +308,9 @@ function buscar_en_campos_demanda($search, $wp_query) {
  * Valida
  */
 function validar_datos_demanda($post_ID, $data) {
+    // delete
     if ('demanda' !== $data['post_type']) return;
+    if (isset($_GET['action']) && $_GET['action'] === 'trash') return;
     
     $dni = isset($_POST['dni']) ? sanitize_text_field($_POST['dni']) : '';
     $email = isset($_POST['email']) ? sanitize_text_field($_POST['email']) : '';
