@@ -26,7 +26,7 @@ This WordPress plugin allows you to turn your site into a real estate management
 Once activated, you can access the plugin's features from the WordPress admin menu:
 
 - **Inmuebles**: Add, edit, and delete properties from "Inmuebles" in the admin menu.
-- **Demandss**: Manage property demands from "Demands" in the admin menu.
+- **Demandas**: Manage property demands from "Demands" in the admin menu.
 - **Propietarios**: Administer property owners from "Propietarios" in the admin menu.
 - **Citas**: Manage appointments related to "Demandas" and "Inmuebles" from "Citas" in the admin menu.
 - **Queries**: View and manage queries submitted by users from "Queries" in the admin menu.
