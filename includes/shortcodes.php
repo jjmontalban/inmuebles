@@ -16,12 +16,16 @@ function formulario_contacto_shortcode()
 
             <?php if (is_singular('inmueble')) : ?>
                 <input type="hidden" name="inmueble_id" value="<?php echo get_the_ID(); ?>">
-                <h5>¿Te intenresa este inmueble?</h5>    
-            <?php elseif (is_post_type_archive('inmueble')) : ?>
-                <h5>Solicita más información</h5>
+                <h4 class="icon-title">¿Te interesa este inmueble?</h4>   
+                <?php elseif (is_post_type_archive('inmueble')) : ?>
+                    <div class="col-md-12 mb-3">
+                        <h4>Solicita más información</h4>
+                    </div>
                 <input type="hidden" name="tipo_formulario" value="Contacto desde listado">
             <?php elseif (is_post_type_archive('page')) : ?>
-                <h5>Dinos quién eres y te contactamos:</h5>
+                <div class="col-md-12 mb-3">
+                        <h4>Dinos quién eres y te contactamos:</h4>
+                    </div>
                 <input type="hidden" name="tipo_formulario" value="desde pagina">
             <?php endif; ?>
 
@@ -67,15 +71,16 @@ function formulario_contacto_shortcode()
     <!-- Para mostrar los dos últimos botones solo en las páginas de inmueble, archivo de inmuebles y -->
     <?php if (is_singular('inmueble') || is_post_type_archive('inmueble')) : ?>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <a class="btn btn-w" href="https://api.whatsapp.com/send?phone=+346232969 00&text=Hola,%quiero%20obtener%20más%20información." target="_blank" rel="nofollow">
                         <i class="fa fa-whatsapp"></i>
-                        Envíanos un WhatsApp
+                        WhatsApp
                     </a>
+                    
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                         <a class="btn btn-b" href="tel:+34648736312">
                             <i class="fa fa-phone"></i>Llámanos!
