@@ -6,47 +6,83 @@ function formulario_contacto_shortcode()
 {
     ob_start();
     ?>
-    <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-contacto">
-        <input type="hidden" name="action" value="procesar_formulario_contacto">
-        <?php if (is_singular('inmueble')) : ?>
-            <h5>¿Te intenresa este inmueble?</h5>
-            <input type="hidden" name="inmueble_id" value="<?php echo get_the_ID(); ?>">
-        <?php elseif (is_post_type_archive('inmueble')) : ?>
-            <h5>Solicita más información</h5>
-            <input type="hidden" name="tipo_formulario" value="Contacto desde listado">
-        <?php elseif (is_post_type_archive('page')) : ?>
-            <h5>Dinos quién eres y te contactamos:</h5>
-            <input type="hidden" name="tipo_formulario" value="desde pagina">
-        <?php endif; ?>
-        <input type="text" name="nombre" placeholder="Nombre y Apellidos*" required>
-        <input type="email" name="email" placeholder="Email*" required>
-        <input type="tel" name="telefono" placeholder="Teléfono*" required>
-        <textarea name="mensaje" placeholder="Mensaje (opcional)" style="height: 100px;"></textarea>
-        <input type="checkbox" name="aceptar_condiciones" required>
-        <label for="aceptar_condiciones" style="font-size: 0.8em;">Usando este formulario estás aceptando nuestra <a target="blank" href="<?php echo esc_url(get_permalink(get_page_by_path('aviso-legal'))); ?>">política de privacidad</a></label>
-        <button type="submit" class="submit-button">
-            Enviar
-            <span class="spinner" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>
-        </button>
-        <!-- Agregar un campo oculto en el formulario -->
-        <input type="text" name="extra_field" style="display: none;">
-        <!-- Agregar un campo oculto para almacenar el token de reCAPTCHA v3 -->
-        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="">
+    <form class="form-a contactForm" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" id="formulario-contacto">
+        <div class="row">
+            <input type="hidden" name="action" value="procesar_formulario_contacto">
+            <!-- Agregar un campo oculto en el formulario -->
+            <input type="text" name="extra_field" style="display: none;">
+            <!-- Agregar un campo oculto para almacenar el token de reCAPTCHA v3 -->
+            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="">
+
+            <?php if (is_singular('inmueble')) : ?>
+                <input type="hidden" name="inmueble_id" value="<?php echo get_the_ID(); ?>">
+                <h5>¿Te intenresa este inmueble?</h5>    
+            <?php elseif (is_post_type_archive('inmueble')) : ?>
+                <h5>Solicita más información</h5>
+                <input type="hidden" name="tipo_formulario" value="Contacto desde listado">
+            <?php elseif (is_post_type_archive('page')) : ?>
+                <h5>Dinos quién eres y te contactamos:</h5>
+                <input type="hidden" name="tipo_formulario" value="desde pagina">
+            <?php endif; ?>
+
+            <div class="col-md-12 mb-3">
+                <div class="form-group">
+                    <input type="text" name="nombre" class="form-control form-control-lg form-control-a" placeholder="Nombre y Apellidos*" required>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3">
+                <div class="form-group">
+                    <input type="email" name="email" class="form-control form-control-lg form-control-a" placeholder="Email*" required>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3">
+                <div class="form-group">
+                    <input type="tel" name="telefono" class="form-control form-control-lg form-control-a" placeholder="Teléfono*" required>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3">
+                <div class="form-group">
+                    <textarea name="mensaje" class="form-control" name="message" cols="45" rows="8" placeholder="Mensaje (opcional)"></textarea>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <input type="checkbox" name="aceptar_condiciones" required>
+                    <label for="aceptar_condiciones" style="font-size: 0.8em;">Usando este formulario estás aceptando nuestra <a target="blank" href="<?php echo esc_url(get_permalink(get_page_by_path('aviso-legal'))); ?>">política de privacidad</a></label>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-a">
+                        Enviar
+                        <span class="spinner" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </form>
 
     <div id="respuesta-formulario-contacto"></div>
+
     <!-- Para mostrar los dos últimos botones solo en las páginas de inmueble, archivo de inmuebles y -->
     <?php if (is_singular('inmueble') || is_post_type_archive('inmueble')) : ?>
-        <!-- Botón de WhatsApp con icono -->
-        <a class="contact-link whatsapp-link" href="https://api.whatsapp.com/send?phone=+346232969 00&text=Hola,%20estoy%20interesado%20en%20obtener%20más%20información." target="_blank" rel="nofollow">
-            <i class="fab fa-whatsapp"></i>
-            <span class="button-text">Envíanos un WhatsApp</span>
-        </a>
-        <!-- Botón de contacto por teléfono con icono -->
-        <a class="contact-link phone-link" href="tel:+34648736312">
-            <i class="fa fa-phone"></i>
-            <span class="button-text">Llámanos!</span>
-        </a>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <a class="btn btn-w" href="https://api.whatsapp.com/send?phone=+346232969 00&text=Hola,%quiero%20obtener%20más%20información." target="_blank" rel="nofollow">
+                        <i class="fa fa-whatsapp"></i>
+                        Envíanos un WhatsApp
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                        <a class="btn btn-b" href="tel:+34648736312">
+                            <i class="fa fa-phone"></i>Llámanos!
+                        </a>
+                </div>
+            </div>
+        </div>
     <?php endif;
     return ob_get_clean();
 }   
