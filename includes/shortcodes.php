@@ -256,16 +256,14 @@ function ultimos_inmuebles_shortcode()
                 <div class="container">
                     <div class="row">
 
-                        <div class="col-md-1"></div>
-                        
-                        <div class="col-md-10">
+                        <div class="col-md-12">
                             <div class="row">
                                 <?php while ($query->have_posts()): $query->the_post(); ?>
                                 <?php 
                                     $tipo_inmueble = get_post_meta(get_the_ID(), 'tipo_inmueble', true);
                                     $campos = obtener_campos_inmueble(get_the_ID());
                                     ?> 
-                                    <div class="col-md-4 col-6">
+                                    <div class="col-md-4">
                                         <div class="card-box-a card-shadow">
                                             <div class="img-box-a">
                                                 <?php if (has_post_thumbnail()) : ?>
@@ -328,7 +326,7 @@ function ultimos_inmuebles_shortcode()
                                 <?php endwhile; ?>
                             </div>
                         </div>
-                        <div class="col-md-1"></div>
+
                     </div>
                 </div>
             </section>
