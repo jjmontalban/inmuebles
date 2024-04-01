@@ -56,7 +56,6 @@ class Demanda
         $nombre = get_post_meta($post->ID, 'nombre', true);
         $email = get_post_meta($post->ID, 'email', true);
         $telefono = get_post_meta($post->ID, 'telefono', true);
-        $email = get_post_meta($post->ID, 'email', true);
         $dni = get_post_meta($post->ID, 'dni', true);
         $operacion = get_post_meta($post->ID, 'operacion', true);
         $tipo_inmueble = get_post_meta($post->ID, 'tipo_inmueble', true);
@@ -270,6 +269,8 @@ class Demanda
                 } else {
                     echo esc_html($inmueble_interesado);
                 }
+                break;
+            default:
                 break;
         }
     }

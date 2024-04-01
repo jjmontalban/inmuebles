@@ -15,10 +15,10 @@ class Propietario {
         $labels = array(
             'name' => 'Propietario',
             'singular_name' => 'Propietario',
-            'menu_name' => 'Propietarios',
-            'name_admin_bar' => 'Propietario',
             'add_new' => 'Añadir Propietario',
             'add_new_item' => 'Añadir Nuevo Propietario',
+            'menu_name' => 'Propietarios',
+            'name_admin_bar' => 'Propietario',
             'new_item' => 'Nuevo Propietario',
             'edit_item' => 'Editar Propietario',
             'view_item' => 'Ver Propietario',
@@ -36,7 +36,6 @@ class Propietario {
             'menu_icon' => 'dashicons-admin-users',
             'supports' => array( '' ),
         );
-        
         register_post_type('propietario', $args);
     }
     
@@ -83,8 +82,8 @@ class Propietario {
                     <td><input type="text" name="apellidos" id="apellidos" value="<?php echo esc_attr($apellidos ?? ''); ?>"></td>
                 </tr>
                 <tr>
-                    <th><label for="email">Email*</label></th>
-                    <td><input type="text" name="email" id="email" value="<?php echo esc_attr($email ?? ''); ?>" required></td>
+                    <th><label for="email">Email</label></th>
+                    <td><input type="text" name="email" id="email" value="<?php echo esc_attr($email ?? ''); ?>"></td>
                 </tr>
                 <tr>
                     <th><label for="telefono">Teléfono*</label></th>
@@ -236,16 +235,11 @@ new Propietario();
 function buscar_en_campos_propietario($search, $wp_query) {
     global $wpdb;
     if (!empty($search) && !empty($wp_query->query_vars['search_terms'])) {
-        // Estamos en la búsqueda de la administración
         if (is_admin() && $wp_query->query_vars['post_type'] == 'propietario') {
-            // Obtener términos de búsqueda
             $terms = $wp_query->query_vars['search_terms'];
-            // Campos meta que deseas buscar
             $meta_keys = array('nombre', 'apellidos', 'telefono', 'email', 'dni');
-            // Inicializar la cláusula de búsqueda de campos meta
             $meta_search = '';
             foreach ($meta_keys as $meta_key) {
-                // Agregar cláusula para cada campo meta
                 $meta_search .= " OR EXISTS (
                     SELECT * FROM {$wpdb->postmeta}
                     WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
@@ -253,7 +247,6 @@ function buscar_en_campos_propietario($search, $wp_query) {
                     AND {$wpdb->postmeta}.meta_value LIKE '%" . implode("%' OR {$wpdb->postmeta}.meta_value LIKE '%", $terms) . "%'
                     )";
                 }
-                // Agregar la cláusula de búsqueda de campo meta a la consulta principal
                 $search .= $meta_search;
         }
     }
@@ -264,45 +257,94 @@ add_filter('posts_search', 'buscar_en_campos_propietario', 10, 2);
 /**
  * Valida
  */
-function validar_datos_propietario($post_ID, $data) {
-    if ('propietario' !== $data['post_type']) return;
-    
+function validar_datos_propietario($post_id, $data) {
+    if ('propietario' !== $data['post_type'] || (isset($_GET['action']) && $_GET['action'] === 'trash')) return;
+
     $dni = isset($_POST['dni']) ? sanitize_text_field($_POST['dni']) : '';
     $email = isset($_POST['email']) ? sanitize_text_field($_POST['email']) : '';
     $telefono = isset($_POST['telefono']) ? sanitize_text_field($_POST['telefono']) : '';
-    
+
     $meta_query = array('relation' => 'OR');
-    
+    $conflict_fields = array();
+
     if (!empty($dni)) {
         $meta_query[] = array(
             'key' => 'dni',
             'value' => $dni,
-            'compare' => '='
+            'compare' => '=',
         );
+        $exists_propietario_dni = new WP_Query(array(
+            'post_type' => 'propietario',
+            'meta_query' => array(
+                array(
+                    'key' => 'dni',
+                    'value' => $dni,
+                    'compare' => '=',
+                )
+            ),
+            'post__not_in' => array($post_id),
+        ));
+        if ($exists_propietario_dni->have_posts()) {
+            $conflict_fields[] = 'DNI';
+        }
     }
-    
-    $meta_query[] = array(
-        'key' => 'email',
-        'value' => $email,
-        'compare' => '='
-    );
-    
-    $meta_query[] = array(
-        'key' => 'telefono',
-        'value' => $telefono,
-        'compare' => '='
-    );
-    
-    $exists_propietario = get_posts(array(
-        'post_type' => 'propietario',
-        'post_status' => 'publish',
-        'meta_query' => $meta_query,
-    ));
-    
-    if (!empty($exists_propietario)) {
-        wp_die('Ya existe un propietario con el mismo DNI, teléfono o email. <br> <a href="javascript:history.back()">Volver</a>', 'Error', array('response' => 400));
-        
+
+    if (!empty($email)) {
+        $meta_query[] = array(
+            'key' => 'email',
+            'value' => $email,
+            'compare' => '=',
+        );
+        $exists_propietario_email = new WP_Query(array(
+            'post_type' => 'propietario',
+            'meta_query' => array(
+                array(
+                    'key' => 'email',
+                    'value' => $email,
+                    'compare' => '=',
+                )
+            ),
+            'post__not_in' => array($post_id),
+        ));
+        if ($exists_propietario_email->have_posts()) {
+            $conflict_fields[] = 'email';
+        }
+    }
+
+    if (!empty($telefono)) {
+        $meta_query[] = array(
+            'key' => 'telefono',
+            'value' => $telefono,
+            'compare' => '=',
+        );
+        $exists_propietario_telefono = new WP_Query(array(
+            'post_type' => 'propietario',
+            'meta_query' => array(
+                array(
+                    'key' => 'telefono',
+                    'value' => $telefono,
+                    'compare' => '=',
+                )
+            ),
+            'post__not_in' => array($post_id),
+        ));
+        if ($exists_propietario_telefono->have_posts()) {
+            $conflict_fields[] = 'teléfono';
+        }
+    }
+
+    if (count($meta_query) > 1) {
+        $exists_propietario = new WP_Query(array(
+            'post_type' => 'propietario',
+            'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit'),
+            'meta_query' => $meta_query,
+            'post__not_in' => array($post_id),
+        ));
+
+        if (!empty($exists_propietario) && $exists_propietario->have_posts()) {
+            $conflict_fields_str = implode(', ', $conflict_fields);
+            wp_die('Ya existe un propietario con el mismo ' . $conflict_fields_str . '. <br> <a href="javascript:history.back()">Volver</a>', 'Error', array('response' => 400));
+        }
     }
 }
 add_action('pre_post_update', 'validar_datos_propietario', 10, 2);
-
