@@ -540,7 +540,18 @@ function mostrar_campos_inmueble( $post ) {
                 <input type="hidden" id="orden-imagenes" name="orden_imagenes" value="">
             </td>
         </tr>
-
+        <tr>
+            <th><label for="video_embed">Vídeo</label></th>
+            <td>
+                <input type="file" name="video_embed" id="video_embed">
+                <?php
+                $video_embed_url = esc_attr($campos['video_embed']);
+                if (!empty($video_embed_url)) {
+                    echo '<p><strong>Vídeo actual:</strong> <a href="' . $video_embed_url . '">' . basename($video_embed_url) . '</a></p>';
+                }
+                ?>
+            </td>
+        </tr>
         <tr>
             <th>Propietario del Inmueble</th>
             <td>

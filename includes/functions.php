@@ -24,7 +24,7 @@ function obtener_campos_inmueble($post_id) {
         'gastos_comunidad', 'precio_alquiler', 'fianza', 'calefaccion', 'num_ascensores',
         'caract_inm', 'm_construidos','m_utiles','m_lineales','superf_terreno',
         'num_dormitorios','num_banos','num_escap','calif_consumo', 'num_plazas',
-        'consumo','calif_emis','emisiones','tipo_local','tipo_terreno',
+        'consumo','calif_emis','emisiones','tipo_local','tipo_terreno', 'video_embed',
         'ac','estado_cons','interior_ext','ascensor', 'calif_terreno',
         'descripcion','ano_edificio','acceso_rodado', 'plano1', 'plano2', 'plano3', 'plano4',
         'uso_excl','distribucion_oficina','aire_acond',

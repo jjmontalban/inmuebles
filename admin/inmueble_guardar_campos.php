@@ -230,6 +230,23 @@ function guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['ano_edificio'])) {
         update_post_meta($post_id, 'ano_edificio', sanitize_text_field($_POST['ano_edificio']));
     }
+    //video
+    // Manejar la carga del vídeo si se ha subido uno nuevo
+    if (!empty($_FILES['video_embed']['name'])) {
+        $file = $_FILES['video_embed'];
+        $upload_overrides = array('test_form' => false);
+        $uploaded_file = wp_handle_upload($file, $upload_overrides);
+        
+        if (!isset($uploaded_file['error'])) {
+            // Archivo subido correctamente, guardamos la URL del vídeo
+            $video_url = $uploaded_file['url'];
+            update_post_meta($post_id, 'video_embed', $video_url);
+        } else {
+            // Ocurrió un error al subir el archivo, puedes manejarlo aquí
+            // Por ejemplo, mostrar un mensaje de error o registrar el error en algún lugar
+            error_log('Error al subir el vídeo: ' . $uploaded_file['error']);
+        }
+    }
     //campo mapa
     if (isset($_POST['campo_mapa'])) {
         update_post_meta($post_id, 'campo_mapa', sanitize_text_field($_POST['campo_mapa']));
