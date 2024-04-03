@@ -172,6 +172,7 @@ function inmuebles_guardar_campos_propietario($post_id) {
             'cb' => '<input type="checkbox" />',
             'nombre' => 'Nombre',
             'apellidos' => 'Apellidos',
+            'titulo_propiedad' => 'Título de Propiedad',
             'telefono' => 'Teléfono',
             'email' => 'Email',
             'date' => 'Fecha de publicación',
@@ -195,6 +196,21 @@ function inmuebles_guardar_campos_propietario($post_id) {
                 break;
             case 'email':
                 echo get_post_meta($post_id, 'email', true);
+                break;
+            case 'titulo_propiedad':
+                $inmuebles_asignados = get_post_meta($post_id, 'inmuebles_asignados', true);
+                if (!empty($inmuebles_asignados) && is_array($inmuebles_asignados)) {
+                    // Obtener el primer inmueble asignado
+                    $primer_inmueble_id = $inmuebles_asignados[0];
+                    $primer_inmueble = get_post($primer_inmueble_id);
+                    if ($primer_inmueble) {
+                        echo $primer_inmueble->post_title;
+                    } else {
+                        echo 'N/A';
+                    }
+                } else {
+                    echo 'N/A';
+                }
                 break;
             default:
                 break;
