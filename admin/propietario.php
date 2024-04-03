@@ -202,12 +202,10 @@ function inmuebles_guardar_campos_propietario($post_id) {
                 if (!empty($inmuebles_asignados) && is_array($inmuebles_asignados)) {
                     // Obtener el primer inmueble asignado
                     $primer_inmueble_id = $inmuebles_asignados[0];
-                    $primer_inmueble = get_post($primer_inmueble_id);
-                    if ($primer_inmueble) {
-                        echo $primer_inmueble->post_title;
-                    } else {
-                        echo 'N/A';
-                    }
+                    // Obtener el título del primer inmueble asignado
+                    $primer_inmueble_titulo = get_the_title($primer_inmueble_id);
+                    // Mostrar el título del primer inmueble asignado
+                    echo $primer_inmueble_titulo ? $primer_inmueble_titulo : 'N/A';
                 } else {
                     echo 'N/A';
                 }
@@ -217,6 +215,7 @@ function inmuebles_guardar_campos_propietario($post_id) {
         }
     }
 
+    
     /**
      * Desactivar edicion rápida
      */
