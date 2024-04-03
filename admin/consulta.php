@@ -9,7 +9,7 @@ class Consulta
         add_action('admin_post_procesar_formulario_contacto', [$this, 'procesar_formulario_contacto']);
         add_action('admin_post_nopriv_procesar_formulario_contacto', [$this, 'procesar_formulario_contacto']);
         add_filter('manage_consulta_posts_columns', [$this, 'agregar_columnas_consulta']);
-        add_action('manage_consulta_posts_custom_column', [$this, 'llenar_columnas_consulta'], 10, 2);
+        add_action('manage_consulta_posts_custom_column', [$this, 'mostrar_datos_columnas_consulta'], 10, 2);
         add_filter('post_row_actions', [$this, 'modificar_texto_accion_consulta'], 10, 2);
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_consulta'], 10, 2);
         add_action('admin_menu', [$this, 'eliminar_submenu_consultas']);
@@ -232,7 +232,7 @@ class Consulta
     /**
      * Modificar el listado de la página de consultas
      */
-    public function llenar_columnas_consulta($column, $post_id)
+    public function mostrar_datos_columnas_consulta($column, $post_id)
     {
         switch ($column) {
             case 'nombre':

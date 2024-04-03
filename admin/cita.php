@@ -7,8 +7,8 @@ class Cita
         add_action('init', array($this, 'registrar_cpt_cita'));
         add_action('add_meta_boxes', [$this, 'citas_meta_box']);
         add_action('save_post', [$this, 'guardar_campos_cita']);
-        add_filter('manage_cita_posts_columns', [$this, 'agregar_columnas_personalizadas_cita']);
-        add_action('manage_cita_posts_custom_column', [$this, 'mostrar_datos_columnas_personalizadas_cita'], 10, 2);
+        add_filter('manage_cita_posts_columns', [$this, 'agregar_columnas_cita']);
+        add_action('manage_cita_posts_custom_column', [$this, 'mostrar_datos_columnas_cita'], 10, 2);
         add_filter('post_row_actions', [$this, 'modificar_texto_accion_cita'], 10, 2);
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_cita'], 10, 2);
     }
@@ -182,7 +182,7 @@ class Cita
         wp_mail($demanda_email, $subject, $message);
     }
 
-    public function agregar_columnas_personalizadas_cita($columns)
+    public function agregar_columnas_cita($columns)
     {
         $columns = array(
             'cb' => '<input type="checkbox" />',
@@ -194,7 +194,7 @@ class Cita
         return $columns;
     }
 
-    public function mostrar_datos_columnas_personalizadas_cita($column, $post_id)
+    public function mostrar_datos_columnas_cita($column, $post_id)
     {
         switch ($column) {
             case 'inmueble':

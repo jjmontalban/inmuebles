@@ -9,8 +9,8 @@ class Demanda
         add_action('save_post', [$this, 'inmuebles_guardar_campos_demanda']);
         add_filter('post_row_actions', [$this, 'modificar_texto_accion_demanda'], 10, 2);
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_demanda'], 10, 2);
-        add_filter('manage_demanda_posts_columns', [$this, 'agregar_columnas_personalizadas_demanda']);
-        add_action('manage_demanda_posts_custom_column', [$this, 'mostrar_datos_columnas_personalizadas_demanda'], 10, 2);  
+        add_filter('manage_demanda_posts_columns', [$this, 'agregar_columnas_demanda']);
+        add_action('manage_demanda_posts_custom_column', [$this, 'mostrar_datos_columnas_demanda'], 10, 2);  
     }
 
     public function crear_cpt_demanda() {
@@ -232,7 +232,7 @@ class Demanda
      * Agregar columnas personalizadas a la lista de entradas de demandas
      * @param int $columns
      */
-    public function agregar_columnas_personalizadas_demanda($columns) {
+    public function agregar_columnas_demanda($columns) {
         $columns = array(
             'cb' => '<input type="checkbox" />',
             'nombre' => 'Nombre',
@@ -244,7 +244,7 @@ class Demanda
         return $columns;
     }
 
-    public function mostrar_datos_columnas_personalizadas_demanda($column, $post_id) {
+    public function mostrar_datos_columnas_demanda($column, $post_id) {
         switch ($column) {
             case 'nombre':
                 echo get_post_meta($post_id, 'nombre', true);

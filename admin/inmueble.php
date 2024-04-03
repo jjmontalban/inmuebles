@@ -9,6 +9,8 @@ class Inmueble
         
         add_action('init', [$this, 'crear_cpt_inmueble']);
         add_action('init', [$this, 'registrar_taxonomia_tipo_inmueble']);
+        add_filter('manage_inmueble_posts_columns', [$this, 'agregar_columnas_inmueble']);
+        add_action('manage_inmueble_posts_custom_column', [$this, 'mostrar_datos_columnas_inmueble'], 10, 2);
         add_action( 'add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_inmueble']);
         add_action('save_post', [$this, 'asignar_tipo_inmueble_taxonomia']);
         add_filter('the_title', [$this, 'modificar_valor_columna_title'], 1, 2);        
@@ -139,6 +141,24 @@ class Inmueble
         return $title;
     }
 
+    /**
+     * Agregar columnas personalizadas en el listado de inmuebles.
+     */
+    public function agregar_columnas_inmueble($columns)
+    {
+        $columns['imagen_destacada'] = 'Imagen Destacada';
+        return $columns;
+    }
+
+    /**
+     * Llenar las columnas personalizadas en el listado de inmuebles.
+     */
+    public function mostrar_datos_columnas_inmueble($column, $post_id)
+    {
+        if ($column === 'imagen_destacada') {
+            echo get_the_post_thumbnail($post_id, array(100, 100));
+        }
+    }
 
     /**
      * Desactivar edicion rápida
@@ -302,6 +322,7 @@ class Inmueble
     }
 
 }
+
 new Inmueble();
 
 
@@ -337,21 +358,6 @@ function contar_visitas_inmueble() {
 add_action('wp_footer', 'contar_visitas_inmueble');
 
 
-
-/**
- * Elimina columnas YOAST del listado de inmuebles
- */
-function eliminar_columna_yoast_seo($columns) {
-    unset($columns['wpseo-linked']);
-    unset($columns['wpseo-links']);
-    unset($columns['wpseo-score-readability']);
-    unset($columns['wpseo-score']);
-    unset($columns['wpseo-cornerstone']);
-    return $columns;
-}
-add_filter('manage_edit-inmueble_columns', 'eliminar_columna_yoast_seo');
-
-
 /**
  * Añade titulo personalizado a entrada de tipo inmueble a YOAST
  */
@@ -365,3 +371,6 @@ function modificar_titulo_seo_inmueble($title) {
     return $title;
 }
 add_filter('wpseo_title', 'modificar_titulo_seo_inmueble');
+
+
+

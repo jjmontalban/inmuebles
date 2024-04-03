@@ -5,8 +5,8 @@ class Propietario {
         add_action('init', array($this, 'registrar_cpt_propietario'));
         add_action('add_meta_boxes', array($this, 'propietarios_meta_box'));
         add_action('save_post', array($this, 'inmuebles_guardar_campos_propietario'));
-        add_filter('manage_propietario_posts_columns', array($this, 'agregar_columnas_personalizadas_propietario'));
-        add_action('manage_propietario_posts_custom_column', array($this, 'mostrar_datos_columnas_personalizadas_propietario'), 10, 2);
+        add_filter('manage_propietario_posts_columns', array($this, 'agregar_columnas_propietario'));
+        add_action('manage_propietario_posts_custom_column', array($this, 'mostrar_datos_columnas_propietario'), 10, 2);
         add_filter('post_row_actions', array($this, 'desactivar_quick_edit_propietario'), 10, 2);
         add_filter('post_row_actions', array($this, 'modificar_texto_accion_propietario'), 10, 2);
     }
@@ -167,7 +167,7 @@ function inmuebles_guardar_campos_propietario($post_id) {
      * Agregar columnas personalizadas a la lista de entradas de "Propietario"
      * @param int $columns
      */
-    public function agregar_columnas_personalizadas_propietario($columns) {
+    public function agregar_columnas_propietario($columns) {
         $columns = array(
             'cb' => '<input type="checkbox" />',
             'nombre' => 'Nombre',
@@ -180,9 +180,9 @@ function inmuebles_guardar_campos_propietario($post_id) {
     }
 
     /**
-     * Mostrar_datos_columnas_personalizadas_propietario
+     * mostrar_datos_columnas_propietario
      */
-    public function mostrar_datos_columnas_personalizadas_propietario($column, $post_id) {
+    public function mostrar_datos_columnas_propietario($column, $post_id) {
         switch ($column) {
             case 'nombre':
                 echo get_post_meta($post_id, 'nombre', true);
