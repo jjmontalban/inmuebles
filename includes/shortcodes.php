@@ -16,11 +16,13 @@ function formulario_contacto_shortcode()
 
             <?php if (is_singular('inmueble')) : ?>
                 <input type="hidden" name="inmueble_id" value="<?php echo get_the_ID(); ?>">
-                <h4 class="icon-title">¿Te interesa este inmueble?</h4>   
+                <div class="col-md-12 mb-3">
+                    <h4>¿Te interesa este inmueble?</h4>
+                </div>
                 <?php elseif (is_post_type_archive('inmueble')) : ?>
-                    <div class="col-md-12 mb-3">
-                        <h4>Solicita más información</h4>
-                    </div>
+                <div class="col-md-12 mb-3">
+                    <h4>Solicita más información</h4>
+                </div>
                 <input type="hidden" name="tipo_formulario" value="Contacto desde listado">
             <?php elseif (is_post_type_archive('page')) : ?>
                 <div class="col-md-12 mb-3">
