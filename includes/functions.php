@@ -37,7 +37,10 @@ function obtener_campos_inmueble($post_id) {
     $valores = array();
 
     foreach($campos as $campo) {
-        $valores[$campo] = get_post_meta($post_id, $campo, true);
+         // Obtener el valor del campo
+         $valor = get_post_meta($post_id, $campo, true);
+         // Deserializar el valor si está serializado
+         $valores[$campo] = is_serialized($valor) ? unserialize($valor) : $valor;
     }
 
     // Casos especiales para campos que podrían devolver arrays:

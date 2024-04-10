@@ -173,7 +173,7 @@ class Inmueble
 
 
     /**
-     * Aplica el nombre del post inmuebble
+     * Aplica el nombre del post inmueble
      */
     public function inmuebles_custom_permalink($data, $postarr) {
         if ($data['post_type'] == 'inmueble') {
