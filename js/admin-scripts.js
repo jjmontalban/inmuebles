@@ -378,19 +378,31 @@ jQuery(document).ready(function($) {
         $('#mapaModal').hide();
     });
 
-    /* document.getElementById('mapa_correcto').addEventListener('click', function(event) {
-        event.preventDefault();
-        // Obtener la ubicación del marcador en el mapa
-        var ubicacionMarcador = marcador.getPosition();
-        // Guardar la ubicación en el campo oculto
-        document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var mapaCorrecto = document.getElementById('mapa_correcto');
+        if(mapaCorrecto) {
+            mapaCorrecto.addEventListener('click', function(event) {
+                event.preventDefault();
+                // Obtener la ubicación del marcador en el mapa
+                var ubicacionMarcador = marcador.getPosition();
+                // Guardar la ubicación en el campo oculto
+                document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
+            });
+        }
     });
 
-
-    document.getElementById('mapa_correcto').addEventListener('click', function() {
-        document.getElementById('mapaModal').style.display = 'none';
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var mapaCorrecto = document.getElementById('mapa_correcto');
+        if(mapaCorrecto) {
+            mapaCorrecto.addEventListener('click', function() {
+                var mapaModal = document.getElementById('mapaModal');
+                if(mapaModal) {
+                    mapaModal.style.display = 'none';
+                }
+            });
+        }
     });
- */
+
 
     // Detectar cambios en el selector de propietarios
     $('#selector-propietario').change(function() {
