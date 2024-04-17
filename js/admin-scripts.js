@@ -110,7 +110,6 @@ jQuery(document).ready(function($) {
         ],
         
         oficina: [
-            { campo: 'campo_tipo_oficina', requerido: true },
             { campo: 'campo_planta', requerido: true },
             { campo: 'campo_m_construidos', requerido: true },
             { campo: 'campo_uso_excl', requerido: true },

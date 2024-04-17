@@ -156,9 +156,9 @@ function mostrar_campos_inmueble( $post ) {
         <tr id="campo_tipologia_chalet">
             <th>Tipo de Chalet*</th>
             <td>
-                <label><input type="radio" name="tipologia_chalet" value="atico" <?php checked($campos['tipologia_chalet'] ?? '', 'atico'); ?> required>Adosado</label>
-                <label><input type="radio" name="tipologia_chalet" value="estudio" <?php checked($campos['tipologia_chalet'] ?? '', 'estudio'); ?>>Pareado</label>
-                <label><input type="radio" name="tipologia_chalet" value="duplex" <?php checked($campos['tipologia_chalet'] ?? '', 'duplex'); ?>>Independiente</label>
+                <label><input type="radio" name="tipologia_chalet" value="adosado" <?php checked($campos['tipologia_chalet'] ?? '', 'adosado'); ?> required>Adosado</label>
+                <label><input type="radio" name="tipologia_chalet" value="pareado" <?php checked($campos['tipologia_chalet'] ?? '', 'pareado'); ?>>Pareado</label>
+                <label><input type="radio" name="tipologia_chalet" value="independiente" <?php checked($campos['tipologia_chalet'] ?? '', 'independiente'); ?>>Independiente</label>
             </td>
         </tr>
         <tr id="campo_tipo_rustica">
@@ -345,7 +345,7 @@ function mostrar_campos_inmueble( $post ) {
                 <label><input type="radio" name="ascensor" value="no" <?php checked($campos['ascensor'] ?? '', 'no'); ?>> No</label>
             </td>
         </tr>
-        <tr id="campo_ac">
+        <!-- <tr id="campo_ac">
             <th>Aire acondicionado*</th>
             <td>
                 <label><input type="radio" name="ac" value="no" <?php checked($campos['ac'] ?? '', 'no'); ?>>No disponible</label>
@@ -353,7 +353,7 @@ function mostrar_campos_inmueble( $post ) {
                 <label><input type="radio" name="ac" value="frio_calor" <?php checked($campos['ac'] ?? '', 'frio_calor'); ?>>Frío/calor</label>
                 <label><input type="radio" name="ac" value="preinst" <?php checked($campos['ac'] ?? '', 'preinst'); ?>>Preinstalación</label>
             </td>
-        </tr>
+        </tr> -->
         <tr id="campo_uso_excl">
             <th>Uso exclusivo*</th>
             <td>
@@ -469,7 +469,7 @@ function mostrar_campos_inmueble( $post ) {
                 <label><input type="checkbox" name="caract_garaje[]" id="ascensor_garaje" value="ascensor_garaje" <?php if (in_array('ascensor_garaje', $campos['caract_garaje'] ?? array() )) echo 'checked'; ?> >Ascensor</label>
                 <label><input type="checkbox" name="caract_garaje[]" id="persona_seguridad" value="persona_seguridad" <?php if (in_array('persona_seguridad', $campos['caract_garaje'] ?? array() )) echo 'checked'; ?>>Personal de seguridad</label>
                 <label><input type="checkbox" name="caract_garaje[]" id="plaza_cubierta" value="plaza_cubierta" <?php if (in_array('plaza_cubierta', $campos['caract_garaje'] ?? array() )) echo 'checked'; ?>>Plaza cubierta</label>
-                <label><input type="checkbox" name="caract_garaje[]" id="alarma_cerarada" value="alarma_cerarada" <?php if (in_array('alarma_cerarada', $campos['caract_garaje'] ?? array() )) echo 'checked'; ?>>Alarma con circuito cerrado</label>
+                <label><input type="checkbox" name="caract_garaje[]" id="alarma_cerrada" value="alarma_cerrada" <?php if (in_array('alarma_cerrada', $campos['caract_garaje'] ?? array() )) echo 'checked'; ?>>Alarma con circuito cerrado</label>
                 <label><input type="checkbox" name="caract_garaje[]" id="puerta_auto" value="puerta_auto" <?php if (in_array('puerta_auto', $campos['caract_garaje'] ?? array() )) echo 'checked'; ?>>Puerta automática</label>
             </td>
         </tr>

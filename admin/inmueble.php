@@ -46,7 +46,8 @@ class Inmueble
             'has_archive' => true,
             'rewrite' => array( 'slug' => 'inmueble' ),
             'menu_icon' => 'dashicons-admin-multisite',
-            'supports' => array( 'thumbnail' )
+            'supports' => array( 'thumbnail' ),
+            'show_in_rest' => true
         );
 
         register_post_type( 'inmueble', $args );
