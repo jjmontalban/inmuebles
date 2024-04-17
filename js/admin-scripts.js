@@ -378,7 +378,7 @@ jQuery(document).ready(function($) {
         $('#mapaModal').hide();
     });
 
-    document.getElementById('mapa_correcto').addEventListener('click', function(event) {
+    /* document.getElementById('mapa_correcto').addEventListener('click', function(event) {
         event.preventDefault();
         // Obtener la ubicación del marcador en el mapa
         var ubicacionMarcador = marcador.getPosition();
@@ -390,7 +390,7 @@ jQuery(document).ready(function($) {
     document.getElementById('mapa_correcto').addEventListener('click', function() {
         document.getElementById('mapaModal').style.display = 'none';
     });
-
+ */
 
     // Detectar cambios en el selector de propietarios
     $('#selector-propietario').change(function() {
