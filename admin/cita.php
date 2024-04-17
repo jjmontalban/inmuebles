@@ -92,8 +92,9 @@ class Cita
                 </td>
             </tr>
             <tr>
-                <th><label for="demanda_id">Demanda</label></th>
+            <th><label for="demanda_id">Demanda</label></th>
                 <td>
+                    <input type="text" id="searchDemanda" placeholder="Buscar demanda...">
                     <select name="demanda_id" id="demanda_id">
                         <option value="">Selecciona una demanda</option>
                         <?php foreach ($demandas as $demanda) : ?>
@@ -240,3 +241,4 @@ class Cita
 }
 
 new Cita();
+

@@ -310,7 +310,7 @@ jQuery(document).ready(function($) {
     /**
      * MAPA
     */
-   var marcador;
+    var marcador;
     // Asigna el evento al botón "Validar Dirección"
     $('#validar_direccion').on('click', function(event) {
         event.preventDefault(); // Evita el comportamiento predeterminado del enlace
@@ -371,12 +371,26 @@ jQuery(document).ready(function($) {
         // Oculta el modal
         $('#mapaModal').hide();
     });
-  
+
     // Asigna el evento al botón "Cerrar Modal"
     $('#cerrar_modal').on('click', function() {
         // Oculta el modal
         $('#mapaModal').hide();
     });
+
+    document.getElementById('mapa_correcto').addEventListener('click', function(event) {
+        event.preventDefault();
+        // Obtener la ubicación del marcador en el mapa
+        var ubicacionMarcador = marcador.getPosition();
+        // Guardar la ubicación en el campo oculto
+        document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
+    });
+
+
+    document.getElementById('mapa_correcto').addEventListener('click', function() {
+        document.getElementById('mapaModal').style.display = 'none';
+    });
+
 
     // Detectar cambios en el selector de propietarios
     $('#selector-propietario').change(function() {
@@ -395,17 +409,32 @@ jQuery(document).ready(function($) {
     }).trigger('change');  // Trigger inicial para ajustar la visualización en función de la selección actual
 
 
-    document.getElementById('mapa_correcto').addEventListener('click', function(event) {
-        event.preventDefault();
-        // Obtener la ubicación del marcador en el mapa
-        var ubicacionMarcador = marcador.getPosition();
-        // Guardar la ubicación en el campo oculto
-        document.getElementById('campo_mapa').value = ubicacionMarcador.lat() + ',' + ubicacionMarcador.lng();
-    });
+    /**
+     * buscador en el select
+    */
+    $(document).ready(function() {
+        $('#searchDemanda').on('input focus', function() {
+            var searchText = $(this).val().toLowerCase();
+            var visibleCount = 0;
+            var maxVisible = 10;
     
-    document.getElementById('mapa_correcto').addEventListener('click', function() {
-        document.getElementById('mapaModal').style.display = 'none';
-    });
+            $('#demanda_id option').each(function() {
+                var optionText = $(this).text().toLowerCase();
+                if (optionText.includes(searchText) && visibleCount < maxVisible) {
+                    $(this).show();
+                    visibleCount++;
+                } else {
+                    $(this).hide();
+                }
+            });
     
+            var size = $('#demanda_id option:visible').length;
+            $('#demanda_id').attr('size', size > 1 ? size : 2);
+        });
+    
+        $('#demanda_id').blur(function() {
+            $(this).attr('size', 1);
+        });
+    });
 
 });
