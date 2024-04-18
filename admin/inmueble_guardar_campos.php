@@ -48,16 +48,16 @@ function guardar_campos_inmueble( $post_id ) {
         update_post_meta( $post_id, 'tipo_operacion', sanitize_text_field( $_POST['tipo_operacion'] ) );
     }
     if ( isset( $_POST['precio_venta'] ) ) {
-        update_post_meta( $post_id, 'precio_venta', sanitize_text_field( $_POST['precio_venta'] ) );
+        update_post_meta( $post_id, 'precio_venta', intval( $_POST['precio_venta'] ) );
     }
     if ( isset( $_POST['precio_alquiler'] ) ) {
-        update_post_meta( $post_id, 'precio_alquiler', sanitize_text_field( $_POST['precio_alquiler'] ) );
+        update_post_meta( $post_id, 'precio_alquiler', intval( $_POST['precio_alquiler'] ) );
     }
     if ( isset( $_POST['gastos_comunidad'] ) ) {
-        update_post_meta( $post_id, 'gastos_comunidad', sanitize_text_field( $_POST['gastos_comunidad'] ) );
+        update_post_meta( $post_id, 'gastos_comunidad', intval( $_POST['gastos_comunidad'] ) );
     }
     if ( isset( $_POST['fianza'] ) ) {
-        update_post_meta( $post_id, 'fianza', sanitize_text_field( $_POST['fianza'] ) );
+        update_post_meta( $post_id, 'fianza', intval( $_POST['fianza'] ) );
     }
     if ( isset( $_POST['tipo_plaza'] ) ) {
         update_post_meta( $post_id, 'tipo_plaza', sanitize_text_field( $_POST['tipo_plaza'] ) );
@@ -108,34 +108,34 @@ function guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'humos', sanitize_text_field($_POST['humos']));
     }
     if (isset($_POST['m_construidos'])) {
-        update_post_meta($post_id, 'm_construidos', sanitize_text_field($_POST['m_construidos']));
+        update_post_meta($post_id, 'm_construidos', intval($_POST['m_construidos']));
     }
     if (isset($_POST['num_dormitorios'])) {
-        update_post_meta($post_id, 'num_dormitorios', sanitize_text_field($_POST['num_dormitorios']));
+        update_post_meta($post_id, 'num_dormitorios', intval($_POST['num_dormitorios']));
     }
     if (isset($_POST['num_banos'])) {
-        update_post_meta($post_id, 'num_banos', sanitize_text_field($_POST['num_banos']));
+        update_post_meta($post_id, 'num_banos', intval($_POST['num_banos']));
     }
     if (isset($_POST['num_ascensores'])) {
-        update_post_meta($post_id, 'num_ascensores', sanitize_text_field($_POST['num_ascensores']));
+        update_post_meta($post_id, 'num_ascensores', intval($_POST['num_ascensores']));
     }
     if (isset($_POST['m_utiles'])) {
-        update_post_meta($post_id, 'm_utiles', sanitize_text_field($_POST['m_utiles']));
+        update_post_meta($post_id, 'm_utiles', intval($_POST['m_utiles']));
     }
     if (isset($_POST['m_lineales'])) {
-        update_post_meta($post_id, 'm_lineales', sanitize_text_field($_POST['m_lineales']));
+        update_post_meta($post_id, 'm_lineales', intval($_POST['m_lineales']));
     }
     if (isset($_POST['superf_terreno'])) {
-        update_post_meta($post_id, 'superf_terreno', sanitize_text_field($_POST['superf_terreno']));
+        update_post_meta($post_id, 'superf_terreno', intval($_POST['superf_terreno']));
     }
     if (isset($_POST['m_plaza'])) {
-        update_post_meta($post_id, 'm_plaza', sanitize_text_field($_POST['m_plaza']));
+        update_post_meta($post_id, 'm_plaza', intval($_POST['m_plaza']));
     }
     if (isset($_POST['calif_consumo'])) {
         update_post_meta($post_id, 'calif_consumo', sanitize_text_field($_POST['calif_consumo']));
     }
     if (isset($_POST['consumo'])) {
-        update_post_meta($post_id, 'consumo', sanitize_text_field($_POST['consumo']));
+        update_post_meta($post_id, 'consumo', floatval($_POST['consumo']));
     }
     if (isset($_POST['cocina_equipada'])) {
         update_post_meta($post_id, 'cocina_equipada', sanitize_text_field($_POST['cocina_equipada']));
@@ -164,8 +164,11 @@ function guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['puerta_auto'])) {
         update_post_meta($post_id, 'puerta_auto', sanitize_text_field($_POST['puerta_auto']));
     }
+    if (isset($_POST['calif_emis'])) {
+        update_post_meta($post_id, 'calif_emis', sanitize_text_field($_POST['calif_emis']));
+    } 
     if (isset($_POST['emisiones'])) {
-        update_post_meta($post_id, 'emisiones', sanitize_text_field($_POST['emisiones']));
+        update_post_meta($post_id, 'emisiones', floatval($_POST['emisiones']));
     }
     if (isset($_POST['chimenea'])) {
         update_post_meta($post_id, 'chimenea', sanitize_text_field($_POST['chimenea']));
@@ -185,14 +188,11 @@ function guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['estado_cons'])) {
         update_post_meta($post_id, 'estado_cons', sanitize_text_field($_POST['estado_cons']));
     }
-    if (isset($_POST['calif_emis'])) {
-        update_post_meta($post_id, 'calif_emis', sanitize_text_field($_POST['calif_emis']));
-    } 
     if (isset($_POST['m_parcela'])) {
-        update_post_meta($post_id, 'm_parcela', sanitize_text_field($_POST['m_parcela']));
+        update_post_meta($post_id, 'm_parcela', intval($_POST['m_parcela']));
     }
     if (isset($_POST['m_fachada'])) {
-        update_post_meta($post_id, 'm_fachada', sanitize_text_field($_POST['m_fachada']));
+        update_post_meta($post_id, 'm_fachada', intval($_POST['m_fachada']));
     }  
     if (isset($_POST['tipologia_chalet'])) {
         update_post_meta($post_id, 'tipologia_chalet', sanitize_text_field($_POST['tipologia_chalet']));
@@ -207,16 +207,16 @@ function guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'tipo_rustica', sanitize_text_field($_POST['tipo_rustica']));
     }
     if (isset($_POST['num_plantas'])) {
-        update_post_meta($post_id, 'num_plantas', sanitize_text_field($_POST['num_plantas']));
+        update_post_meta($post_id, 'num_plantas', intval($_POST['num_plantas']));
     }
     if (isset($_POST['num_escap'])) {
-        update_post_meta($post_id, 'num_escap', sanitize_text_field($_POST['num_escap']));
+        update_post_meta($post_id, 'num_escap', intval($_POST['num_escap']));
     }
     if (isset($_POST['num_plazas'])) {
-        update_post_meta($post_id, 'num_plazas', sanitize_text_field($_POST['num_plazas']));
+        update_post_meta($post_id, 'num_plazas', intval($_POST['num_plazas']));
     }
     if (isset($_POST['num_estancias'])) {
-        update_post_meta($post_id, 'num_estancias', sanitize_text_field($_POST['num_estancias']));
+        update_post_meta($post_id, 'num_estancias', intval($_POST['num_estancias']));
     }
     if (isset($_POST['ubicacion_local'])) {
         update_post_meta($post_id, 'ubicacion_local', sanitize_text_field($_POST['ubicacion_local']));
@@ -228,7 +228,7 @@ function guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'descripcion', sanitize_text_field($_POST['descripcion']));
     }
     if (isset($_POST['ano_edificio'])) {
-        update_post_meta($post_id, 'ano_edificio', sanitize_text_field($_POST['ano_edificio']));
+        update_post_meta($post_id, 'ano_edificio', intval($_POST['ano_edificio']));
     }
     //video
     // Manejar la carga del vídeo si se ha subido uno nuevo

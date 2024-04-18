@@ -86,6 +86,7 @@ $zonas_inmueble_map = array(
     '3_piedras' => 'Las 3 Piedras',
     'estacion' => 'Estación autobuses',
     'lagunilla' => 'La Lagunilla',
+    'montijo' => 'Montijo',
 );
 
 /* Ocultar las opciones de publicación y visibilidad para los CPT personalizados */
