@@ -99,7 +99,7 @@ class Cita
                         <option value="">Selecciona una demanda</option>
                         <?php foreach ($demandas as $demanda) : ?>
                             <option value="<?php echo esc_attr($demanda->ID); ?>" <?php selected($demanda_id, $demanda->ID); ?>>
-                                <?php echo esc_html( $demanda->nombre ); ?>
+                                <?php echo esc_html( $demanda->nombre .' - '. $demanda->telefono ); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
