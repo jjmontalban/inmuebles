@@ -66,12 +66,15 @@ class Demanda
         $presupuesto = get_post_meta($post->ID, 'presupuesto', true);
         $inmueble_interesado = get_post_meta($post->ID, 'inmueble_interesado', true);
         $notas = get_post_meta($post->ID, 'notas', true);
-    $notas_str = '';
-    if (is_array($notas)) {
-        foreach ($notas as $nota) {
-            $notas_str .= 'Fecha: ' . $nota['fecha'] . ', Nota: ' . $nota['nota'] . "\n";
+        $notas = get_post_meta($post->ID, 'notas', true);
+        $notas_str = '';
+        if (is_array($notas)) {
+            foreach ($notas as $nota) {
+                $notas_str .= '(' . $nota['fecha'] . '), Nota: ' . $nota['nota'] . "\n";
+            }
+        } else {
+            $notas_str = '(' . date('Y-m-d H:i:s') . '), Nota: ' . $notas;
         }
-    }
         // Obtiene la lista de inmuebles para el select
         $args = array(
             'post_type' => 'inmueble',
@@ -216,7 +219,7 @@ class Demanda
         if (array_key_exists('nueva_nota', $_POST)) {
             $notas = get_post_meta($post_id, 'notas', true);
             if (!is_array($notas)) {
-                $notas = array();
+                $notas = array(array('nota' => $notas, 'fecha' => date('Y-m-d H:i:s')));
             }
             $nueva_nota = sanitize_text_field($_POST['nueva_nota']);
             $notas[] = array('nota' => $nueva_nota, 'fecha' => date('Y-m-d H:i:s'));
