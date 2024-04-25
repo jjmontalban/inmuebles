@@ -64,9 +64,14 @@ class Demanda
         $tipo_inmueble = unserialize(get_post_meta($post->ID, 'tipo_inmueble', true));
         $zona_deseada = unserialize(get_post_meta($post->ID, 'zona_deseada', true));
         $presupuesto = get_post_meta($post->ID, 'presupuesto', true);
-        $notas = get_post_meta($post->ID, 'notas', true);
         $inmueble_interesado = get_post_meta($post->ID, 'inmueble_interesado', true);
-        
+        $notas = get_post_meta($post->ID, 'notas', true);
+    $notas_str = '';
+    if (is_array($notas)) {
+        foreach ($notas as $nota) {
+            $notas_str .= 'Fecha: ' . $nota['fecha'] . ', Nota: ' . $nota['nota'] . "\n";
+        }
+    }
         // Obtiene la lista de inmuebles para el select
         $args = array(
             'post_type' => 'inmueble',
@@ -162,9 +167,19 @@ class Demanda
                 </td>
             </tr>
             <tr>
-                <th><label for="notas">Notas</label></th>
-                <td><textarea name="notas" id="notas" rows="10" cols="100"><?php echo esc_textarea( $notas ?? ''); ?></textarea></td>
-            </tr>
+    <th><label for="notas">Notas</label></th>
+    <td>
+        <?php 
+        $notas_arr = explode("\n", $notas_str);
+        foreach ($notas_arr as $nota) {
+            if (!empty(trim($nota))) {
+                echo '<p><input type="text" name="notas[]" value="' . esc_attr( $nota ) . '" readonly style="width: 100%;"></p>';
+            }
+        }
+        ?>
+        <p><input type="text" name="nueva_nota" id="nueva_nota" placeholder="Nueva nota" style="width: 100%;"></p>
+    </td>
+</tr>
         </table>
         <?php 
     }
@@ -198,9 +213,16 @@ class Demanda
         if (array_key_exists('presupuesto', $_POST)) {
             update_post_meta($post_id, 'presupuesto', sanitize_text_field($_POST['presupuesto']));
         }
-        if (array_key_exists('notas', $_POST)) {
-            update_post_meta($post_id, 'notas', sanitize_text_field($_POST['notas']));
+        if (array_key_exists('nueva_nota', $_POST)) {
+            $notas = get_post_meta($post_id, 'notas', true);
+            if (!is_array($notas)) {
+                $notas = array();
+            }
+            $nueva_nota = sanitize_text_field($_POST['nueva_nota']);
+            $notas[] = array('nota' => $nueva_nota, 'fecha' => date('Y-m-d H:i:s'));
+            update_post_meta($post_id, 'notas', $notas);
         }
+
         if (array_key_exists('inmueble_interesado', $_POST)) {
             update_post_meta($post_id, 'inmueble_interesado', sanitize_text_field($_POST['inmueble_interesado']));
         }
