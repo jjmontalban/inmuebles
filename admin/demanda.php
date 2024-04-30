@@ -66,7 +66,6 @@ class Demanda
         $presupuesto = get_post_meta($post->ID, 'presupuesto', true);
         $inmueble_interesado = get_post_meta($post->ID, 'inmueble_interesado', true);
         $notas = get_post_meta($post->ID, 'notas', true);
-        $notas = get_post_meta($post->ID, 'notas', true);
         $notas_str = '';
         if (is_array($notas)) {
             foreach ($notas as $nota) {
@@ -217,13 +216,16 @@ class Demanda
             update_post_meta($post_id, 'presupuesto', sanitize_text_field($_POST['presupuesto']));
         }
         if (array_key_exists('nueva_nota', $_POST)) {
-            $notas = get_post_meta($post_id, 'notas', true);
-            if (!is_array($notas)) {
-                $notas = array(array('nota' => $notas, 'fecha' => date('Y-m-d H:i:s')));
-            }
             $nueva_nota = sanitize_text_field($_POST['nueva_nota']);
-            $notas[] = array('nota' => $nueva_nota, 'fecha' => date('Y-m-d H:i:s'));
-            update_post_meta($post_id, 'notas', $notas);
+            // Verificar si la nueva nota no está vacía
+            if (!empty($nueva_nota)) {
+                $notas = get_post_meta($post_id, 'notas', true);
+                if (!is_array($notas)) {
+                    $notas = array(array('nota' => $notas, 'fecha' => date('Y-m-d H:i:s')));
+                }
+                $notas[] = array('nota' => $nueva_nota, 'fecha' => date('Y-m-d H:i:s'));
+                update_post_meta($post_id, 'notas', $notas);
+            }
         }
 
         if (array_key_exists('inmueble_interesado', $_POST)) {
