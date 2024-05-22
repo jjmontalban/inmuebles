@@ -4,11 +4,11 @@ This WordPress plugin allows you to turn your site into a real estate management
 
 ## Features
 
-- **Property Management**: Easily manage your properties from the WordPress admin panel. The `Inmuebles` custom post type (CPT) registers properties with numerous custom fields.
-- **Demand Management**: Register user demands for buying or selling properties using the `Demandas` CPT to handle these requests.
-- **Owner Management**: Register property owners using the `Propietarios` CPT.
+- **Property Management**: Easily manage your properties from the WordPress admin panel. The `Inmuebles` custom post type (CPT) registers properties with several custom fields.
+- **Demand Management**: Register user demands for buying or selling properties using `Demandas` CPT to handle these requests.
+- **Owner Management**: Register property owners using `Propietarios` CPT.
 - **Appointment Management**: Manage appointments through `Citas` CPT related to `Demandas` and `Inmuebles`. They are recorded in the system, and email notifications are sent to administrators and users with `Demandas`.
-- **Query Management**: Record queries submitted through frontend forms using a shortcode. Depending on where they are created, a demand type will be created accordingly. It's also possible to create a `Demandas` from a query. Queries are protected by Google reCAPTCHA to prevent spam, and the Google reCAPTCHA API key can be configured from the plugin's options.
+- **Query Management**: Record queries submitted through frontend forms using shortcodes. Depending on where they are created, a demand type will be created accordingly. It's also possible to create a `Demandas` from a query. Queries are protected by Google reCAPTCHA to prevent spam, and the Google reCAPTCHA API key can be configured from the plugin's options.
 - **Google Maps Integration**: Easily configure property maps from a plugin configuration page.
 - **Custom Shortcodes**:
   - Contact Forms: Several contact form options are available.
