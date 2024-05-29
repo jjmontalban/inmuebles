@@ -11,92 +11,86 @@
  * Text Domain: inmuebles
  */
 
+require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
+require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
+require_once plugin_dir_path(__FILE__) . 'admin/inmueble.php';
+require_once plugin_dir_path(__FILE__) . 'admin/cita.php';
+require_once plugin_dir_path(__FILE__) . 'admin/propietario.php';
+require_once plugin_dir_path(__FILE__) . 'admin/consulta.php';
+require_once plugin_dir_path(__FILE__) . 'admin/demanda.php';
+require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
+require_once plugin_dir_path(__FILE__) . 'admin/recaptcha.php';
 
-// Hook para la activación del plugin
 register_activation_hook(__FILE__, 'inmuebles_activate_plugin');
 
-// Hook para la desactivación del plugin
 register_deactivation_hook(__FILE__, 'inmuebles_deactivate_plugin');
 
-// Hook para la desinstalación del plugin
 register_uninstall_hook(__FILE__, 'inmuebles_uninstall_plugin');
 
-
-// Función de activación del plugin
 function inmuebles_activate_plugin() {
-    // Agregar la opción para la clave de API
     add_option('inmuebles_google_maps_api_key', '');
-    // Flushing rewrite rules para que las reglas de reescritura de URL se generen correctamente
     flush_rewrite_rules();
 }
 
-// Función de desinstalación del plugin
 function inmuebles_uninstall_plugin() {
-    // Eliminar opción de la API de Google Maps
     delete_option('inmuebles_google_maps_api_key');
-
-    // Eliminar tipos de contenido personalizados (CPT)
+    remove_menu_page('inmuebles');
     unregister_post_type('inmueble');
     unregister_post_type('propietario');
     unregister_post_type('consulta');
-
-    // Eliminar la página de configuración del menú
-    remove_menu_page('inmuebles-settings'); // Reemplaza 'inmuebles-settings' con el slug de tu página de configuración
-
-    // Flushing rewrite rules para que las reglas de reescritura de URL se actualicen
+    unregister_post_type('cita');
+    unregister_post_type('demanda');
+    
     flush_rewrite_rules();
 }
 
-
-// Función de desactivación del plugin
 function inmuebles_deactivate_plugin() {
 }
 
-
-// Incluimos los archivos secundarios
-require_once plugin_dir_path(__FILE__) . 'includes/cpt-inmueble.php';
-require_once plugin_dir_path(__FILE__) . 'includes/cpt-propietario.php';
-require_once plugin_dir_path(__FILE__) . 'includes/cpt-consulta.php';
-require_once plugin_dir_path(__FILE__) . 'includes/cpt-demanda.php';
-require_once plugin_dir_path(__FILE__) . 'admin/inmueble-page.php';
-require_once plugin_dir_path(__FILE__) . 'admin/propietario-page.php';
-require_once plugin_dir_path(__FILE__) . 'admin/consulta-page.php';
-require_once plugin_dir_path(__FILE__) . 'admin/demanda-page.php';
-
-
 /**
- * Carga librerias js necesarias
+ *   js admin
  */
 function inmuebles_load_scripts() {
-    // Registrar jQuery y jQuery UI
-    wp_enqueue_script('jquery');
-    wp_enqueue_script('jquery-ui-core');
     wp_enqueue_script('jquery-ui-sortable');
-
-    // Registrar el script 'media' de WordPress
     wp_enqueue_media();
-
-    // Obtener la clave de API almacenada
+    add_action('admin_menu', 'inmuebles_add_settings_page');
+    
+    // Google Maps API
     $api_key = get_option('inmuebles_google_maps_api_key', '');
-
-     // Agregar la página de configuración en el menú de administración
-     add_action('admin_menu', 'inmuebles_add_settings_page');
-
-    // Cargar la biblioteca de Google Maps JavaScript API con la clave
     wp_enqueue_script('google-maps', "https://maps.googleapis.com/maps/api/js?key={$api_key}", array(), null, true);
+    // Google Recaptcha
+    $recaptcha_site_key = get_option('inmuebles_recaptcha_site_key', '');
+    wp_enqueue_script('google-recaptcha', "https://www.google.com/recaptcha/api.js?render={$recaptcha_site_key}", array(), null, true);
 
-    // Registrar el script personalizado
-    wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '1.0', true);
+    wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/admin-scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '2.0', true);
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_scripts');
 
-
+/**
+ *   js front
+ */
+function inmuebles_load_front_scripts() {
+    wp_enqueue_script('inmuebles-front-script', plugin_dir_url(__FILE__) . 'js/front-scripts.js', array('jquery'), '1.0', true);
+    $recaptcha_site_key = get_option('inmuebles_recaptcha_site_key', '');
+    // Google Recaptcha
+    wp_localize_script('inmuebles-front-script', 'inmuebles_vars', array( 'recaptcha_site_key' => $recaptcha_site_key, ));
+    // Font Awesome
+    wp_enqueue_style('font-awesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+}
+add_action('wp_enqueue_scripts', 'inmuebles_load_front_scripts');
 
 /**
- * Carga css personalizado
+ * css frontend
  */
-function inmuebles_load_styles() {
-    // Registrar el archivo CSS del plugin
-    wp_enqueue_style('inmuebles-style', plugin_dir_url(__FILE__) . 'css/styles.css', array(), '1.0', 'all');
+function inmuebles_load_styles_front() {
+    wp_enqueue_style('inmuebles-style-front', plugin_dir_url(__FILE__) . 'css/style-front.css', array(), '2.0', 'all');
 }
-add_action('admin_enqueue_scripts', 'inmuebles_load_styles');
+add_action('wp_enqueue_scripts', 'inmuebles_load_styles_front');
+
+/**
+ * css backend
+ */
+function inmuebles_load_styles_admin() {
+    wp_enqueue_style('inmuebles-style-admin', plugin_dir_url(__FILE__) . 'css/style-admin.css', array(), '2.0', 'all');
+}
+add_action('admin_enqueue_scripts', 'inmuebles_load_styles_admin');
