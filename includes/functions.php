@@ -31,7 +31,7 @@ function obtener_campos_inmueble($post_id) {
         'residencial_altura','residencial_unif',
         'terciario_ofi','terciario_com','terciario_hotel','industrial','dotaciones','otra',
         'm_parcela','m_fachada','tipologia_chalet','tipo_rustica','num_plantas',
-        'num_estancias','ubicacion_local','tipo_plaza','m_plaza', 'visitas'
+        'num_estancias','ubicacion_local','tipo_plaza','m_plaza', 'visitas', 'codigo','referencia'
     );
 
     $valores = array();
