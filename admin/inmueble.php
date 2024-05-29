@@ -375,3 +375,54 @@ add_filter('wpseo_title', 'modificar_titulo_seo_inmueble');
 
 
 
+
+
+
+
+
+
+
+
+
+function inmueble_add_meta_boxes() {
+    add_meta_box(
+        'inmueble_meta_box', // ID de la caja de meta
+        'Información adicional', // Título de la caja de meta
+        'inmueble_display_meta_box', // Función que muestra el contenido de la caja de meta
+        'inmueble', // Tipo de publicación donde se mostrará la caja de meta
+        'normal', // Contexto donde se mostrará la caja de meta
+        'high' // Prioridad de la caja de meta
+    );
+}
+add_action('add_meta_boxes', 'inmueble_add_meta_boxes');
+
+function inmueble_display_meta_box($post) {
+    $codigo = get_post_meta($post->ID, 'codigo', true);
+    $referencia = get_post_meta($post->ID, 'referencia', true);
+    ?>
+    <table>
+        <tr>
+            <th><label for="codigo">Código</label></th>
+            <td><input type="text" id="codigo" name="codigo" value="<?php echo esc_attr($codigo); ?>"></td>
+        </tr>
+        <tr>
+            <th><label for="referencia">Referencia</label></th>
+            <td><input type="text" id="referencia" name="referencia" value="<?php echo esc_attr($referencia); ?>"></td>
+        </tr>
+    </table>
+    <?php
+}
+
+function inmueble_save_post($post_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    if (isset($_POST['codigo'])) {
+        update_post_meta($post_id, 'codigo', $_POST['codigo']);
+    }
+
+    if (isset($_POST['referencia'])) {
+        update_post_meta($post_id, 'referencia', $_POST['referencia']);
+    }
+}
+add_action('save_post', 'inmueble_save_post');
