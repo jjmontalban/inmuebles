@@ -77,7 +77,7 @@ class Inmueble
             'public' => true,
             'show_ui' => false,
             'show_in_quick_edit' => false,
-            'show_admin_column' => true,
+            'show_admin_column' => false,
             'query_var' => true,
             'rewrite' => array('slug' => 'tipo-inmueble'), // Personaliza la URL como desees
         );
@@ -147,7 +147,12 @@ class Inmueble
      */
     public function agregar_columnas_inmueble($columns)
     {
+        // Agregar la columna de tipo de inmueble
+        $columns['tipo_inmueble'] = 'Tipo de Inmueble';
+
+        // Agregar la columna de imagen destacada
         $columns['imagen_destacada'] = 'Imagen Destacada';
+
         return $columns;
     }
 
@@ -156,10 +161,27 @@ class Inmueble
      */
     public function mostrar_datos_columnas_inmueble($column, $post_id)
     {
-        if ($column === 'imagen_destacada') {
-            echo get_the_post_thumbnail($post_id, array(100, 100));
+        global $tipos_inmueble_map;
+
+        switch ($column) {
+            case 'imagen_destacada':
+                echo get_the_post_thumbnail($post_id, array(100, 100));
+                break;
+            case 'tipo_inmueble':
+                $tipo_inmueble_serializado = get_post_meta($post_id, 'tipo_inmueble', true);
+                $tipo_inmueble = maybe_unserialize($tipo_inmueble_serializado); // Deserializar el valor
+                
+                if (!empty($tipo_inmueble) && isset($tipos_inmueble_map[$tipo_inmueble])) {
+                    echo esc_html($tipos_inmueble_map[$tipo_inmueble]);
+                } else {
+                    echo 'No definido';
+                }
+                break;
+            default:
+                break;
         }
     }
+
 
     /**
      * Desactivar edicion rápida
@@ -450,3 +472,42 @@ function modificar_titulo_pagina() {
     }
 }
 add_action('wp_head', 'modificar_titulo_pagina');
+
+
+
+// Automatizar SEO. Actualizar Título y Descripción al Guardar un Inmueble
+// Función para actualizar el título y la descripción SEO al guardar un inmueble
+function actualizar_seo_para_inmueble($post_id) {
+    // Verificar que el post sea del tipo 'inmueble'
+    if (get_post_type($post_id) != 'inmueble') {
+        return;
+    }
+
+    // Comprobar permisos del usuario
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    // Obtener instancias de The SEO Framework
+    if (class_exists('The_SEO_Framework')) {
+        $seo_framework = The_SEO_Framework();
+
+        // Obtener el título y la descripción personalizados
+        $title = get_post_meta($post_id, 'nombre_calle', true);
+        $description = get_post_meta($post_id, 'descripcion', true);
+
+        // Actualizar el título SEO si existe
+        if ($title) {
+            $seo_framework->set_title($post_id, $title);
+        }
+
+        // Actualizar la descripción SEO si existe
+        if ($description) {
+            $seo_framework->set_description($post_id, $description);
+        }
+    }
+}
+add_action('save_post', 'actualizar_seo_para_inmueble');
+
+
+
