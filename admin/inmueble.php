@@ -359,36 +359,14 @@ function contar_visitas_inmueble() {
 add_action('wp_footer', 'contar_visitas_inmueble');
 
 
-/**
- * Añade titulo personalizado a entrada de tipo inmueble a YOAST
- */
-function modificar_titulo_seo_inmueble($title) {
-    if (is_singular('inmueble')) {
-        $post_id = get_queried_object_id();
-        $titulo_personalizado = get_post_meta($post_id, 'nombre_calle', true) . ' ' . get_post_meta($post_id, 'precio_venta', true);
-        $title = $titulo_personalizado;
-    }
-    
-    return $title;
-}
-add_filter('wpseo_title', 'modificar_titulo_seo_inmueble');
-
-
-
-
-
-
-
-
-
 
 
 
 function inmueble_add_meta_boxes() {
     add_meta_box(
         'inmueble_meta_box', // ID de la caja de meta
-        'Información adicional', // Título de la caja de meta
-        'inmueble_display_meta_box', // Función que muestra el contenido de la caja de meta
+        'Información de Identificación (se asigna automáticamente)', // Título de la caja de meta
+        'inmueble_meta_box_identification', // Función que muestra el contenido de la caja de meta
         'inmueble', // Tipo de publicación donde se mostrará la caja de meta
         'normal', // Contexto donde se mostrará la caja de meta
         'high' // Prioridad de la caja de meta
@@ -396,33 +374,61 @@ function inmueble_add_meta_boxes() {
 }
 add_action('add_meta_boxes', 'inmueble_add_meta_boxes');
 
-function inmueble_display_meta_box($post) {
+function inmueble_meta_box_identification($post) {
     $codigo = get_post_meta($post->ID, 'codigo', true);
     $referencia = get_post_meta($post->ID, 'referencia', true);
+    // Agregar nonce para la verificación de seguridad
+    wp_nonce_field('inmueble_save_meta_box_data', 'inmueble_meta_box_nonce');
     ?>
     <table>
         <tr>
             <th><label for="codigo">Código</label></th>
-            <td><input type="text" id="codigo" name="codigo" value="<?php echo esc_attr($codigo); ?>"></td>
+            <td><input type="text" id="codigo" name="codigo" value="<?php echo esc_attr($codigo); ?>" readonly></td>
         </tr>
         <tr>
             <th><label for="referencia">Referencia</label></th>
-            <td><input type="text" id="referencia" name="referencia" value="<?php echo esc_attr($referencia); ?>"></td>
+            <td><input type="text" id="referencia" name="referencia" value="<?php echo esc_attr($referencia); ?>" readonly></td>
         </tr>
     </table>
     <?php
 }
 
 function inmueble_save_post($post_id) {
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if (!current_user_can('edit_post', $post_id)) return;
-
-    if (isset($_POST['codigo'])) {
-        update_post_meta($post_id, 'codigo', $_POST['codigo']);
+    // Comprobar si el nonce es válido
+    if (!isset($_POST['inmueble_meta_box_nonce']) || !wp_verify_nonce($_POST['inmueble_meta_box_nonce'], 'inmueble_save_meta_box_data')) {
+        return;
     }
 
-    if (isset($_POST['referencia'])) {
-        update_post_meta($post_id, 'referencia', $_POST['referencia']);
+    // Comprobar si es una autoguardado
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    // Comprobar permisos del usuario
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    // Asignar código si no existe
+    if (!get_post_meta($post_id, 'codigo', true)) {
+        $codigo = $post_id;
+        update_post_meta($post_id, 'codigo', $codigo);
+    }
+
+    // Asignar referencia si no existe
+    if (!get_post_meta($post_id, 'referencia', true)) {
+        $last_reference = get_option('last_inmueble_reference', 0);
+        $new_reference = sprintf('chipi-%04d', $last_reference + 1);
+        update_post_meta($post_id, 'referencia', $new_reference);
+        update_option('last_inmueble_reference', $last_reference + 1);
     }
 }
 add_action('save_post', 'inmueble_save_post');
+
+// Asegurarse de que la opción exista al activar el plugin
+function inmueble_activate() {
+    if (false === get_option('last_inmueble_reference')) {
+        add_option('last_inmueble_reference', 0);
+    }
+}
+register_activation_hook(__FILE__, 'inmueble_activate');
