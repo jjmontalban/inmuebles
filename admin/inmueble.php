@@ -432,3 +432,21 @@ function inmueble_activate() {
     }
 }
 register_activation_hook(__FILE__, 'inmueble_activate');
+
+
+
+
+
+/**
+ * Asigna titulo del post al front del inmueble
+ */
+function modificar_titulo_pagina() {
+    if (is_singular('inmueble')) {
+        global $post;
+        $nombre_calle = get_post_meta($post->ID, 'nombre_calle', true);
+        if ($nombre_calle) {
+            echo '<script>document.title = "' . esc_js($nombre_calle) . '";</script>';
+        }
+    }
+}
+add_action('wp_head', 'modificar_titulo_pagina');
