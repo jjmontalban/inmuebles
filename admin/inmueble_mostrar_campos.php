@@ -409,14 +409,18 @@ function mostrar_campos_inmueble( $post ) {
         <tr id="campo_calif_terreno">
             <th><label for="calif_terreno">Tipo de calificación*</label></th>
             <td>
-                <label><input type="checkbox" name="calif_terreno[]" value="residencial_altura" <?php if (in_array('residencial_altura', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Residencial en altura</label>
-                <label><input type="checkbox" name="calif_terreno[]" value="residencial_unif" <?php if (in_array('residencial_unif', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Residencial unifamiliar</label>
-                <label><input type="checkbox" name="calif_terreno[]" value="terciario_ofi" <?php if (in_array('terciario_ofi', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Terciario oficinas</label>
-                <label><input type="checkbox" name="calif_terreno[]" value="terciario_com" <?php if (in_array('terciario_com', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Terciario comercial</label>
-                <label><input type="checkbox" name="calif_terreno[]" value="terciario_hotel" <?php if (in_array('terciario_hotel', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Terciario hoteles</label>
-                <label><input type="checkbox" name="calif_terreno[]" value="industrial" <?php if (in_array('industrial', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Industrial</label>
-                <label><input type="checkbox" name="calif_terreno[]" value="dotaciones" <?php if (in_array('dotaciones', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Dotaciones</label>
-                <label><input type="checkbox" name="calif_terreno[]" value="otra" <?php if (in_array('otra', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Otra</label>
+                <?php
+                // Asegurarse de que $campos['calif_terreno'] sea un array
+                $calif_terreno_values = isset($campos['calif_terreno']) ? (array)$campos['calif_terreno'] : array();
+                ?>
+                <label><input type="checkbox" name="calif_terreno[]" value="residencial_altura" <?php if (in_array('residencial_altura', $calif_terreno_values)) echo 'checked'; ?> >Residencial en altura</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="residencial_unif" <?php if (in_array('residencial_unif', $calif_terreno_values)) echo 'checked'; ?> >Residencial unifamiliar</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="terciario_ofi" <?php if (in_array('terciario_ofi', $calif_terreno_values)) echo 'checked'; ?> >Terciario oficinas</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="terciario_com" <?php if (in_array('terciario_com', $calif_terreno_values)) echo 'checked'; ?> >Terciario comercial</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="terciario_hotel" <?php if (in_array('terciario_hotel', $calif_terreno_values)) echo 'checked'; ?> >Terciario hoteles</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="industrial" <?php if (in_array('industrial', $calif_terreno_values)) echo 'checked'; ?> >Industrial</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="dotaciones" <?php if (in_array('dotaciones', $calif_terreno_values)) echo 'checked'; ?> >Dotaciones</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="otra" <?php if (in_array('otra', $calif_terreno_values)) echo 'checked'; ?> >Otra</label>
             </td>
         </tr>
 

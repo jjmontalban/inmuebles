@@ -51,6 +51,7 @@ function obtener_campos_inmueble($post_id) {
     $valores['otra_caract_inm'] = is_array(get_post_meta($post_id, 'otra_caract_inm', true)) ? get_post_meta($post_id, 'otra_caract_inm', true) : array();
     $valores['caract_local'] = is_array(get_post_meta($post_id, 'caract_local', true)) ? get_post_meta($post_id, 'caract_local', true) : array();
     $valores['caract_garaje'] = is_array(get_post_meta($post_id, 'caract_garaje', true)) ? get_post_meta($post_id, 'caract_garaje', true) : array();
+    $valores['calif_terreno'] = is_array(get_post_meta($post_id, 'calif_terreno', true)) ? get_post_meta($post_id, 'calif_terreno', true) : array();
     
     return $valores;
 }
