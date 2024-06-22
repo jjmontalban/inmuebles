@@ -77,8 +77,11 @@ function guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['aire_acond'])) {
         update_post_meta($post_id, 'aire_acond', sanitize_text_field($_POST['aire_acond']));
     }
-    if (isset($_POST['calif_terreno'])) {
-        update_post_meta($post_id, 'calif_terreno', sanitize_text_field($_POST['calif_terreno']));
+    if (isset($_POST['calif_terreno']) && is_array($_POST['calif_terreno'])) {
+        $calif_terreno = array_map('sanitize_text_field', $_POST['calif_terreno']);
+        update_post_meta($post_id, 'calif_terreno', $calif_terreno);
+    } else {
+        update_post_meta($post_id, 'calif_terreno', array());
     }
     if (isset($_POST['residencial_altura'])) {
         update_post_meta($post_id, 'residencial_altura', sanitize_text_field($_POST['residencial_altura']));

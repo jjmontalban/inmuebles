@@ -408,20 +408,18 @@ function mostrar_campos_inmueble( $post ) {
 
         <tr id="campo_calif_terreno">
             <th><label for="calif_terreno">Tipo de calificación*</label></th>
-                <td>
-                    <select name="calif_terreno" id="calif_terreno">
-                        <option value="">Seleccionar</option>
-                        <option value="residencial_altura" <?php selected($campos['calif_terreno'] ?? '', 'residencial_altura'); ?>>Residencial en altura</option>
-                        <option value="residencial_unif" <?php selected($campos['calif_terreno'] ?? '', 'residencial_unif'); ?>>Residencial unifamiliar</option>
-                        <option value="terciario_ofi" <?php selected($campos['calif_terreno'] ?? '', 'terciario_ofi'); ?>>Terciario oficinas</option>
-                        <option value="terciario_com" <?php selected($campos['calif_terreno'] ?? '', 'terciario_com'); ?>>Terciario comercial</option>
-                        <option value="terciario_hotel" <?php selected($campos['calif_terreno'] ?? '', 'terciario_hotel'); ?>>Terciario hoteles</option>
-                        <option value="industrial" <?php selected($campos['calif_terreno'] ?? '', 'industrial'); ?>>Industrial</option>
-                        <option value="dotaciones" <?php selected($campos['calif_terreno'] ?? '', 'dotaciones'); ?>>Dotaciones</option>
-                        <option value="otra" <?php selected($campos['calif_terreno'] ?? '', 'otra'); ?>>Otra</option>
-                    </select>
-                </td>
+            <td>
+                <label><input type="checkbox" name="calif_terreno[]" value="residencial_altura" <?php if (in_array('residencial_altura', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Residencial en altura</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="residencial_unif" <?php if (in_array('residencial_unif', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Residencial unifamiliar</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="terciario_ofi" <?php if (in_array('terciario_ofi', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Terciario oficinas</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="terciario_com" <?php if (in_array('terciario_com', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Terciario comercial</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="terciario_hotel" <?php if (in_array('terciario_hotel', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Terciario hoteles</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="industrial" <?php if (in_array('industrial', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Industrial</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="dotaciones" <?php if (in_array('dotaciones', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Dotaciones</label>
+                <label><input type="checkbox" name="calif_terreno[]" value="otra" <?php if (in_array('otra', $campos['calif_terreno'] ?? array())) echo 'checked'; ?> >Otra</label>
+            </td>
         </tr>
+
         <tr id="campo_otra_caract_inm">
             <th>Otras caracteristicas de la vivienda</th>
             <td>

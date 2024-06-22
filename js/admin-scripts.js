@@ -145,7 +145,7 @@ jQuery(document).ready(function($) {
             { campo: 'campo_tipo_terreno', requerido: true },
             { campo: 'campo_acceso_rodado', requerido: true },
             { campo: 'campo_superf_terreno', requerido: true },
-            { campo: 'campo_calif_terreno', requerido: true },
+            { campo: 'campo_calif_terreno', requerido: false },
             { campo: 'campo_tipo_terreno', requerido: true },
         ]
             
