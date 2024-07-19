@@ -147,13 +147,19 @@ class Inmueble
      */
     public function agregar_columnas_inmueble($columns)
     {
-        // Agregar la columna de tipo de inmueble
-        $columns['tipo_inmueble'] = 'Tipo de Inmueble';
-
-        // Agregar la columna de imagen destacada
-        $columns['imagen_destacada'] = 'Imagen Destacada';
-
-        return $columns;
+        // Crear un nuevo array de columnas ordenadas
+        $new_columns = array();
+    
+        // Añadir columnas en el orden deseado
+        $new_columns['title'] = $columns['title']; 
+        $new_columns['tipo_inmueble'] = 'Tipo de Inmueble';
+        $new_columns['referencia'] = 'Referencia';
+        $new_columns['imagen_destacada'] = 'Imagen Destacada';
+        $new_columns['date'] = $columns['date'];
+        $new_columns['tsf-seo-bar-wrap'] = $columns['tsf-seo-bar-wrap'];
+    
+        // Devolver el nuevo array de columnas ordenadas
+        return $new_columns;
     }
 
     /**
@@ -176,6 +182,10 @@ class Inmueble
                 } else {
                     echo 'No definido';
                 }
+                break;
+            case 'referencia':
+                $referencia = get_post_meta($post_id, 'referencia', true);
+                echo !empty($referencia) ? esc_html($referencia) : 'No definido';
                 break;
             default:
                 break;
