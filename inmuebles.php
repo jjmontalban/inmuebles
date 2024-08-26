@@ -14,6 +14,7 @@
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
 require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 require_once plugin_dir_path(__FILE__) . 'admin/inmueble.php';
+require_once plugin_dir_path(__FILE__) . 'admin/informe-inmueble.php';
 require_once plugin_dir_path(__FILE__) . 'admin/cita.php';
 require_once plugin_dir_path(__FILE__) . 'admin/propietario.php';
 require_once plugin_dir_path(__FILE__) . 'admin/consulta.php';
