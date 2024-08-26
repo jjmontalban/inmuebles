@@ -160,7 +160,7 @@ class Demanda
                             }
                             // Verifica si el tipo de inmueble está mapeado correctamente
                             if (is_array($tipo_inmueble)) {
-                                // Si es un array, toma el primer valor (o ajusta según tu necesidad)
+                                // Si es un array, toma el primer valor
                                 $tipo_inmueble_key = reset($tipo_inmueble);
                             } else {
                                 $tipo_inmueble_key = $tipo_inmueble;

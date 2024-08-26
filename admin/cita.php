@@ -55,10 +55,11 @@ class Cita
 
     public function mostrar_campos_cita($post)
     {
+        global $tipos_inmueble_map;
+        
         $inmueble_id = get_post_meta($post->ID, 'inmueble_id', true);
         $demanda_id = get_post_meta($post->ID, 'demanda_id', true);
         $fecha = get_post_meta($post->ID, 'fecha', true);
-        
         
         $args = array(
             'post_type' => 'inmueble',
@@ -82,10 +83,26 @@ class Cita
                         <?php foreach ($inmuebles as $inmueble) : ?>
                             <?php
                             $tipo_inmueble = get_post_meta($inmueble->ID, 'tipo_inmueble', true);
+                            // Deserializa el tipo de inmueble si es necesario
+                            if (is_serialized($tipo_inmueble)) {
+                                $tipo_inmueble = maybe_unserialize($tipo_inmueble);
+                            }
+                            // Verifica si el tipo de inmueble está mapeado correctamente
+                            if (is_array($tipo_inmueble)) {
+                                // Si es un array, toma el primer valor
+                                $tipo_inmueble_key = reset($tipo_inmueble);
+                            } else {
+                                $tipo_inmueble_key = $tipo_inmueble;
+                            }
+                            
+                            if (array_key_exists($tipo_inmueble_key, $tipos_inmueble_map)) {
+                                $tipo_inmueble = $tipos_inmueble_map[$tipo_inmueble_key];
+                            }
                             $nombre_calle = get_post_meta($inmueble->ID, 'nombre_calle', true);
+                            $referencia = get_post_meta($inmueble->ID, 'referencia', true);
                             ?>
                             <option value="<?php echo esc_attr($inmueble->ID); ?>" <?php selected($inmueble_id, $inmueble->ID); ?>>
-                                <?php echo esc_html($tipo_inmueble . ' en ' . $nombre_calle); ?>
+                                <?php echo esc_html('('. $referencia .') ' . $tipo_inmueble . ' en ' . $nombre_calle); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
