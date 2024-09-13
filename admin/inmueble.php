@@ -2,26 +2,38 @@
 
 class Inmueble
 {
-    public function __construct()
-    {        
+    public function __construct() {
+        // Cargar dependencias para guardar y mostrar campos personalizados
         require_once 'inmueble_mostrar_campos.php';
         require_once 'inmueble_guardar_campos.php';
-        
+        require_once 'inmueble-pdf.php'; // Incluir la clase de PDF
+        require_once 'inmueble-functions.php';
+
+        // Registrar CPT y taxonomía
         add_action('init', [$this, 'crear_cpt_inmueble']);
         add_action('init', [$this, 'registrar_taxonomia_tipo_inmueble']);
+        // Agregar columnas personalizadas y metaboxes
         add_filter('manage_inmueble_posts_columns', [$this, 'agregar_columnas_inmueble']);
         add_action('manage_inmueble_posts_custom_column', [$this, 'mostrar_datos_columnas_inmueble'], 10, 2);
-        add_action( 'add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_inmueble']);
+        add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_inmueble']);
+        add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_indentificacion']);
+        // Guardar datos al guardar el post
+        add_action('save_post', [$this, 'inmuebles_guardar_campos_inmueble']);
         add_action('save_post', [$this, 'asignar_tipo_inmueble_taxonomia']);
-        add_filter('the_title', [$this, 'modificar_valor_columna_title'], 1, 2);        
-        add_filter('post_row_actions', [$this, 'desactivar_quick_edit_inmueble'], 10, 2);
+        add_action('save_post', [$this, 'guardar_meta_inmueble']);
+        add_action('save_post', [$this, 'actualizar_seo_inmueble']);
+
+        // Personalizar URL del inmueble
         add_filter('wp_insert_post_data', [$this, 'inmuebles_custom_permalink'], 10, 2);
-        add_action( 'save_post', [$this, 'inmuebles_guardar_campos_inmueble']);   
-        add_action('add_meta_boxes', array($this, 'inmuebles_agregar_mb_pdf_inmueble')); 
+        
+        // Otras funcionalidades
+        add_filter('the_title', [$this, 'modificar_valor_columna_title'], 1, 2);  
+        add_filter('post_row_actions', [$this, 'desactivar_quick_edit_inmueble'], 10, 2);
     }
 
+
     /**
-    * Registra el tipo de entrada personalizado 'inmueble'.
+    * Registra CPT 'inmueble'.
     */
     public function crear_cpt_inmueble() {
         $labels = array(
@@ -50,6 +62,7 @@ class Inmueble
 
         register_post_type( 'inmueble', $args );
     }
+
 
     /**
     * Registra la taxonomía 'tipo de inmueble'.
@@ -83,62 +96,6 @@ class Inmueble
         register_taxonomy('tipo_inmueble', 'inmueble', $args);
     }
 
-    /**
-     * Agrega el metabox "Datos del inmueble" al formulario de edición de inmuebles.
-     */
-    public function inmuebles_agregar_mb_campos_inmueble() {
-        add_meta_box( 'inmueble_campos_inmueble',
-                      'Datos del inmueble',
-                      'mostrar_campos_inmueble',
-                      'inmueble',
-                      'normal',
-                      'high' );
-    }
-
-    /**
-     * Guarda la taxonomía 'tipo de inmueble' cada vez que se guarde un inmueble cogiendo el valor del campo personalizado "tipo_inmueble"
-     */
-    function asignar_tipo_inmueble_taxonomia($post_id) {
-        global $tipos_inmueble_map;
-    
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-            return;
-        }
-    
-        $tipo_inmueble = get_post_meta($post_id, 'tipo_inmueble', true);
-    
-        if (isset($tipos_inmueble_map[$tipo_inmueble])) {
-            // Añadir un prefijo o sufijo único al slug del término
-            $slug = $tipo_inmueble . '_' . uniqid();
-    
-            wp_insert_term($tipos_inmueble_map[$tipo_inmueble], 'tipo_inmueble', array(
-                'slug' => $slug
-            ));
-    
-            wp_set_object_terms($post_id, $slug, 'tipo_inmueble', false);
-        }
-    }
-    
-
-    /**
-     * Guarda los valores de los campos personalizados al guardar un inmueble.
-     * @param int $post_id ID del inmueble actual.
-     */
-    public function inmuebles_guardar_campos_inmueble( $post_id ) {
-        guardar_campos_inmueble( $post_id );
-    }
-
-    /**
-     * Modificar el valor de la columna "title" en el listado de 'inmueble'
-     */
-    public function modificar_valor_columna_title($title, $post_id) {
-        if (get_post_type($post_id) == 'inmueble') {
-            $titulo_personalizado = get_post_meta($post_id, 'nombre_calle', true) . ' ' . get_post_meta($post_id, 'precio_venta', true);
-            //valor personalizado en lugar del título original
-            $title = $titulo_personalizado;
-        }
-        return $title;
-    }
 
     /**
      * Agregar columnas personalizadas en el listado de inmuebles.
@@ -147,7 +104,6 @@ class Inmueble
     {
         // Crear un nuevo array de columnas ordenadas
         $new_columns = array();
-    
         // Añadir columnas en el orden deseado
         $new_columns['title'] = $columns['title']; 
         $new_columns['tipo_inmueble'] = 'Tipo de Inmueble';
@@ -159,6 +115,7 @@ class Inmueble
         // Devolver el nuevo array de columnas ordenadas
         return $new_columns;
     }
+
 
     /**
      * Llenar las columnas personalizadas en el listado de inmuebles.
@@ -192,14 +149,24 @@ class Inmueble
 
 
     /**
-     * Desactivar edicion rápida
+     * Agrega el metabox "Datos del inmueble" al formulario de edición de inmuebles.
      */
-    public function desactivar_quick_edit_inmueble($actions, $post) {
-        
-        if ($post->post_type === 'inmueble') {
-            unset($actions['inline hide-if-no-js']);
-        }
-        return $actions;
+    public function inmuebles_agregar_mb_campos_inmueble() {
+        add_meta_box( 'inmueble_campos_inmueble',
+                    'Datos del inmueble',
+                    'mostrar_campos_inmueble',
+                    'inmueble',
+                    'normal',
+                    'high' );
+    }
+
+
+    /**
+     * Guarda los valores de los campos personalizados al guardar un inmueble.
+     * @param int $post_id ID del inmueble actual.
+     */
+    public function inmuebles_guardar_campos_inmueble( $post_id ) {
+        guardar_campos_inmueble( $post_id );
     }
 
 
@@ -221,101 +188,143 @@ class Inmueble
         }
         return $data;
     }
-    
-
-    
-
-
 
 
     /**
-     * PDF de inmueble
+     * Modificar el valor de la columna "title" en el listado de 'inmueble'
      */
-    public function inmuebles_agregar_mb_pdf_inmueble() {
+    public function modificar_valor_columna_title($title, $post_id) {
+        if (get_post_type($post_id) == 'inmueble') {
+            $titulo_personalizado = get_post_meta($post_id, 'nombre_calle', true) . ' ' . get_post_meta($post_id, 'precio_venta', true);
+            //valor personalizado en lugar del título original
+            $title = $titulo_personalizado;
+        }
+        return $title;
+    }
+
+
+    /**
+     * Desactivar edicion rápida
+     */
+    public function desactivar_quick_edit_inmueble($actions, $post) { 
+        if ($post->post_type === 'inmueble') {
+            unset($actions['inline hide-if-no-js']);
+        }
+        return $actions;
+    }
+
+
+    /**
+     * Guarda la taxonomía 'tipo de inmueble' cada vez que se guarde un inmueble cogiendo el valor del campo personalizado "tipo_inmueble"
+     */
+    function asignar_tipo_inmueble_taxonomia($post_id) {
+        global $tipos_inmueble_map;
+    
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+    
+        $tipo_inmueble = get_post_meta($post_id, 'tipo_inmueble', true);
+    
+        if (isset($tipos_inmueble_map[$tipo_inmueble])) {
+            // Añadir un prefijo o sufijo único al slug del término
+            $slug = $tipo_inmueble . '_' . uniqid();
+    
+            wp_insert_term($tipos_inmueble_map[$tipo_inmueble], 'tipo_inmueble', array(
+                'slug' => $slug
+            ));
+    
+            wp_set_object_terms($post_id, $slug, 'tipo_inmueble', false);
+        }
+    }
+
+    /**
+     * Guarda los metadatos del inmueble al guardar un post
+     */
+    function guardar_meta_inmueble($post_id) {
+        // Comprobar si el nonce es válido
+        if (!isset($_POST['inmueble_meta_box_nonce']) || !wp_verify_nonce($_POST['inmueble_meta_box_nonce'], 'inmueble_save_meta_box_data')) {
+            return;
+        }
+        // Comprobar si es una autoguardado
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+        // Comprobar permisos del usuario
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+        // Asignar código si no existe
+        if (!get_post_meta($post_id, 'codigo', true)) {
+            $codigo = $post_id;
+            update_post_meta($post_id, 'codigo', $codigo);
+        }
+        // Asignar referencia si no existe
+        if (!get_post_meta($post_id, 'referencia', true)) {
+            $last_reference = get_option('last_inmueble_reference', 0);
+            $new_reference = sprintf('chipi-%04d', $last_reference + 1);
+            update_post_meta($post_id, 'referencia', $new_reference);
+            update_option('last_inmueble_reference', $last_reference + 1);
+        }
+    }
+
+
+    /**
+     * Método para actualizar el título y la descripción SEO al guardar un inmueble
+     */
+    public function actualizar_seo_inmueble($post_id) {
+        // Verificar que el post sea del tipo 'inmueble'
+        if (get_post_type($post_id) != 'inmueble') {
+            return;
+        }
+
+        // Comprobar permisos del usuario
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+
+        // Obtener instancias de The SEO Framework
+        if (class_exists('The_SEO_Framework')) {
+            $seo_framework = The_SEO_Framework();
+
+            // Obtener el título y la descripción personalizados
+            $title = get_post_meta($post_id, 'nombre_calle', true);
+            $description = get_post_meta($post_id, 'descripcion', true);
+
+            // Actualizar el título SEO si existe
+            if ($title) {
+                $seo_framework->set_title($post_id, $title);
+            }
+
+            // Actualizar la descripción SEO si existe
+            if ($description) {
+                $seo_framework->set_description($post_id, $description);
+            }
+        }
+    }
+
+    /**
+     * Agregar metabox de indetificacion de inmueble
+     */
+    public function inmuebles_agregar_mb_campos_indentificacion() {
         add_meta_box(
-            'inmueble_pdf_inmueble',
-            'PDF de Inmueble',
-            array($this, 'inmuebles_boton_pdf'), // Callback
-            'inmueble', // Donde se mostrará
-            'side', // Contexto
-            'default' // Prioridad
+            'inmueble_meta_box', // ID de la caja de meta
+            'Información de Identificación (se asigna automáticamente)', // Título de la caja de meta
+            'inmueble_meta_box_identification', // Callback que muestra el contenido
+            'inmueble', // Tipo de publicación donde se mostrará la caja de meta
+            'normal', // Contexto donde se mostrará la caja de meta
+            'high' // Prioridad de la caja de meta
         );
     }
-
-    public function inmuebles_boton_pdf($post) {
-        echo '<button id="generar-pdf" type="button" class="button button-primary button-large">Crear PDF anuncio de Inmueble</button>';
-    }
     
-
-    public function inmuebles_generar_pdf($post_id) {
-        // Obtén los detalles de la vivienda
-        $vivienda = get_post($post_id);
-        $campos = get_post_meta($post_id);
-
-        // Crea una nueva instancia de TCPDF
-        $pdf = new TCPDF();
-
-        // Añade una página
-        $pdf->AddPage();
-
-        // Escribe los detalles de la vivienda en el PDF
-        $pdf->SetFont('helvetica', '', 12);
-        $pdf->Write(0, $vivienda->post_title, '', 0, 'L', true, 0, false, false, 0);
-        // Repite este paso para cada campo que quieras añadir al PDF
-
-        // Cierra y genera el PDF
-        $pdf->Output('vivienda.pdf', 'I');
-    }
-
 }
 
 new Inmueble();
 
 
-/* Cuenta las visitas de los inmuebles y registra la fecha de cada visita */
-function contar_visitas_inmueble() {
-    // Verificar si la página es un inmueble individual y si el usuario no es administrador ni editor
-    if (is_singular('inmueble') && !current_user_can('activate_plugins') && !current_user_can('edit_others_posts')) { 
-        $inmueble_id = get_the_ID(); 
-
-        // Obtener el número de visitas y las fechas anteriores (si existen)
-        $visitas = get_post_meta($inmueble_id, 'visitas', true);
-        $fechas_visitas = get_post_meta($inmueble_id, 'fechas_visitas', true);
-
-        // Asegurarse de que $fechas_visitas sea un array
-        if (!is_array($fechas_visitas)) {
-            $fechas_visitas = array();
-        }
-
-        // Incrementar el número de visitas
-        $visitas = empty($visitas) ? 1 : $visitas + 1;
-
-        // Registrar la fecha de la visita actual
-        $fecha_actual = current_time('mysql');
-        $fechas_visitas[] = $fecha_actual;
-
-        // Actualizar los metadatos del inmueble
-        update_post_meta($inmueble_id, 'visitas', $visitas);
-        update_post_meta($inmueble_id, 'fechas_visitas', $fechas_visitas);
-    }
-}
-
-// Asegúrate de que la función esté agregada a la acción wp_footer
-add_action('wp_footer', 'contar_visitas_inmueble');
-
-
-function inmueble_add_meta_boxes() {
-    add_meta_box(
-        'inmueble_meta_box', // ID de la caja de meta
-        'Información de Identificación (se asigna automáticamente)', // Título de la caja de meta
-        'inmueble_meta_box_identification', // Función que muestra el contenido de la caja de meta
-        'inmueble', // Tipo de publicación donde se mostrará la caja de meta
-        'normal', // Contexto donde se mostrará la caja de meta
-        'high' // Prioridad de la caja de meta
-    );
-}
-add_action('add_meta_boxes', 'inmueble_add_meta_boxes');
-
+/**
+ * Mostrar el contenido del metabox
+ */
 function inmueble_meta_box_identification($post) {
     $codigo = get_post_meta($post->ID, 'codigo', true);
     $referencia = get_post_meta($post->ID, 'referencia', true);
@@ -335,38 +344,6 @@ function inmueble_meta_box_identification($post) {
     <?php
 }
 
-function inmueble_save_post($post_id) {
-    // Comprobar si el nonce es válido
-    if (!isset($_POST['inmueble_meta_box_nonce']) || !wp_verify_nonce($_POST['inmueble_meta_box_nonce'], 'inmueble_save_meta_box_data')) {
-        return;
-    }
-
-    // Comprobar si es una autoguardado
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
-    }
-
-    // Comprobar permisos del usuario
-    if (!current_user_can('edit_post', $post_id)) {
-        return;
-    }
-
-    // Asignar código si no existe
-    if (!get_post_meta($post_id, 'codigo', true)) {
-        $codigo = $post_id;
-        update_post_meta($post_id, 'codigo', $codigo);
-    }
-
-    // Asignar referencia si no existe
-    if (!get_post_meta($post_id, 'referencia', true)) {
-        $last_reference = get_option('last_inmueble_reference', 0);
-        $new_reference = sprintf('chipi-%04d', $last_reference + 1);
-        update_post_meta($post_id, 'referencia', $new_reference);
-        update_option('last_inmueble_reference', $last_reference + 1);
-    }
-}
-add_action('save_post', 'inmueble_save_post');
-
 // Asegurarse de que la opción exista al activar el plugin
 function inmueble_activate() {
     if (false === get_option('last_inmueble_reference')) {
@@ -374,60 +351,3 @@ function inmueble_activate() {
     }
 }
 register_activation_hook(__FILE__, 'inmueble_activate');
-
-
-
-
-
-/**
- * Asigna titulo del post al front del inmueble
- */
-function modificar_titulo_pagina() {
-    if (is_singular('inmueble')) {
-        global $post;
-        $nombre_calle = get_post_meta($post->ID, 'nombre_calle', true);
-        if ($nombre_calle) {
-            echo '<script>document.title = "' . esc_js($nombre_calle) . '";</script>';
-        }
-    }
-}
-add_action('wp_head', 'modificar_titulo_pagina');
-
-
-
-// Automatizar SEO. Actualizar Título y Descripción al Guardar un Inmueble
-// Función para actualizar el título y la descripción SEO al guardar un inmueble
-function actualizar_seo_para_inmueble($post_id) {
-    // Verificar que el post sea del tipo 'inmueble'
-    if (get_post_type($post_id) != 'inmueble') {
-        return;
-    }
-
-    // Comprobar permisos del usuario
-    if (!current_user_can('edit_post', $post_id)) {
-        return;
-    }
-
-    // Obtener instancias de The SEO Framework
-    if (class_exists('The_SEO_Framework')) {
-        $seo_framework = The_SEO_Framework();
-
-        // Obtener el título y la descripción personalizados
-        $title = get_post_meta($post_id, 'nombre_calle', true);
-        $description = get_post_meta($post_id, 'descripcion', true);
-
-        // Actualizar el título SEO si existe
-        if ($title) {
-            $seo_framework->set_title($post_id, $title);
-        }
-
-        // Actualizar la descripción SEO si existe
-        if ($description) {
-            $seo_framework->set_description($post_id, $description);
-        }
-    }
-}
-add_action('save_post', 'actualizar_seo_para_inmueble');
-
-
-
