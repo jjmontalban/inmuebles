@@ -300,21 +300,30 @@ class Demanda
             case 'email':
                 echo get_post_meta($post_id, 'email', true);
                 break;
-            case 'inmueble_interesado':
-                $inmueble_interesado = get_post_meta($post_id, 'inmueble_interesado', true);
-                if (is_numeric($inmueble_interesado)) {
-                    $tipo_inmueble = get_post_meta($inmueble_interesado, 'tipo_inmueble', true);
-                    $nombre_calle = get_post_meta($inmueble_interesado, 'nombre_calle', true);
-                    if (array_key_exists($tipo_inmueble, $tipos_inmueble_map)) {
-                        $tipo_inmueble = $tipos_inmueble_map[$tipo_inmueble];
+                case 'inmueble_interesado':
+                    $inmueble_interesado = get_post_meta($post_id, 'inmueble_interesado', true);
+                    if (is_numeric($inmueble_interesado)) {
+                        $tipo_inmueble_serialized = get_post_meta($inmueble_interesado, 'tipo_inmueble', true);
+                        $tipo_inmueble = maybe_unserialize($tipo_inmueble_serialized);
+                        $nombre_calle = get_post_meta($inmueble_interesado, 'nombre_calle', true);
+        
+                        if (is_array($tipo_inmueble)) {
+                            $tipo_inmueble_key = reset($tipo_inmueble);
+                        } else {
+                            $tipo_inmueble_key = $tipo_inmueble;
+                        }
+        
+                        if (array_key_exists($tipo_inmueble_key, $tipos_inmueble_map)) {
+                            $tipo_inmueble = $tipos_inmueble_map[$tipo_inmueble_key];
+                        }
+                        
+                        echo esc_html($tipo_inmueble . ' en ' . $nombre_calle);
+                    } else {
+                        echo esc_html($inmueble_interesado);
                     }
-                    echo esc_html($tipo_inmueble . ' en ' . $nombre_calle);
-                } else {
-                    echo esc_html($inmueble_interesado);
-                }
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
         }
     }
     
