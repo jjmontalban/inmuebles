@@ -204,13 +204,20 @@ class Inmueble
 
 
     /**
-     * Aplica el nombre del post inmueble
+     * Aplica el nombre del post inmueble a la URL
      */
     public function inmuebles_custom_permalink($data, $postarr) {
         if ($data['post_type'] == 'inmueble') {
+            // Obtener el tipo de inmueble, la dirección y la referencia
             $tipo_inmueble = isset($postarr['tipo_inmueble']) ? $postarr['tipo_inmueble'] : '';
             $nombre_calle = isset($postarr['nombre_calle']) ? $postarr['nombre_calle'] : '';
-            $data['post_name'] = sanitize_title($tipo_inmueble . ' ' . $nombre_calle);
+            $referencia = isset($postarr['referencia']) ? $postarr['referencia'] : '';
+            // Eliminar el prefijo "chipi-" de la referencia si existe
+            if (strpos($referencia, 'chipi-') === 0) {
+                $referencia = str_replace('chipi-', '', $referencia);
+            }
+            // Generar el slug añadiendo la referencia para hacerlo único
+            $data['post_name'] = sanitize_title($tipo_inmueble . ' ' . $nombre_calle . ' ' . $referencia);
         }
         return $data;
     }
@@ -295,9 +302,6 @@ function contar_visitas_inmueble() {
 
 // Asegúrate de que la función esté agregada a la acción wp_footer
 add_action('wp_footer', 'contar_visitas_inmueble');
-
-
-
 
 
 function inmueble_add_meta_boxes() {
