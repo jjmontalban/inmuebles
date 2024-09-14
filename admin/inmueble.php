@@ -16,16 +16,14 @@ class Inmueble
         add_filter('manage_inmueble_posts_columns', [$this, 'agregar_columnas_inmueble']);
         add_action('manage_inmueble_posts_custom_column', [$this, 'mostrar_datos_columnas_inmueble'], 10, 2);
         add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_inmueble']);
-        add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_indentificacion']);
+        add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_identificacion']);            
         // Guardar datos al guardar el post
-        add_action('save_post', [$this, 'inmuebles_guardar_campos_inmueble']);
-        add_action('save_post', [$this, 'asignar_tipo_inmueble_taxonomia']);
-        add_action('save_post', [$this, 'guardar_meta_inmueble']);
-        add_action('save_post', [$this, 'actualizar_seo_inmueble']);
-
+        add_action('save_post', [$this, 'inmuebles_guardar_campos_inmueble'], $post_id);
+        add_action('save_post', [$this, 'asignar_tipo_inmueble_taxonomia'], $post_id);
+        add_action('save_post', [$this, 'guardar_meta_inmueble'], $post_id);
+        add_action('save_post', [$this, 'actualizar_seo_inmueble'], $post_id);
         // Personalizar URL del inmueble
         add_filter('wp_insert_post_data', [$this, 'inmuebles_custom_permalink'], 10, 2);
-        
         // Otras funcionalidades
         add_filter('the_title', [$this, 'modificar_valor_columna_title'], 1, 2);  
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_inmueble'], 10, 2);
@@ -96,7 +94,6 @@ class Inmueble
         register_taxonomy('tipo_inmueble', 'inmueble', $args);
     }
 
-
     /**
      * Agregar columnas personalizadas en el listado de inmuebles.
      */
@@ -152,7 +149,8 @@ class Inmueble
      * Agrega el metabox "Datos del inmueble" al formulario de edición de inmuebles.
      */
     public function inmuebles_agregar_mb_campos_inmueble() {
-        add_meta_box( 'inmueble_campos_inmueble',
+        add_meta_box( 
+                    'inmueble_campos_inmueble',
                     'Datos del inmueble',
                     'mostrar_campos_inmueble',
                     'inmueble',
@@ -306,15 +304,38 @@ class Inmueble
     /**
      * Agregar metabox de indetificacion de inmueble
      */
-    public function inmuebles_agregar_mb_campos_indentificacion() {
+    public function inmuebles_agregar_mb_campos_identificacion() {
         add_meta_box(
-            'inmueble_meta_box', // ID de la caja de meta
-            'Información de Identificación (se asigna automáticamente)', // Título de la caja de meta
-            'inmueble_meta_box_identification', // Callback que muestra el contenido
-            'inmueble', // Tipo de publicación donde se mostrará la caja de meta
-            'normal', // Contexto donde se mostrará la caja de meta
-            'high' // Prioridad de la caja de meta
+            'inmueble_meta_box_indentificacion',
+            'Información de Identificación (se asigna automáticamente)',
+            [$this, 'inmueble_meta_box_identification'],
+            'inmueble',
+            'side',
+            'high'
         );
+    }
+
+    
+    /**
+     * Mostrar el contenido del metabox
+     */
+    public function inmueble_meta_box_identification($post) {
+        $codigo = get_post_meta($post->ID, 'codigo', true);
+        $referencia = get_post_meta($post->ID, 'referencia', true);
+        // Agregar nonce para la verificación de seguridad
+        wp_nonce_field('inmueble_save_meta_box_data', 'inmueble_meta_box_nonce');
+        ?>
+        <table>
+            <tr>
+                <th><label for="codigo">Código</label></th>
+                <td><input type="text" id="codigo" name="codigo" value="<?php echo esc_attr($codigo); ?>" readonly></td>
+            </tr>
+            <tr>
+                <th><label for="referencia">Referencia</label></th>
+                <td><input type="text" id="referencia" name="referencia" value="<?php echo esc_attr($referencia); ?>" readonly></td>
+            </tr>
+        </table>
+        <?php
     }
     
 }
@@ -322,27 +343,6 @@ class Inmueble
 new Inmueble();
 
 
-/**
- * Mostrar el contenido del metabox
- */
-function inmueble_meta_box_identification($post) {
-    $codigo = get_post_meta($post->ID, 'codigo', true);
-    $referencia = get_post_meta($post->ID, 'referencia', true);
-    // Agregar nonce para la verificación de seguridad
-    wp_nonce_field('inmueble_save_meta_box_data', 'inmueble_meta_box_nonce');
-    ?>
-    <table>
-        <tr>
-            <th><label for="codigo">Código</label></th>
-            <td><input type="text" id="codigo" name="codigo" value="<?php echo esc_attr($codigo); ?>" readonly></td>
-        </tr>
-        <tr>
-            <th><label for="referencia">Referencia</label></th>
-            <td><input type="text" id="referencia" name="referencia" value="<?php echo esc_attr($referencia); ?>" readonly></td>
-        </tr>
-    </table>
-    <?php
-}
 
 // Asegurarse de que la opción exista al activar el plugin
 function inmueble_activate() {
