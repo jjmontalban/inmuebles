@@ -60,6 +60,7 @@ class Cita
         $inmueble_id = get_post_meta($post->ID, 'inmueble_id', true);
         $demanda_id = get_post_meta($post->ID, 'demanda_id', true);
         $fecha = get_post_meta($post->ID, 'fecha', true);
+        $comentario = get_post_meta($post->ID, 'comentario', true);
         
         $args = array(
             'post_type' => 'inmueble',
@@ -134,6 +135,12 @@ class Cita
                     <input type="time" name="hora" id="hora" value="<?php echo esc_attr( $hora ?? ''); ?>" required>
                 </td>
             </tr>
+            <tr>
+                <th><label for="fecha">Comentario</label></th>
+                <td>
+                    <input type="text" name="comentario" id="comentario" value="<?php echo esc_attr( $comentario ?? ''); ?>">
+                </td>
+            </tr>
         </table>
         <?php
     }
@@ -160,6 +167,9 @@ class Cita
         }
         if (array_key_exists('hora', $_POST)) {
             update_post_meta($post_id, 'hora', sanitize_text_field($_POST['hora']));
+        }
+        if (array_key_exists('comentario', $_POST)) {
+            update_post_meta($post_id, 'comentario', sanitize_text_field($_POST['comentario']));
         }
 
        // Obtener información necesaria para el correo electrónico
@@ -207,6 +217,7 @@ class Cita
             'inmueble' => 'Nombre Inmueble',
             'fecha' => 'Fecha de la cita',
             'hora' => 'Hora de la cita',
+            'comentario' => 'Comentario',
         );
         return $columns;
     }
@@ -229,6 +240,9 @@ class Cita
             case 'hora':
                 $hora = get_post_meta($post_id, 'hora', true);
                 echo date('H:i', strtotime($hora));
+                break;
+            case 'comentario':
+                echo get_post_meta($post_id, 'comentario', true);
                 break;
             default:
                 break;
