@@ -63,6 +63,7 @@ class Demanda
         $operacion = get_post_meta($post->ID, 'operacion', true);
         $tipo_inmueble = unserialize(get_post_meta($post->ID, 'tipo_inmueble', true));
         $zona_deseada = unserialize(get_post_meta($post->ID, 'zona_deseada', true));
+        $num_hab = get_post_meta($post->ID, 'num_hab', true);
         $presupuesto = get_post_meta($post->ID, 'presupuesto', true);
         $inmueble_interesado = get_post_meta($post->ID, 'inmueble_interesado', true);
         $notas = get_post_meta($post->ID, 'notas', true);
@@ -146,6 +147,12 @@ class Demanda
                 <th><label for="presupuesto">Presupuesto</label></th>
                 <td><input type="text" name="presupuesto" id="presupuesto" value="<?php echo esc_attr( $presupuesto ?? ''); ?>"></td>
             </tr>
+            
+            <tr>
+                <th><label for="num_hab">Nº de habitaciones</label></th>
+                <td><input type="number" name="num_hab" id="num_hab" value="<?php echo esc_attr( $num_hab ?? ''); ?>"></td>
+            </tr>
+            
             <tr>
                 <th><label for="inmueble_interesado">Inmueble interesado</label></th>
                 <td>
@@ -209,7 +216,7 @@ class Demanda
             update_post_meta($post_id, 'nombre', sanitize_text_field($_POST['nombre']));
         }
         if (array_key_exists('email', $_POST)) {
-            update_post_meta($post_id, 'email', sanitize_text_field($_POST['email']));
+            update_post_meta($post_id, 'email', sanitize_email($_POST['email']));
         }
         if (array_key_exists('telefono', $_POST)) {
             update_post_meta($post_id, 'telefono', sanitize_text_field($_POST['telefono']));
@@ -227,7 +234,10 @@ class Demanda
             update_post_meta($post_id, 'tipo_inmueble', serialize($_POST['tipo_inmueble']));
         }        
         if (array_key_exists('presupuesto', $_POST)) {
-            update_post_meta($post_id, 'presupuesto', sanitize_text_field($_POST['presupuesto']));
+            update_post_meta($post_id, 'presupuesto', intval($_POST['presupuesto']));
+        }
+        if (array_key_exists('num_hab', $_POST)) {
+            update_post_meta($post_id, 'num_hab', intval($_POST['num_hab']));
         }
         if (array_key_exists('nueva_nota', $_POST)) {
             $nueva_nota = sanitize_text_field($_POST['nueva_nota']);
@@ -332,7 +342,6 @@ class Demanda
 new Demanda();
 
 //Amplia la busqueda en campos personalizados de demandas 
-add_filter('posts_search', 'buscar_en_campos_demanda', 10, 2);
 function buscar_en_campos_demanda($search, $wp_query) {
     global $wpdb;
     if (!empty($search) && !empty($wp_query->query_vars['search_terms'])) {
@@ -349,13 +358,14 @@ function buscar_en_campos_demanda($search, $wp_query) {
                 WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id 
                 AND {$wpdb->postmeta}.meta_key = '{$meta_key}' 
                 AND {$wpdb->postmeta}.meta_value LIKE '%" . implode("%' OR {$wpdb->postmeta}.meta_value LIKE '%", $terms) . "%'
-            )";
+                )";
+            }
+            // Agregar la cláusula de búsqueda de campo meta a la consulta principal
+            $search .= $meta_search;
         }
-        // Agregar la cláusula de búsqueda de campo meta a la consulta principal
-        $search .= $meta_search;
-    }
-    return $search;
+        return $search;
 }
+add_filter('posts_search', 'buscar_en_campos_demanda', 10, 2);
 
 /**
  * Valida
