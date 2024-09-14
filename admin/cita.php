@@ -140,44 +140,43 @@ class Cita
 
     public function guardar_campos_cita($post_id)
     {
-       if (empty($_POST) || defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        if (empty($_POST) || defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return $post_id;
-       }
-       if ($_POST['action'] != 'editpost' && $_POST['action'] != 'post.php') {
+        }
+        if ($_POST['action'] != 'editpost' && $_POST['action'] != 'post.php') {
             return $post_id;
-       }
-       if ( get_post_type($post_id) !== 'cita') {
-           return;
-       }
-       if (array_key_exists('inmueble_id', $_POST)) {
-           update_post_meta($post_id, 'inmueble_id', sanitize_text_field($_POST['inmueble_id']));
-       }
-       if (array_key_exists('demanda_id', $_POST)) {
-           update_post_meta($post_id, 'demanda_id', sanitize_text_field($_POST['demanda_id']));
-       }
-       if (array_key_exists('fecha', $_POST)) {
-           update_post_meta($post_id, 'fecha', sanitize_text_field($_POST['fecha']));
-       }
-       if (array_key_exists('hora', $_POST)) {
-           update_post_meta($post_id, 'hora', sanitize_text_field($_POST['hora']));
-       }
-   
+        }
+        if ( get_post_type($post_id) !== 'cita') {
+            return;
+        }
+        if (array_key_exists('inmueble_id', $_POST)) {
+            update_post_meta($post_id, 'inmueble_id', sanitize_text_field($_POST['inmueble_id']));
+        }
+        if (array_key_exists('demanda_id', $_POST)) {
+            update_post_meta($post_id, 'demanda_id', sanitize_text_field($_POST['demanda_id']));
+        }
+        if (array_key_exists('fecha', $_POST)) {
+            update_post_meta($post_id, 'fecha', sanitize_text_field($_POST['fecha']));
+        }
+        if (array_key_exists('hora', $_POST)) {
+            update_post_meta($post_id, 'hora', sanitize_text_field($_POST['hora']));
+        }
+
        // Obtener información necesaria para el correo electrónico
-       $inmueble_id = get_post_meta($post_id, 'inmueble_id', true);
-       $demanda_id = get_post_meta($post_id, 'demanda_id', true);
-       $fecha = get_post_meta($post_id, 'fecha', true);
-       $hora = get_post_meta($post_id, 'hora', true); 
-       $demanda_email = get_post_meta($demanda_id, 'email', true);
-
-
+        $inmueble_id = get_post_meta($post_id, 'inmueble_id', true);
+        $demanda_id = get_post_meta($post_id, 'demanda_id', true);
+        $fecha = get_post_meta($post_id, 'fecha', true);
+        $hora = get_post_meta($post_id, 'hora', true); 
+        $demanda_email = get_post_meta($demanda_id, 'email', true);
        // Obtener información del inmueble
         $inmueble_info = '';
+
         if ($inmueble_id) {
             $tipo_inmueble = get_post_meta($inmueble_id, 'tipo_inmueble', true);
             $nombre_calle = get_post_meta($inmueble_id, 'nombre_calle', true);
             $inmueble_info = $tipo_inmueble . " en " .  $nombre_calle;
         }
-   
+        
         // Obtener el nombre de la demanda
         $demanda_info = get_post_meta($demanda_id, 'nombre', true);
 
@@ -187,7 +186,7 @@ class Cita
         $message .= "Hora: $hora\n";
         $message .= "Inmueble: $inmueble_info\n";
         $message .= "Demanda: $demanda_info\n";
-   
+        
         // Enviar correo electrónico a los editores del sitio
         $editores = get_users(array('role' => 'editor'));
         // Enviar correo electrónico a cada editor
@@ -195,7 +194,7 @@ class Cita
             $editor_email = $editor->user_email;
             wp_mail($editor_email, $subject, $message);
         }
-   
+
         // Enviar correo electrónico a la demanda
         wp_mail($demanda_email, $subject, $message);
     }

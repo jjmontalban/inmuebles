@@ -19,7 +19,7 @@ class Consulta
     }
     
     /**
-     * Registra el tipo de entrada personalizado 'consulta'.
+     * Registra el CPT 'consulta'.
      */
     public function crear_cpt_consulta()
     {
@@ -29,7 +29,7 @@ class Consulta
             'menu_name'             => 'Consultas',
             'name_admin_bar'        => 'Consulta',
             'edit_item'             => 'Ver consulta', 
-            'search_items'          => 'Buscar Consulta',
+            'search_items'          => 'Buscar por nombre, email o telefono',
         );
     
         $args = array(
@@ -47,12 +47,12 @@ class Consulta
      */
     public function agregar_metabox_consulta()
     {
-         add_meta_box('datos_consulta', 
-                 'Datos de la Consulta', 
-                 array($this, 'mostrar_metabox_consulta'),
-                 'consulta', 
-                 'normal', 
-                 'high');
+        add_meta_box('datos_consulta', 
+                'Datos de la Consulta', 
+                array($this, 'mostrar_metabox_consulta'),
+                'consulta', 
+                'normal', 
+                'high');
     }
 
     /**
@@ -65,11 +65,11 @@ class Consulta
         $telefono = get_post_meta($post->ID, 'telefono', true);
         $mensaje = get_post_meta($post->ID, 'mensaje', true);
 
-        echo "<strong>Título:</strong> " . esc_html($post->post_title) . "<br>";
-        echo "<strong>Nombre:</strong> $nombre<br>";
-        echo "<strong>Email:</strong> $email<br>";
-        echo "<strong>Teléfono:</strong> $telefono<br>";
-        echo "<strong>Mensaje:</strong> $mensaje<br>";
+        echo "<p><strong>Título:</strong> " . esc_html($post->post_title) . "</p>";
+        echo "<p><strong>Nombre:</strong> $nombre</p>";
+        echo "<p><strong>Email:</strong> $email</p>";
+        echo "<p><strong>Teléfono:</strong> $telefono</p>";
+        echo "<p><strong>Mensaje:</strong> $mensaje</p>";
 
         $tipo_formulario = get_post_meta($post->ID, 'tipo_formulario', true);
 
@@ -78,9 +78,11 @@ class Consulta
             $presupuesto = get_post_meta($post->ID, 'presupuesto', true);
             echo "<strong>Zona deseada:</strong> $zona<br>";
             echo "<strong>Presupuesto:</strong> $presupuesto<br>";
+
         } elseif ($tipo_formulario == 'vender') {
             $direccion = get_post_meta($post->ID, 'direccion', true);
             echo "<strong>Direccion del inmueble:</strong> $direccion<br>";
+            
         } else {
             $inmueble_interesado_id = get_post_meta($post->ID, 'inmueble_interesado', true);
             // Obtener el título y el enlace del post del inmueble interesado
@@ -337,3 +339,19 @@ class Consulta
 }
 
 new Consulta();
+
+
+/**
+ * Amplia la búsqueda en campos personalizados de consulta.
+ */
+function buscar_en_campos_consulta($search, $wp_query) {
+    if (!empty($search) && !empty($wp_query->query_vars['search_terms']) && $wp_query->query_vars['post_type'] == 'consulta') {
+        $terms = $wp_query->query_vars['search_terms'];
+        $meta_keys = array('nombre', 'email', 'telefono');
+        $search .= construir_meta_search($meta_keys, $terms);
+    }
+
+    return $search;
+}
+
+add_filter('posts_search', 'buscar_en_campos_consulta', 10, 2);

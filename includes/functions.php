@@ -152,3 +152,27 @@ function ocultar_opciones_menu_para_editor() {
     }
 }
 add_action('admin_menu', 'ocultar_opciones_menu_para_editor');
+
+
+/**
+ * Construye la búsqueda en metadatos de un CPT dado.
+ */
+function construir_meta_search($meta_keys, $terms) {
+    global $wpdb;
+    // Inicializar la cláusula de búsqueda
+    $meta_search = '';
+
+    foreach ($meta_keys as $meta_key) {
+        $meta_search .= " OR EXISTS (
+            SELECT * FROM {$wpdb->postmeta}
+            WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+            AND {$wpdb->postmeta}.meta_key = '{$meta_key}'
+            AND {$wpdb->postmeta}.meta_value LIKE '%" . implode("%' OR {$wpdb->postmeta}.meta_value LIKE '%", $terms) . "%'
+        )";
+    }
+
+    // Añadir la condición de que solo se incluyan los posts publicados
+    $meta_search .= " AND {$wpdb->posts}.post_status = 'publish'";
+
+    return $meta_search;
+}

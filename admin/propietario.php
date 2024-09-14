@@ -23,7 +23,7 @@ class Propietario {
             'edit_item' => 'Editar Propietario',
             'view_item' => 'Ver Propietario',
             'all_items' => 'Todos los Propietarios',
-            'search_items' => 'Buscar Propietario',
+            'search_items' => 'Buscar por nombre, apellidos, teléfono, email o dni',
             'not_found' => 'No se encontraron Propietarios',
         );
     
@@ -161,7 +161,7 @@ function inmuebles_guardar_campos_propietario($post_id) {
         // Si no se seleccionó ningún inmueble, guardar un array vacío
         update_post_meta($post_id, 'inmuebles_asignados', array());
     }
-     
+
 }
     /**
      * Agregar columnas personalizadas a la lista de entradas de "Propietario"
@@ -245,26 +245,15 @@ function inmuebles_guardar_campos_propietario($post_id) {
 new Propietario();
 
 /**
- * Amplia la busqueda en campos personalizados de propietario 
+ * Amplia la búsqueda en campos personalizados de propietario.
  */
 function buscar_en_campos_propietario($search, $wp_query) {
-    global $wpdb;
-    if (!empty($search) && !empty($wp_query->query_vars['search_terms'])) {
-        if (is_admin() && $wp_query->query_vars['post_type'] == 'propietario') {
-            $terms = $wp_query->query_vars['search_terms'];
-            $meta_keys = array('nombre', 'apellidos', 'telefono', 'email', 'dni');
-            $meta_search = '';
-            foreach ($meta_keys as $meta_key) {
-                $meta_search .= " OR EXISTS (
-                    SELECT * FROM {$wpdb->postmeta}
-                    WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-                    AND {$wpdb->postmeta}.meta_key = '{$meta_key}'
-                    AND {$wpdb->postmeta}.meta_value LIKE '%" . implode("%' OR {$wpdb->postmeta}.meta_value LIKE '%", $terms) . "%'
-                    )";
-                }
-                $search .= $meta_search;
-        }
+    if (!empty($search) && !empty($wp_query->query_vars['search_terms']) && $wp_query->query_vars['post_type'] == 'propietario') {
+        $terms = $wp_query->query_vars['search_terms'];
+        $meta_keys = array('nombre', 'apellidos', 'telefono', 'email', 'dni');
+        $search .= construir_meta_search($meta_keys, $terms);
     }
+
     return $search;
 }
 add_filter('posts_search', 'buscar_en_campos_propietario', 10, 2);

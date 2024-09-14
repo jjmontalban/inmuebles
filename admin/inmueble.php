@@ -45,7 +45,7 @@ class Inmueble
             'edit_item' => 'Editar Inmueble',
             'view_item' => 'Ver Inmueble',
             'all_items' => 'Todos los Inmuebles',
-            'search_items' => 'Buscar Inmuebles',
+            'search_items' => 'Buscar por nombre de calle, precio o referencia',
         );
 
         $args = array(
@@ -351,3 +351,16 @@ function inmueble_activate() {
     }
 }
 register_activation_hook(__FILE__, 'inmueble_activate');
+
+
+
+function buscar_en_campos_inmueble($search, $wp_query) {
+    if (!empty($search) && !empty($wp_query->query_vars['search_terms']) && $wp_query->query_vars['post_type'] == 'inmueble') {
+        $terms = $wp_query->query_vars['search_terms'];
+        $meta_keys = array('referencia', 'nombre_calle', 'precio_venta');
+        $search .= construir_meta_search($meta_keys, $terms);
+    }
+
+    return $search;
+}
+add_filter('posts_search', 'buscar_en_campos_inmueble', 10, 2);

@@ -23,7 +23,7 @@ class Demanda
             'name_admin_bar' => 'Demanda',
             'edit_item' => 'Ver Demanda',
             'all_items' => 'Todas las Demandas',
-            'search_items' => 'Buscar Demanda',
+            'search_items' => 'Buscar por nombre, email o teléfono',
         );
     
         $args = array(
@@ -344,31 +344,34 @@ class Demanda
 
 new Demanda();
 
-//Amplia la busqueda en campos personalizados de demandas 
+/**
+ * Amplia la búsqueda en campos personalizados de demandas.
+ */
 function buscar_en_campos_demanda($search, $wp_query) {
-    global $wpdb;
-    if (!empty($search) && !empty($wp_query->query_vars['search_terms'])) {
-        // Obtener términos de búsqueda
+    if (!empty($search) && !empty($wp_query->query_vars['search_terms']) && $wp_query->query_vars['post_type'] == 'demanda') {
         $terms = $wp_query->query_vars['search_terms'];
-        // Campos meta que deseas buscar
         $meta_keys = array('nombre', 'email', 'telefono');
-        // Inicializar la cláusula de búsqueda de campos meta
-        $meta_search = '';
-        foreach ($meta_keys as $meta_key) {
-            // Agregar cláusula para cada campo meta
-            $meta_search .= " OR EXISTS (
-                SELECT * FROM {$wpdb->postmeta} 
-                WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id 
-                AND {$wpdb->postmeta}.meta_key = '{$meta_key}' 
-                AND {$wpdb->postmeta}.meta_value LIKE '%" . implode("%' OR {$wpdb->postmeta}.meta_value LIKE '%", $terms) . "%'
-                )";
-            }
-            // Agregar la cláusula de búsqueda de campo meta a la consulta principal
-            $search .= $meta_search;
-        }
-        return $search;
+        $search .= construir_meta_search($meta_keys, $terms);
+    }
+
+    return $search;
 }
 add_filter('posts_search', 'buscar_en_campos_demanda', 10, 2);
+
+
+// Cambiar el texto del botón de búsqueda en la pantalla de administración de 'demanda'
+function cambiar_texto_boton_busqueda_demanda( $text ) {
+    global $post_type;
+
+    // Verificar si estamos en el tipo de post 'demanda'
+    if ( 'demanda' === $post_type ) {
+        return 'Buscar por nombre, email o teléfono';
+    }
+
+    return $text;
+}
+//add_filter( 'gettext', 'cambiar_texto_boton_busqueda_demanda', 20, 3 );
+
 
 /**
  * Valida
