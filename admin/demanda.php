@@ -53,7 +53,6 @@ class Demanda
      * @param WP_Post $post El objeto de entrada actual.
      */
     public function mostrar_campos_demanda( $post ) {
-
         global $tipos_inmueble_map, $zonas_inmueble_map;
         
         $nombre = get_post_meta($post->ID, 'nombre', true);
@@ -88,14 +87,17 @@ class Demanda
                 <th><label for="nombre">Nombre*</label></th>
                 <td><input type="text" name="nombre" id="nombre" value="<?php echo esc_attr( $nombre ?? ''); ?>" required></td>
             </tr>
+
             <tr>
                 <th><label for="email">Email</label></th>
                 <td><input type="text" name="email" id="email" value="<?php echo esc_attr( $email ?? ''); ?>" ></td>
             </tr>
+
             <tr>
                 <th><label for="telefono">Teléfono</label></th>
                 <td><input type="text" name="telefono" id="telefono" value="<?php echo esc_attr( $telefono ?? ''); ?>"></td>
             </tr>
+
             <tr>
                 <th><label for="dni">DNI</label></th>
                 <td><input type="text" name="dni" id="dni" value="<?php echo esc_attr( $dni ?? ''); ?>"></td>
@@ -141,6 +143,7 @@ class Demanda
                         }
                         ?>
                     </select>
+                </td>
             </tr>
             
             <tr>
@@ -189,20 +192,20 @@ class Demanda
                     </select>
                 </td>
             </tr>
-            <tr>
-    <th><label for="notas">Notas</label></th>
-    <td>
-        <?php 
-        $notas_arr = explode("\n", $notas_str);
-        foreach ($notas_arr as $nota) {
-            if (!empty(trim($nota))) {
-                echo '<p><input type="text" name="notas[]" value="' . esc_attr( $nota ) . '" readonly style="width: 100%;"></p>';
-            }
-        }
-        ?>
-        <p><input type="text" name="nueva_nota" id="nueva_nota" placeholder="Nueva nota" style="width: 100%;"></p>
-    </td>
-</tr>
+
+            <th><label for="notas">Notas</label></th>
+            <td>
+                <?php 
+                $notas_arr = explode("\n", $notas_str);
+                foreach ($notas_arr as $nota) {
+                    if (!empty(trim($nota))) {
+                        echo '<p><input type="text" name="notas[]" value="' . esc_attr( $nota ) . '" readonly style="width: 100%;"></p>';
+                    }
+                }
+                ?>
+                <p><input type="text" name="nueva_nota" id="nueva_nota" placeholder="Nueva nota" style="width: 100%;"></p>
+            </td>
+
         </table>
         <?php 
     }
