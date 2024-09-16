@@ -346,11 +346,12 @@ class Demanda
      * Obtener inmuebles sugeridos (cruces) para una demanda.
      */
     public function obtener_cruces_inmuebles($post_id) {
-        // Obtener los campos de la demanda
         $presupuesto = intval(get_post_meta($post_id, 'presupuesto', true));
         $zona_deseada = maybe_unserialize(get_post_meta($post_id, 'zona_deseada', true)); // Puede ser un array
         $tipo_inmueble = maybe_unserialize(get_post_meta($post_id, 'tipo_inmueble', true)); // Puede ser un array
         $num_hab = intval(get_post_meta($post_id, 'num_hab', true));
+        $inmueble_interesado = get_post_meta($post_id, 'inmueble_interesado', true); // Obtener el inmueble interesado
+
     
         // Configurar la consulta para buscar inmuebles
         $meta_query = array(
@@ -363,7 +364,7 @@ class Demanda
             ),
         );
     
-        // Añadir el filtro de tipo_inmueble solo si está definido en la demanda
+        // Añadir el filtro de tipo_inmueble
         if (!empty($tipo_inmueble) && is_array($tipo_inmueble)) {
             $tipo_query = array(
                 'relation' => 'OR',
@@ -378,16 +379,16 @@ class Demanda
             $meta_query[] = $tipo_query; // Añadir la subconsulta de tipo de inmueble
         }
 
-        // Añadir el filtro de zona solo si está definido en la demanda
+        // Zona
         if (!empty($zona_deseada) && is_array($zona_deseada)) {
             $meta_query[] = array(
-                'key' => 'zona_inmueble', // Campo en el inmueble
-                'value' => $zona_deseada, // Array de zonas deseadas de la demanda
+                'key' => 'zona_inmueble',
+                'value' => $zona_deseada,
                 'compare' => 'IN', // Usar IN para comparar con el array
             );
         }
         
-        // Añadir el filtro de número de dormitorios solo si está definido en la demanda
+        // Número de dormitorios
         if (!empty($num_hab)) {
             $meta_query[] = array(  
                 'key' => 'num_dormitorios',
@@ -404,11 +405,15 @@ class Demanda
             'posts_per_page' => -1,
             'meta_query' => $meta_query,
         );
+
+         // Excluir el inmueble interesado
+        if (!empty($inmueble_interesado) && is_numeric($inmueble_interesado)) {
+            $args['post__not_in'] = array($inmueble_interesado);
+        }
     
-        // Ejecutar la consulta
+        
         $cruces_inmuebles = new WP_Query($args);
     
-        // Si hay resultados, retornar los inmuebles
         if ($cruces_inmuebles->have_posts()) {
             return $cruces_inmuebles->posts;
         }
@@ -423,12 +428,12 @@ class Demanda
      */
     public function cruces_meta_box() {
         add_meta_box(
-            'cruces_inmuebles', // ID del metabox
-            'Inmuebles Sugeridos (Cruces)', // Título del metabox
-            [$this, 'mostrar_cruces_inmuebles'], // Callback que mostrará el contenido
-            'demanda', // Tipo de post donde aparecerá
-            'normal', // Cambiado a 'side' para mostrar en la barra lateral
-            'default' // Prioridad 'default'
+            'cruces_inmuebles', 
+            'Inmuebles Sugeridos (Cruces)', 
+            [$this, 'mostrar_cruces_inmuebles'],
+            'demanda', 
+            'normal',
+            'default'
         );
     }
 
@@ -436,7 +441,7 @@ class Demanda
      * Mostrar los inmuebles sugeridos (cruces) en el metabox.
      */
     public function mostrar_cruces_inmuebles($post) {
-        $inmuebles_sugeridos = $this->obtener_cruces_inmuebles($post->ID); // Obtener los inmuebles sugeridos (cruces)
+        $inmuebles_sugeridos = $this->obtener_cruces_inmuebles($post->ID);
     
         if (!empty($inmuebles_sugeridos)) {
             echo '<ul>';
