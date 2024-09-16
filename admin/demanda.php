@@ -5,7 +5,8 @@ class Demanda
     public function __construct()
     {
         add_action('init', [$this, 'crear_cpt_demanda']);
-        add_action('add_meta_boxes', [$this, 'demanda_meta_box']);
+        add_action('add_meta_boxes_demanda', [$this, 'demanda_meta_box']); // Usamos add_meta_boxes_demanda
+        add_action('add_meta_boxes_demanda', [$this, 'cruces_meta_box']); // Usamos add_meta_boxes_demanda
         add_action('save_post', [$this, 'inmuebles_guardar_campos_demanda']);
         add_filter('post_row_actions', [$this, 'modificar_texto_accion_demanda'], 10, 2);
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_demanda'], 10, 2);
@@ -339,7 +340,118 @@ class Demanda
                     break;
         }
     }
+
+
+    /**
+     * Obtener inmuebles sugeridos (cruces) para una demanda.
+     */
+    public function obtener_cruces_inmuebles($post_id) {
+        // Obtener los campos de la demanda
+        $presupuesto = intval(get_post_meta($post_id, 'presupuesto', true));
+        $zona_deseada = maybe_unserialize(get_post_meta($post_id, 'zona_deseada', true)); // Puede ser un array
+        $tipo_inmueble = maybe_unserialize(get_post_meta($post_id, 'tipo_inmueble', true)); // Puede ser un array
+        $num_hab = intval(get_post_meta($post_id, 'num_hab', true));
     
+        // Configurar la consulta para buscar inmuebles
+        $meta_query = array(
+            'relation' => 'AND',
+            array(
+                'key' => 'precio_venta',
+                'value' => $presupuesto,
+                'compare' => '<=',
+                'type' => 'NUMERIC'
+            ),
+        );
+    
+        // Añadir el filtro de tipo_inmueble solo si está definido en la demanda
+        if (!empty($tipo_inmueble) && is_array($tipo_inmueble)) {
+            $tipo_query = array(
+                'relation' => 'OR',
+            );
+            foreach ($tipo_inmueble as $tipo) {
+                $tipo_query[] = array(
+                    'key' => 'tipo_inmueble',
+                    'value' => '"' . $tipo . '"', // Comparar dentro del array serializado
+                    'compare' => 'LIKE',
+                );
+            }
+            $meta_query[] = $tipo_query; // Añadir la subconsulta de tipo de inmueble
+        }
+
+        // Añadir el filtro de zona solo si está definido en la demanda
+        if (!empty($zona_deseada) && is_array($zona_deseada)) {
+            $meta_query[] = array(
+                'key' => 'zona_inmueble', // Campo en el inmueble
+                'value' => $zona_deseada, // Array de zonas deseadas de la demanda
+                'compare' => 'IN', // Usar IN para comparar con el array
+            );
+        }
+        
+        // Añadir el filtro de número de dormitorios solo si está definido en la demanda
+        if (!empty($num_hab)) {
+            $meta_query[] = array(  
+                'key' => 'num_dormitorios',
+                'value' => $num_hab,
+                'compare' => '>=',
+                'type' => 'NUMERIC'
+            );
+        }
+    
+        // Ejecutar la consulta con los filtros construidos
+        $args = array(
+            'post_type' => 'inmueble',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'meta_query' => $meta_query,
+        );
+    
+        // Ejecutar la consulta
+        $cruces_inmuebles = new WP_Query($args);
+    
+        // Si hay resultados, retornar los inmuebles
+        if ($cruces_inmuebles->have_posts()) {
+            return $cruces_inmuebles->posts;
+        }
+    
+        return [];
+    }
+    
+
+
+    /**
+     * Metabox (cruces) para una demanda.
+     */
+    public function cruces_meta_box() {
+        add_meta_box(
+            'cruces_inmuebles', // ID del metabox
+            'Inmuebles Sugeridos (Cruces)', // Título del metabox
+            [$this, 'mostrar_cruces_inmuebles'], // Callback que mostrará el contenido
+            'demanda', // Tipo de post donde aparecerá
+            'normal', // Cambiado a 'side' para mostrar en la barra lateral
+            'default' // Prioridad 'default'
+        );
+    }
+
+    /**
+     * Mostrar los inmuebles sugeridos (cruces) en el metabox.
+     */
+    public function mostrar_cruces_inmuebles($post) {
+        $inmuebles_sugeridos = $this->obtener_cruces_inmuebles($post->ID); // Obtener los inmuebles sugeridos (cruces)
+    
+        if (!empty($inmuebles_sugeridos)) {
+            echo '<ul>';
+            foreach ($inmuebles_sugeridos as $inmueble) {
+                $titulo_inmueble = get_the_title($inmueble->ID);
+                $link_inmueble = get_edit_post_link($inmueble->ID);
+                echo '<li><a href="' . esc_url($link_inmueble) . '" target="_blank">' . esc_html($titulo_inmueble) . '</a></li>';
+            }
+            echo '</ul>';
+        } else {
+            echo '<p>No se encontraron inmuebles sugeridos para esta demanda.</p>';
+        }
+    }
+
+
 }
 
 new Demanda();
@@ -357,20 +469,6 @@ function buscar_en_campos_demanda($search, $wp_query) {
     return $search;
 }
 add_filter('posts_search', 'buscar_en_campos_demanda', 10, 2);
-
-
-// Cambiar el texto del botón de búsqueda en la pantalla de administración de 'demanda'
-function cambiar_texto_boton_busqueda_demanda( $text ) {
-    global $post_type;
-
-    // Verificar si estamos en el tipo de post 'demanda'
-    if ( 'demanda' === $post_type ) {
-        return 'Buscar por nombre, email o teléfono';
-    }
-
-    return $text;
-}
-//add_filter( 'gettext', 'cambiar_texto_boton_busqueda_demanda', 20, 3 );
 
 
 /**
@@ -413,7 +511,7 @@ function validar_datos_demanda($post_ID, $data) {
         $exists_demanda = new WP_Query(array(
             'post_type' => 'demanda',
             'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit'),
-            'post__not_in' => array($post_ID), // excluye el post que estás editando
+            'post__not_in' => array($post_ID), // excluye el post que se esta editando
             'meta_query' => $meta_query,
         ));
 
@@ -423,4 +521,6 @@ function validar_datos_demanda($post_ID, $data) {
     }
 }
 add_action('pre_post_update', 'validar_datos_demanda', 10, 2);
+
+
 
