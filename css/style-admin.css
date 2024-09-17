@@ -55,3 +55,39 @@ input::placeholder {
 #sortable li { display: inline-block; margin: 10px; position: relative; }
 #sortable li .remove-imagen { position: absolute; top: 5px; right: 5px; background-color: white; padding: 5px; border: none; }
 #sortable li img { width: 100px; height: 100px; display: block; }
+
+
+/* Estilos para el informe del inmueble */
+
+.half-width {
+    width: 48%;
+}
+
+.float-left {
+    float: left;
+}
+
+.margin-right {
+    margin-right: 2%;
+}
+
+.clear-both {
+    clear: both;
+}
+
+.postbox-container {
+    margin-bottom: 20px;
+}
+
+.postbox .inside {
+    padding: 10px;
+}
+
+.postbox .hndle {
+    padding: 0 10px;
+}
+
+ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
