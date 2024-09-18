@@ -12,18 +12,22 @@ class Inmueble
         // Registrar CPT y taxonomía
         add_action('init', [$this, 'crear_cpt_inmueble']);
         add_action('init', [$this, 'registrar_taxonomia_tipo_inmueble']);
+
         // Agregar columnas personalizadas y metaboxes
         add_filter('manage_inmueble_posts_columns', [$this, 'agregar_columnas_inmueble']);
         add_action('manage_inmueble_posts_custom_column', [$this, 'mostrar_datos_columnas_inmueble'], 10, 2);
         add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_inmueble']);
-        add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_identificacion']);            
+        add_action('add_meta_boxes', [$this, 'inmuebles_agregar_mb_campos_identificacion']);
+
         // Guardar datos al guardar el post
-        add_action('save_post', [$this, 'inmuebles_guardar_campos_inmueble'], $post_id);
-        add_action('save_post', [$this, 'asignar_tipo_inmueble_taxonomia'], $post_id);
-        add_action('save_post', [$this, 'guardar_meta_inmueble'], $post_id);
-        add_action('save_post', [$this, 'actualizar_seo_inmueble'], $post_id);
+        add_action('save_post', [$this, 'inmuebles_guardar_campos_inmueble']);
+        add_action('save_post', [$this, 'asignar_tipo_inmueble_taxonomia']);
+        add_action('save_post', [$this, 'guardar_meta_inmueble']);
+        add_action('save_post', [$this, 'actualizar_seo_inmueble']);
+
         // Personalizar URL del inmueble
         add_filter('wp_insert_post_data', [$this, 'inmuebles_custom_permalink'], 10, 2);
+
         // Otras funcionalidades
         add_filter('the_title', [$this, 'modificar_valor_columna_title'], 1, 2);  
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_inmueble'], 10, 2);
