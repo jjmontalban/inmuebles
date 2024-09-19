@@ -87,7 +87,7 @@ function obtener_campos_informe($inmueble_id) {
     // Obtener las visitas y fechas de visitas
     $campos['visitas'] = get_post_meta($inmueble_id, 'visitas', true);
     $campos['fechas_visitas'] = get_post_meta($inmueble_id, 'fechas_visitas', true);
-    
+
     // Obtener el ID del propietario
     $propietario_id = get_post_meta($inmueble_id, 'propietario_id', true);
     if ($propietario_id) {
@@ -193,6 +193,11 @@ function obtener_inmuebles_misma_zona($zona_inmueble_key) {
 }
 
 function pintar_informe_html($inmueble_id, $campos) {
+
+    // Preparar los datos para la gráfica
+    $fechas_visitas = !empty($campos['fechas_visitas']) ? $campos['fechas_visitas'] : [];
+    $visitas = !empty($campos['fechas_visitas']) ? array_fill(0, count($fechas_visitas), 1) : []; // Rellenar con un valor 1 por cada visita
+
     ?>
     <h1 class="wp-heading-inline"><?php echo esc_html($campos['tipo_inmueble']) . " en " . esc_html($campos['nombre_calle']) . " (" . esc_html($campos['referencia']) . ")"; ?></h1>
     
@@ -237,10 +242,15 @@ function pintar_informe_html($inmueble_id, $campos) {
         </div>
 
         <div class="postbox-container half-width float-left margin-right clear-both">
+            <!-- Aquí colocamos el canvas donde se renderizará la gráfica -->
+            <div class="postbox-container half-width float-left margin-right clear-both">
+        
+            </div>
             <div class="postbox">
                 <h2 class="hndle"><span>Listado de Visitas</span></h2>
                 <div class="inside">
                     <?php if (!empty($campos['visitas']) && is_array($campos['fechas_visitas']) && !empty($campos['fechas_visitas'])): ?>
+                        <canvas id="graficaVisitas"></canvas>
                         <ul>
                             <?php foreach ($campos['fechas_visitas'] as $index => $fecha_visita): ?>
                                 <li>Visita <?php echo $index + 1; ?> - Fecha: <?php echo esc_html($fecha_visita); ?></li>
@@ -297,5 +307,13 @@ function pintar_informe_html($inmueble_id, $campos) {
         </div>
 
     </div>
+
+    <!-- Pasar los datos a JavaScript -->
+    <script type="text/javascript">
+        window.fechasVisitas = <?php echo json_encode($fechas_visitas); ?>;
+        window.visitas = <?php echo json_encode($visitas); ?>;
+    </script>
+
     <?php
 }
+

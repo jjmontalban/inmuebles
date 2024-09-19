@@ -13,6 +13,42 @@ jQuery(document).ready(function($) {
         } 
     });
 
+    // Código para la gráfica de visitas
+    if ($('#graficaVisitas').length) {
+        const ctx = $('#graficaVisitas').get(0).getContext('2d');
+        const graficaVisitas = new Chart(ctx, {
+            type: 'line', // Tipo de gráfica: línea
+            data: {
+                labels: fechasVisitas, // Las fechas de las visitas
+                datasets: [{
+                    label: 'Número de Visitas',
+                    data: visitas, // Los datos de visitas
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1 // Asegura que el eje Y muestre solo números enteros
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    }
+
+
+
 
     /**
      * Mostrar u ocultar campos según el tipo de inmueble seleccionado

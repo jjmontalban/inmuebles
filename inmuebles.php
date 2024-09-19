@@ -51,7 +51,7 @@ function inmuebles_deactivate_plugin() {
 /**
  *   js admin
  */
-function inmuebles_load_scripts() {
+function inmuebles_load_scripts($hook) {
     wp_enqueue_script('jquery-ui-sortable');
     wp_enqueue_media();
     add_action('admin_menu', 'inmuebles_add_settings_page');
@@ -64,6 +64,11 @@ function inmuebles_load_scripts() {
     wp_enqueue_script('google-recaptcha', "https://www.google.com/recaptcha/api.js?render={$recaptcha_site_key}", array(), null, true);
 
     wp_enqueue_script('inmuebles-script', plugin_dir_url(__FILE__) . 'js/admin-scripts.js', array('jquery', 'jquery-ui-sortable', 'media'), '2.0', true);
+
+    // Encolar Chart.js solo en la página de informe de inmueble
+    if ($hook == 'inmueble_page_informe-inmueble') {
+        wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js', [], null, true);
+    }
 }
 add_action('admin_enqueue_scripts', 'inmuebles_load_scripts');
 
