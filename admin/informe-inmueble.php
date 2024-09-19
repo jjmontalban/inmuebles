@@ -84,6 +84,10 @@ function obtener_campos_informe($inmueble_id) {
     $campos['num_dormitorios'] = get_post_meta($inmueble_id, 'num_dormitorios', true);
     $campos['num_banos'] = get_post_meta($inmueble_id, 'num_banos', true);
 
+    // Obtener las visitas y fechas de visitas
+    $campos['visitas'] = get_post_meta($inmueble_id, 'visitas', true);
+    $campos['fechas_visitas'] = get_post_meta($inmueble_id, 'fechas_visitas', true);
+    
     // Obtener el ID del propietario
     $propietario_id = get_post_meta($inmueble_id, 'propietario_id', true);
     if ($propietario_id) {
@@ -236,7 +240,7 @@ function pintar_informe_html($inmueble_id, $campos) {
             <div class="postbox">
                 <h2 class="hndle"><span>Listado de Visitas</span></h2>
                 <div class="inside">
-                    <?php if (!empty($campos['visitas']) && !empty($campos['fechas_visitas'])): ?>
+                    <?php if (!empty($campos['visitas']) && is_array($campos['fechas_visitas']) && !empty($campos['fechas_visitas'])): ?>
                         <ul>
                             <?php foreach ($campos['fechas_visitas'] as $index => $fecha_visita): ?>
                                 <li>Visita <?php echo $index + 1; ?> - Fecha: <?php echo esc_html($fecha_visita); ?></li>
