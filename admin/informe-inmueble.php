@@ -67,11 +67,13 @@ function obtener_campos_informe($inmueble_id) {
     $campos = array();
 
     // Obtener el tipo de inmueble
-    $tipo_inmueble_key = get_post_meta($inmueble_id, 'tipo_inmueble', true);
+    $tipo_inmueble_key = maybe_unserialize(get_post_meta($inmueble_id, 'tipo_inmueble', true));
     $campos['tipo_inmueble'] = isset($tipos_inmueble_map[$tipo_inmueble_key]) ? $tipos_inmueble_map[$tipo_inmueble_key] : $tipo_inmueble_key;
+    
     // Obtener la zona del inmueble
-    $zona_inmueble_key = get_post_meta($inmueble_id, 'zona_inmueble', true);
+    $zona_inmueble_key = maybe_unserialize(get_post_meta($inmueble_id, 'zona_inmueble', true));
     $campos['zona_inmueble'] = isset($zonas_inmueble_map[$zona_inmueble_key]) ? $zonas_inmueble_map[$zona_inmueble_key] : $zona_inmueble_key;
+
     // Resto de campos
     $campos['nombre_calle'] = ucfirst(get_post_meta($inmueble_id, 'nombre_calle', true));
     $campos['tipo_operacion'] = get_post_meta($inmueble_id, 'tipo_operacion', true);
@@ -81,25 +83,30 @@ function obtener_campos_informe($inmueble_id) {
     $campos['metros_utiles'] = get_post_meta($inmueble_id, 'm_utiles', true);
     $campos['num_dormitorios'] = get_post_meta($inmueble_id, 'num_dormitorios', true);
     $campos['num_banos'] = get_post_meta($inmueble_id, 'num_banos', true);
+
     // Obtener el ID del propietario
     $propietario_id = get_post_meta($inmueble_id, 'propietario_id', true);
     if ($propietario_id) {
         $campos['propietario'] = array(
             'id' => $propietario_id,
-            'nombre' => get_post_meta($inmueble_id, 'nombre', true),
+            'nombre' => get_post_meta($propietario_id, 'nombre', true),
             'apellidos' => get_post_meta($propietario_id, 'apellidos', true),
             'telefono' => get_post_meta($propietario_id, 'telefono', true)
         );
     } else {
         $campos['propietario'] = 'Sin propietario asignado';
     }
+
     // Obtener las citas del inmueble
     $campos['citas'] = obtener_citas_inmueble($inmueble_id);
+
     // Obtener inmuebles en la misma zona
-    $campos['inmuebles_zona'] = obtener_inmuebles_misma_zona($campos['zona_inmueble_key']);
-    
+    $campos['inmuebles_zona'] = obtener_inmuebles_misma_zona($zona_inmueble_key);
+
     return $campos;
 }
+
+
 
 /**
  * Obtiene las citas del inmueble
@@ -211,7 +218,7 @@ function pintar_informe_html($inmueble_id, $campos) {
                     <p><strong>Número de Dormitorios:</strong> <?php echo esc_html($campos['num_dormitorios']); ?></p>
                     <p><strong>Número de Baños:</strong> <?php echo esc_html($campos['num_banos']); ?></p>
                     <p><strong>Zona del Inmueble:</strong> <?php echo esc_html($campos['zona_inmueble']); ?></p>
-                    <?php if ($campos['propietario']): ?>
+                    <?php if (is_array($campos['propietario']) && !empty($campos['propietario']['id'])): ?>
                         <p><strong>Propietario:</strong> 
                             <a href="<?php echo esc_url(get_edit_post_link($campos['propietario']['id'])); ?>">
                                 <?php echo esc_html($campos['propietario']['nombre'] . ' ' . $campos['propietario']['apellidos']); ?>
