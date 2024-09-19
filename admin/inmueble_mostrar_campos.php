@@ -547,7 +547,7 @@ function mostrar_campos_inmueble( $post ) {
             <td>
                 <input type="file" name="video_embed" id="video_embed">
                 <?php
-                $video_embed_url = esc_attr($campos['video_embed']);
+                $video_embed_url = isset($campos['video_embed']) ? esc_attr($campos['video_embed']) : '' ;
                 if (!empty($video_embed_url)) {
                     echo '<p><strong>Vídeo actual:</strong> <a href="' . $video_embed_url . '">' . basename($video_embed_url) . '</a></p>';
                 }

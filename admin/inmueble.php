@@ -111,7 +111,7 @@ class Inmueble
         $new_columns['referencia'] = 'Referencia';
         $new_columns['imagen_destacada'] = 'Imagen Destacada';
         $new_columns['date'] = $columns['date'];
-        $new_columns['tsf-seo-bar-wrap'] = $columns['tsf-seo-bar-wrap'];
+        $new_columns['tsf-seo-bar-wrap'] = isset($columns['tsf-seo-bar-wrap'])? $columns['tsf-seo-bar-wrap'] : '';
     
         // Devolver el nuevo array de columnas ordenadas
         return $new_columns;
