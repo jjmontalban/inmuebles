@@ -99,11 +99,15 @@ class Propietario {
                     <td>
                     <?php foreach ($inmuebles as $inmueble) : ?>
                         <?php
+                        global $tipos_inmueble_map;
                         $propietario_asignado = get_post_meta($inmueble->ID, 'propietario_id', true);
                         if (!$propietario_asignado || $propietario_asignado == $post->ID) {
-                            $tipo_inmueble = get_post_meta($inmueble->ID, 'tipo_inmueble', true);
+                            $referencia = get_post_meta($inmueble->ID, 'referencia', true);
+                            // Obtener el valor y deserializarlo si es necesario
+                            $tipo_inmueble_key = maybe_unserialize(get_post_meta($inmueble->ID, 'tipo_inmueble', true));
+                            $tipo_inmueble = isset($tipos_inmueble_map[$tipo_inmueble_key]) ? $tipos_inmueble_map[$tipo_inmueble_key] : '';
                             $nombre_calle = get_post_meta($inmueble->ID, 'nombre_calle', true);
-                            $nombre_inmueble = $tipo_inmueble . ' en ' . $nombre_calle;
+                            $nombre_inmueble = $tipo_inmueble . ' en ' . $nombre_calle . ' (' . $referencia . ')';
                             ?>
                             <label>
                                 <input type="checkbox" name="inmuebles_asignados[]" value="<?php echo esc_attr($inmueble->ID); ?>" <?php checked(in_array($inmueble->ID, $inmuebles_asignados), true); ?>>
