@@ -61,6 +61,7 @@ class Demanda
         $telefono = get_post_meta($post->ID, 'telefono', true);
         $dni = get_post_meta($post->ID, 'dni', true);
         $operacion = get_post_meta($post->ID, 'operacion', true);
+        $localidad = get_post_meta($post->ID, 'localidad', true);
         $tipo_inmueble = unserialize(get_post_meta($post->ID, 'tipo_inmueble', true));
         $zona_deseada = unserialize(get_post_meta($post->ID, 'zona_deseada', true));
         $num_hab = get_post_meta($post->ID, 'num_hab', true);
@@ -129,6 +130,11 @@ class Demanda
                         ?>
                     </select>
                 </td>
+            </tr>
+            
+            <tr>
+                <th><label for="localidad">Localidad</label></th>
+                <td><input type="text" name="localidad" id="localidad" value="<?php echo esc_attr( $localidad ?? ''); ?>"></td>
             </tr>
 
             <tr>
@@ -218,6 +224,9 @@ class Demanda
     public function inmuebles_guardar_campos_demanda( $post_id ) {
         if (array_key_exists('nombre', $_POST)) {
             update_post_meta($post_id, 'nombre', sanitize_text_field($_POST['nombre']));
+        }
+        if (array_key_exists('localidad', $_POST)) {
+            update_post_meta($post_id, 'localidad', sanitize_text_field($_POST['localidad']));
         }
         if (array_key_exists('email', $_POST)) {
             update_post_meta($post_id, 'email', sanitize_email($_POST['email']));
@@ -347,12 +356,19 @@ class Demanda
      */
     public function obtener_cruces_inmuebles($post_id) {
         $presupuesto = intval(get_post_meta($post_id, 'presupuesto', true));
+        $localidad_deseada = get_post_meta($post_id, 'localidad', true); // Obtener la localidad deseada de la demanda
         $zona_deseada = maybe_unserialize(get_post_meta($post_id, 'zona_deseada', true)); // Puede ser un array
         $tipo_inmueble = maybe_unserialize(get_post_meta($post_id, 'tipo_inmueble', true)); // Puede ser un array
         $num_hab = intval(get_post_meta($post_id, 'num_hab', true));
         $inmueble_interesado = get_post_meta($post_id, 'inmueble_interesado', true); // Obtener el inmueble interesado
 
-    
+        // Si la localidad deseada está vacía, retornamos vacío ya que no hay nada que cruzar
+        if (empty($localidad_deseada)) {
+            return [];
+        }
+
+        $localidad_deseada = normalizar_texto($localidad_deseada);
+
         // Configurar la consulta para buscar inmuebles
         $meta_query = array(
             'relation' => 'AND',
@@ -361,6 +377,11 @@ class Demanda
                 'value' => $presupuesto,
                 'compare' => '<=',
                 'type' => 'NUMERIC'
+            ),
+            array(
+                'key' => 'localidad',
+                'value' => $localidad_deseada,
+                'compare' => 'LIKE'
             ),
         );
     

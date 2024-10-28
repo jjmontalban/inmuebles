@@ -176,3 +176,17 @@ function construir_meta_search($meta_keys, $terms) {
 
     return $meta_search;
 }
+
+
+/**
+ * función para eliminar tildes y normalizar el caso de los textos (convertir a minúsculas)
+ */
+function normalizar_texto($texto) {
+    $texto = strtolower($texto); // Convertir a minúsculas
+    $texto = preg_replace('/[áàäâã]/u', 'a', $texto);
+    $texto = preg_replace('/[éèëê]/u', 'e', $texto);
+    $texto = preg_replace('/[íìïî]/u', 'i', $texto);
+    $texto = preg_replace('/[óòöôõ]/u', 'o', $texto);
+    $texto = preg_replace('/[úùüû]/u', 'u', $texto);
+    return $texto;
+}
