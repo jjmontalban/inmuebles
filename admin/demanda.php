@@ -550,3 +550,65 @@ add_action('pre_post_update', 'validar_datos_demanda', 10, 2);
 
 
 
+function agregar_opcion_exportar_demandas() {
+    // Agregar un submenú bajo el CPT "Demandas"
+    add_submenu_page(
+        'edit.php?post_type=demanda',  // Menú padre (CPT Demandas)
+        'Exportar Demandas',          // Título de la página
+        'Exportar Demandas',          // Título del submenú
+        'edit_posts',                 // Capacidad requerida
+        'exportar-demandas',          // Slug del submenú
+        'exportar_demandas_callback'  // Función de callback para mostrar contenido
+    );
+}
+add_action('admin_menu', 'agregar_opcion_exportar_demandas');
+
+function exportar_demandas_callback() {
+    echo '<div class="wrap">';
+    echo '<h1>Exportar Demandas</h1>';
+    echo '<p>Haz clic en el botón para descargar las demandas en un archivo CSV.</p>';
+    echo '<a href="' . esc_url(admin_url('edit.php?post_type=demanda&page=exportar-demandas&exportar=csv')) . '" class="button button-primary">Exportar CSV</a>';
+    echo '</div>';
+}
+
+add_action('admin_init', 'procesar_exportar_demandas');
+
+function procesar_exportar_demandas() {
+    if (isset($_GET['exportar']) && $_GET['exportar'] === 'csv') {
+        // Limpia cualquier salida previa
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        // Preparar cabeceras para descargar el archivo
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=demandas.csv');
+
+        $output = fopen('php://output', 'w');
+
+        // Encabezados del archivo
+        fputcsv($output, ['ID', 'Nombre', 'Email', 'Teléfono', 'Localidad', 'Operación']); // Ajusta según tus campos personalizados
+
+        // Obtener todas las demandas
+        $demandas = get_posts([
+            'post_type'      => 'demanda',
+            'posts_per_page' => -1,
+        ]);
+
+        foreach ($demandas as $demanda) {
+            // Obtener datos personalizados de la demanda
+            $id = $demanda->ID;
+            $nombre = get_post_meta($id, 'nombre', true);
+            $email = get_post_meta($id, 'email', true);
+            $telefono = get_post_meta($id, 'telefono', true);
+            $localidad = get_post_meta($id, 'localidad', true);
+            $operacion = get_post_meta($id, 'operacion', true);
+
+            // Añadir fila al CSV
+            fputcsv($output, [$id, $nombre, $email, $telefono, $localidad, $operacion]);
+        }
+
+        fclose($output);
+        exit(); // Finaliza el script después de generar la descarga
+    }
+}
