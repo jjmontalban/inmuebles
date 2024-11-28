@@ -575,40 +575,111 @@ add_action('admin_init', 'procesar_exportar_demandas');
 
 function procesar_exportar_demandas() {
     if (isset($_GET['exportar']) && $_GET['exportar'] === 'csv') {
-        // Limpia cualquier salida previa
+        // Limpia
         if (ob_get_level()) {
             ob_end_clean();
         }
 
-        // Preparar cabeceras para descargar el archivo
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename=demandas.csv');
 
         $output = fopen('php://output', 'w');
 
-        // Encabezados del archivo
-        fputcsv($output, ['ID', 'Nombre', 'Email', 'Teléfono', 'Localidad', 'Operación']); // Ajusta según tus campos personalizados
+        // Encabezados
+        fputcsv($output, [
+            'ID', 
+            'Nombre', 
+            'Email', 
+            'Teléfono', 
+            'DNI',
+            'Localidad', 
+            'Operación', 
+            'Presupuesto', 
+            'Nº de Habitaciones', 
+            'Notas',
+            'Zona Deseada',
+            'Tipo de Inmueble',
+            'Inmueble Interesado',
+            'fecha de registro'
+        ]);
 
-        // Obtener todas las demandas
+        // Obtener demandas
         $demandas = get_posts([
             'post_type'      => 'demanda',
             'posts_per_page' => -1,
         ]);
 
         foreach ($demandas as $demanda) {
-            // Obtener datos personalizados de la demanda
             $id = $demanda->ID;
+
+            // Campos
             $nombre = get_post_meta($id, 'nombre', true);
             $email = get_post_meta($id, 'email', true);
             $telefono = get_post_meta($id, 'telefono', true);
+            $dni = get_post_meta($id, 'dni', true);
             $localidad = get_post_meta($id, 'localidad', true);
             $operacion = get_post_meta($id, 'operacion', true);
+            $presupuesto = get_post_meta($id, 'presupuesto', true);
+            $num_hab = get_post_meta($id, 'num_hab', true);
 
-            // Añadir fila al CSV
-            fputcsv($output, [$id, $nombre, $email, $telefono, $localidad, $operacion]);
+            // Campo Notas
+            // Campo complejo: Notas
+            $notas = get_post_meta($id, 'notas', true);
+            $notas_str = '';
+            if (is_array($notas)) {
+                foreach ($notas as $nota) {
+                    $notas_str .= '(' . $nota['fecha'] . ') Nota: ' . $nota['nota'] . PHP_EOL;
+                }
+            } else {
+                $notas_str = $notas;
+            }
+
+
+            // Campo Zona deseada
+            $zona_deseada = maybe_unserialize(get_post_meta($id, 'zona_deseada', true));
+            $zona_deseada_str = is_array($zona_deseada) ? implode(', ', $zona_deseada) : $zona_deseada;
+
+            // Campo Tipo de inmueble
+            $tipo_inmueble = maybe_unserialize(get_post_meta($id, 'tipo_inmueble', true));
+            $tipo_inmueble_str = is_array($tipo_inmueble) ? implode(', ', $tipo_inmueble) : $tipo_inmueble;
+
+            // Campo Inmueble interesado
+            $inmueble_interesado = get_post_meta($id, 'inmueble_interesado', true);
+            if (!empty($inmueble_interesado)) {
+                $tipo_inmueble_interesado = maybe_unserialize(get_post_meta($inmueble_interesado, 'tipo_inmueble', true));
+                $nombre_calle = get_post_meta($inmueble_interesado, 'nombre_calle', true);
+
+                $tipo_inmueble_interesado_str = is_array($tipo_inmueble_interesado) 
+                    ? implode(', ', $tipo_inmueble_interesado) 
+                    : $tipo_inmueble_interesado;
+
+                $inmueble_interesado_str = $tipo_inmueble_interesado_str . ' en ' . $nombre_calle;
+            } else {
+                $inmueble_interesado_str = '';
+            }
+
+            // Fecha de creación (post_date)
+            $fecha_creacion = $demanda->post_date;
+
+            fputcsv($output, [
+                $id,
+                $nombre,
+                $email,
+                $telefono,
+                $dni,
+                $localidad,
+                $operacion,
+                $presupuesto,
+                $num_hab,
+                $notas_str,
+                $zona_deseada_str,
+                $tipo_inmueble_str,
+                $inmueble_interesado_str,
+                $fecha_creacion
+            ]);
         }
 
         fclose($output);
-        exit(); // Finaliza el script después de generar la descarga
+        exit();
     }
 }
