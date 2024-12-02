@@ -449,33 +449,59 @@ class Demanda
      */
     public function cruces_meta_box() {
         add_meta_box(
-            'cruces_inmuebles', 
-            'Inmuebles Sugeridos (Cruces)', 
+            'cruces_inmuebles',
+            'Inmuebles Sugeridos (Cruces)',
             [$this, 'mostrar_cruces_inmuebles'],
-            'demanda', 
+            'demanda',
             'normal',
             'default'
         );
     }
 
-    /**
-     * Mostrar los inmuebles sugeridos (cruces) en el metabox.
-     */
     public function mostrar_cruces_inmuebles($post) {
         $inmuebles_sugeridos = $this->obtener_cruces_inmuebles($post->ID);
+        $telefono = get_post_meta($post->ID, 'telefono', true);
+        $email = get_post_meta($post->ID, 'email', true);
     
         if (!empty($inmuebles_sugeridos)) {
             echo '<ul>';
             foreach ($inmuebles_sugeridos as $inmueble) {
                 $titulo_inmueble = get_the_title($inmueble->ID);
-                $link_inmueble = get_edit_post_link($inmueble->ID);
-                echo '<li><a href="' . esc_url($link_inmueble) . '" target="_blank">' . esc_html($titulo_inmueble) . '</a></li>';
+                $link_inmueble = get_permalink($inmueble->ID);
+    
+                echo '<li>';
+                echo '<strong><a href="' . esc_url($link_inmueble) . '" target="_blank">' . esc_html($titulo_inmueble) . '</a></strong>';
+    
+                // Botones de acciones para cada inmueble
+                if (!empty($telefono)) {
+                    $mensaje_whatsapp = sprintf(
+                        'Hola, encontré este inmueble que podría interesarte: %s. Mira los detalles aquí: %s',
+                        esc_html($titulo_inmueble),
+                        esc_url($link_inmueble)
+                    );
+                    $link_whatsapp = 'https://wa.me/' . esc_attr($telefono) . '?text=' . urlencode($mensaje_whatsapp);
+                    echo ' <a href="' . esc_url($link_whatsapp) . '" target="_blank" class="button button-primary">Enviar por WhatsApp</a>';
+                }
+    
+                if (!empty($email)) {
+                    $subject = 'Inmueble sugerido para tu demanda';
+                    $body = sprintf(
+                        'Hola, encontré este inmueble que podría interesarte: %s. Mira los detalles aquí: %s',
+                        esc_html($titulo_inmueble),
+                        esc_url($link_inmueble)
+                    );
+                    $link_email = 'mailto:' . esc_attr($email) . '?subject=' . urlencode($subject) . '&body=' . urlencode($body);
+                    echo ' <a href="' . esc_url($link_email) . '" target="_blank" class="button">Enviar por Email</a>';
+                }
+    
+                echo '</li>';
             }
             echo '</ul>';
         } else {
             echo '<p>No se encontraron inmuebles sugeridos para esta demanda.</p>';
         }
     }
+    
 
 
 }
@@ -683,3 +709,43 @@ function procesar_exportar_demandas() {
         exit();
     }
 }
+
+
+add_action('wp_dashboard_setup', 'agregar_widget_cruces_demanda');
+
+function agregar_widget_cruces_demanda() {
+    wp_add_dashboard_widget(
+        'cruces_demanda_dashboard', // ID del widget
+        'Demandas con Cruces', // Título del widget
+        'mostrar_cruces_demanda_dashboard' // Función de callback
+    );
+}
+
+function mostrar_cruces_demanda_dashboard() {
+    // Obtener todas las demandas
+    $demandas = get_posts([
+        'post_type'      => 'demanda',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+    ]);
+
+    if (empty($demandas)) {
+        echo '<p>No hay demandas creadas.</p>';
+        return;
+    }
+
+    echo '<ul>';
+    foreach ($demandas as $demanda) {
+        $cruces = (new Demanda())->obtener_cruces_inmuebles($demanda->ID);
+
+        // Si la demanda tiene cruces, mostrar el enlace
+        if (!empty($cruces)) {
+            $numero_cruces = count($cruces);
+            $nombre_demanda = get_post_meta($demanda->ID, 'nombre', true) ?: 'Demanda sin nombre';
+            $link = get_edit_post_link($demanda->ID);
+            echo '<li><a href="' . esc_url($link) . '">' . esc_html($nombre_demanda) . ' (' . $numero_cruces . ')</a></li>';
+        }
+    }
+    echo '</ul>';
+}
+
