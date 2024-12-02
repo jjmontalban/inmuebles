@@ -486,13 +486,21 @@ class Demanda
                 if (!empty($email)) {
                     $subject = 'Inmueble sugerido para tu demanda';
                     $body = sprintf(
-                        'Hola, encontré este inmueble que podría interesarte: %s. Mira los detalles aquí: %s',
+                        "Hola,\n\nEncontré este inmueble que podría interesarte: %s.\nMira los detalles aquí: %s",
                         esc_html($titulo_inmueble),
                         esc_url($link_inmueble)
                     );
-                    $link_email = 'mailto:' . esc_attr($email) . '?subject=' . urlencode($subject) . '&body=' . urlencode($body);
-                    echo ' <a href="' . esc_url($link_email) . '" target="_blank" class="button">Enviar por Email</a>';
+                
+                    // Construir el enlace al webmail
+                    $link_webmail = 'https://webmail.chipicasa.com/compose'
+                        . '?to=' . urlencode($email)
+                        . '&subject=' . urlencode($subject)
+                        . '&body=' . urlencode($body);
+                
+                    echo ' <a href="' . esc_url($link_webmail) . '" target="_blank" class="button">Enviar por Webmail</a>';
                 }
+                
+                
     
                 echo '</li>';
             }
