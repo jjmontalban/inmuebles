@@ -1,4 +1,46 @@
 <?php 
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+function generar_pdf_informe_inmueble() {
+    ob_clean();
+    nocache_headers();
+
+    if (!current_user_can('edit_posts')) {
+        wp_die('No tienes permisos para acceder a esta página.');
+    }
+
+    $inmueble_id = isset($_GET['inmueble_id']) ? intval($_GET['inmueble_id']) : 0;
+    if ($inmueble_id <= 0) {
+        wp_die('ID de inmueble no válido.');
+    }
+
+    ob_start();
+    pintar_informe_html($inmueble_id, obtener_campos_informe($inmueble_id));
+    $html = ob_get_clean();
+
+    // Cargar estilos externos
+    $css_url = get_stylesheet_directory_uri() . '/style.css'; // Ruta CSS
+    $html = '<link rel="stylesheet" href="' . $css_url . '">' . $html;
+
+    // Configurar DOMPDF
+    $options = new Options();
+    $options->set('isHtml5ParserEnabled', true);
+    $options->set('isRemoteEnabled', true);
+    $dompdf = new Dompdf($options);
+
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    // Descargar el PDF
+    $dompdf->stream("informe_inmueble_$inmueble_id.pdf", ["Attachment" => 1]);
+    exit;
+}
+
+
 
 /**
  * Agrega el metabox de informe de inmueble
@@ -21,7 +63,7 @@ add_action('add_meta_boxes', 'inmuebles_agregar_mb_informe_inmueble');
  */
 function registrar_pagina_informe_inmueble() {
     add_submenu_page(
-        null, // Para que no aparezca en ningún menú
+        '', // Para que no aparezca en ningún menú
         'Informe de Inmueble',
         'Informe de Inmueble',
         'edit_posts',
@@ -37,9 +79,15 @@ add_action('admin_menu', 'registrar_pagina_informe_inmueble');
  */
 function mostrar_informe_inmueble($post) {
     $informe_url = admin_url('edit.php?post_type=inmueble&page=informe-inmueble&inmueble_id=' . $post->ID);
+    $pdf_url = admin_url('edit.php?post_type=inmueble&page=generar-pdf-informe&inmueble_id=' . $post->ID);
+
     echo '<button type="button" class="button button-primary button-large" onclick="window.location.href=\'' . 
             esc_url($informe_url) . '\'">Crear Informe de Inmueble</button>';
+
+    echo '<button type="button" class="button button-secondary button-large" style="margin-left: 10px;" onclick="window.location.href=\'' .
+            esc_url($pdf_url) . '\'">Descargar Informe en PDF</button>';
 }
+
 
 
 /**
@@ -225,9 +273,26 @@ function pintar_informe_html($inmueble_id, $campos) {
         ksort($visitas_por_dia);
     }
 
-    $visitas = !empty($campos['fechas_visitas']) ? array_fill(0, count($fechas_visitas), 1) : []; // Rellenar con un valor 1 por cada visita
 
     ?>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .postbox {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .postbox h2 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+</style>
+
+
+
     <h1 class="wp-heading-inline"><?php echo esc_html($campos['tipo_inmueble']) . " en " . esc_html($campos['nombre_calle']) . " (" . esc_html($campos['referencia']) . ")"; ?></h1>
     
     <div class="wrap">

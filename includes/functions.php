@@ -1,5 +1,27 @@
 <?php 
 
+// endpoint para que se pueda acceder al PDF desde la página del informe
+function agregar_pdf_informe_endpoint() {
+    add_submenu_page(
+        '', // No mostrar en el menú
+        'Generar PDF',
+        'Generar PDF',
+        'edit_posts',
+        'generar-pdf-informe',
+        'generar_pdf_informe_inmueble'
+    );
+}
+add_action('admin_menu', 'agregar_pdf_informe_endpoint');
+
+
+// Activar la generación del PDF cuando se accede al endpoint
+add_action('admin_init', function() {
+    if (isset($_GET['page']) && $_GET['page'] === 'generar-pdf-informe') {
+        generar_pdf_informe_inmueble();
+    }
+});
+
+
 //agregar el atributo enctype al formulario de edición de publicaciones utilizando JavaScript.
 function inmuebles_admin_scripts() {
     echo '
