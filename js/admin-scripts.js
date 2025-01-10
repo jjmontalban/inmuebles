@@ -19,21 +19,43 @@ jQuery(document).ready(function($) {
         const graficaVisitas = new Chart(ctx, {
             type: 'line', // Tipo de gráfica: línea
             data: {
-                labels: fechasVisitas, // Las fechas de las visitas
+                labels: fechasVisitas, // Las fechas de las visitas procesadas en PHP
                 datasets: [{
                     label: 'Número de Visitas',
-                    data: visitas, // Los datos de visitas
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2
+                    data: visitas, // Los datos de visitas acumuladas por día
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4 // Suaviza las líneas de la gráfica
                 }]
             },
             options: {
+                responsive: true, // Se adapta al tamaño del contenedor
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fechas',
+                            color: '#666',
+                            font: {
+                                family: 'Arial',
+                                size: 14
+                            }
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
                             stepSize: 1 // Asegura que el eje Y muestre solo números enteros
+                        },
+                        title: {
+                            display: true,
+                            text: 'Número de Visitas',
+                            color: '#666',
+                            font: {
+                                family: 'Arial',
+                                size: 14
+                            }
                         }
                     }
                 },
@@ -41,11 +63,25 @@ jQuery(document).ready(function($) {
                     legend: {
                         display: true,
                         position: 'top',
+                        labels: {
+                            font: {
+                                family: 'Arial',
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return `Visitas: ${tooltipItem.raw}`; // Tooltip más descriptivo
+                            }
+                        }
                     }
                 }
             }
         });
     }
+    
 
 
 

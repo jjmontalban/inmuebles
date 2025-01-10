@@ -196,6 +196,35 @@ function pintar_informe_html($inmueble_id, $campos) {
 
     // Preparar los datos para la gráfica
     $fechas_visitas = !empty($campos['fechas_visitas']) ? $campos['fechas_visitas'] : [];
+    $visitas_por_dia = [];
+
+    foreach ($fechas_visitas as $fecha) {
+        $fecha_sin_hora = date('Y-m-d', strtotime($fecha)); // Convierte la fecha a formato 'YYYY-MM-DD'
+        if (!isset($visitas_por_dia[$fecha_sin_hora])) {
+            $visitas_por_dia[$fecha_sin_hora] = 0;
+        }
+        $visitas_por_dia[$fecha_sin_hora]++;
+    }
+
+    // Obtener el rango de fechas
+    if (!empty($visitas_por_dia)) {
+        $inicio = new DateTime(min(array_keys($visitas_por_dia)));
+        $fin = new DateTime(max(array_keys($visitas_por_dia)));
+        $intervalo = new DateInterval('P1D'); // Intervalo de un día
+        $rango_fechas = new DatePeriod($inicio, $intervalo, $fin->modify('+1 day'));
+
+        // Asegurarse de que cada día en el rango tenga un valor
+        foreach ($rango_fechas as $fecha) {
+            $fecha_formato = $fecha->format('Y-m-d');
+            if (!isset($visitas_por_dia[$fecha_formato])) {
+                $visitas_por_dia[$fecha_formato] = 0; // Rellenar con 0
+            }
+        }
+
+        // Ordenar las fechas
+        ksort($visitas_por_dia);
+    }
+
     $visitas = !empty($campos['fechas_visitas']) ? array_fill(0, count($fechas_visitas), 1) : []; // Rellenar con un valor 1 por cada visita
 
     ?>
@@ -308,10 +337,11 @@ function pintar_informe_html($inmueble_id, $campos) {
 
     </div>
 
+
     <!-- Pasar los datos a JavaScript -->
     <script type="text/javascript">
-        window.fechasVisitas = <?php echo json_encode($fechas_visitas); ?>;
-        window.visitas = <?php echo json_encode($visitas); ?>;
+        window.fechasVisitas = <?php echo json_encode(array_keys($visitas_por_dia)); ?>;
+        window.visitas = <?php echo json_encode(array_values($visitas_por_dia)); ?>;
     </script>
 
     <?php
