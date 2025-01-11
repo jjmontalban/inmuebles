@@ -1,5 +1,9 @@
 {
-    "require": {
+    "name": "jjmontalban/inmuebles",
+    "description": "A WordPress plugin to convert in Real State System",
+    
+   "require": {
+        "php": "^8.0"
         "dompdf/dompdf": "^3.0"
     }
 }
