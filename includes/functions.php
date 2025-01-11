@@ -11,11 +11,11 @@ function agregar_pdf_informe_endpoint() {
         'generar_pdf_informe_inmueble'
     );
 }
-add_action('admin_menu', 'agregar_pdf_informe_endpoint');
+//add_action('admin_menu', 'agregar_pdf_informe_endpoint');
 
 
 // Activar la generación del PDF cuando se accede al endpoint
-add_action('admin_init', function() {
+//add_action('admin_init', function() {
     if (isset($_GET['page']) && $_GET['page'] === 'generar-pdf-informe') {
         generar_pdf_informe_inmueble();
     }
