@@ -6,7 +6,6 @@ class Inmueble
         // Cargar dependencias para guardar y mostrar campos personalizados
         require_once 'inmueble_mostrar_campos.php';
         require_once 'inmueble_guardar_campos.php';
-       // require_once 'inmueble-pdf.php'; // Incluir la clase de PDF
         require_once 'inmueble-functions.php';
 
         // Registrar CPT y taxonomía

@@ -3,41 +3,65 @@
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-function generar_pdf_informe_inmueble() {
-    ob_clean();
-    nocache_headers();
+add_action('admin_post_generar_pdf_informe', 'generar_pdf_informe_inmueble');
 
+function generar_pdf_informe_inmueble() {
     if (!current_user_can('edit_posts')) {
+        error_log('Permisos insuficientes: el usuario no tiene "edit_posts".');
         wp_die('No tienes permisos para acceder a esta página.');
     }
 
+    // Limpia buffers y desactiva caché
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    nocache_headers();
+
+    // Obtén el ID del inmueble
     $inmueble_id = isset($_GET['inmueble_id']) ? intval($_GET['inmueble_id']) : 0;
     if ($inmueble_id <= 0) {
         wp_die('ID de inmueble no válido.');
     }
 
+    error_log("Generando PDF para inmueble ID: $inmueble_id");
+
+    // Generar el contenido HTML del informe
     ob_start();
     pintar_informe_html($inmueble_id, obtener_campos_informe($inmueble_id));
     $html = ob_get_clean();
 
+    if (empty($html)) {
+        error_log('El contenido HTML está vacío.');
+        wp_die('No se pudo generar el contenido del informe.');
+    }
+
     // Cargar estilos externos
-    $css_url = get_stylesheet_directory_uri() . '/style.css'; // Ruta CSS
-    $html = '<link rel="stylesheet" href="' . $css_url . '">' . $html;
+    $css_url = get_stylesheet_directory_uri() . '/style.css';
+    $html = '<link rel="stylesheet" href="' . esc_url($css_url) . '">' . $html;
 
     // Configurar DOMPDF
     $options = new Options();
     $options->set('isHtml5ParserEnabled', true);
     $options->set('isRemoteEnabled', true);
-    $dompdf = new Dompdf($options);
 
+    $dompdf = new Dompdf($options);
     $dompdf->loadHtml($html);
     $dompdf->setPaper('A4', 'portrait');
-    $dompdf->render();
 
-    // Descargar el PDF
-    $dompdf->stream("informe_inmueble_$inmueble_id.pdf", ["Attachment" => 1]);
-    exit;
+    try {
+        $dompdf->render();
+
+        // Forzar encabezados de descarga
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="informe_inmueble_' . $inmueble_id . '.pdf"');
+        echo $dompdf->output();
+        exit;
+    } catch (Exception $e) {
+        error_log('Error generando el PDF: ' . $e->getMessage());
+        wp_die('Ocurrió un error al generar el PDF.');
+    }
 }
+
 
 
 
@@ -62,15 +86,17 @@ add_action('add_meta_boxes', 'inmuebles_agregar_mb_informe_inmueble');
  */
 function registrar_pagina_informe_inmueble() {
     add_submenu_page(
-        '', // Para que no aparezca en ningún menú
-        'Informe de Inmueble',
-        'Informe de Inmueble',
-        'edit_posts',
-        'informe-inmueble',
-        'mostrar_informe_inmueble_page'
+        'edit.php?post_type=inmueble', // Menú padre (CPT "inmueble")
+        'Informe de Inmueble',         // Título de la página
+        'Informe de Inmueble',         // Título del menú
+        'edit_posts',                  // Capacidad necesaria
+        'informe-inmueble',            // Slug de la página
+        'mostrar_informe_inmueble_page' // Callback para el contenido
     );
 }
 add_action('admin_menu', 'registrar_pagina_informe_inmueble');
+
+
 
 
 /**
@@ -78,14 +104,15 @@ add_action('admin_menu', 'registrar_pagina_informe_inmueble');
  */
 function mostrar_informe_inmueble($post) {
     $informe_url = admin_url('edit.php?post_type=inmueble&page=informe-inmueble&inmueble_id=' . $post->ID);
-    $pdf_url = admin_url('edit.php?post_type=inmueble&page=generar-pdf-informe&inmueble_id=' . $post->ID);
-
+    $pdf_informe = admin_url('admin-post.php?action=generar_pdf_informe&inmueble_id=' . $post->ID);
+    
     echo '<button type="button" class="button button-primary button-large" onclick="window.location.href=\'' . 
-            esc_url($informe_url) . '\'">Crear Informe de Inmueble</button>';
+        esc_url($informe_url) . '\'">Crear Informe de Inmueble</button>';
+    echo '<br><br>';
+    echo '<button type="button" class="button button-primary button-large" onclick="window.location.href=\'' .
+        esc_url($pdf_informe) . '\'">Descargar Informe en PDF</button>';
+    }
 
-    echo '<button type="button" class="button button-secondary button-large" style="margin-left: 10px;" onclick="window.location.href=\'' .
-            esc_url($pdf_url) . '\'">Descargar Informe en PDF</button>';
-}
 
 
 
@@ -93,16 +120,25 @@ function mostrar_informe_inmueble($post) {
  * Muestra la página de informe de inmueble
  */
 function mostrar_informe_inmueble_page() {
-    global $tipos_inmueble_map, $zonas_inmueble_map;
+    if (!current_user_can('edit_posts')) {
+        wp_die(__('No tienes permisos para acceder a esta página.'));
+    }
+
     // Obtener el ID del inmueble desde la URL
     $inmueble_id = isset($_GET['inmueble_id']) ? intval($_GET['inmueble_id']) : 0;
+
     if ($inmueble_id > 0) {
+        // Generar el informe
         $campos = obtener_campos_informe($inmueble_id);
         pintar_informe_html($inmueble_id, $campos);
+
     } else {
         echo 'No se ha seleccionado un inmueble para generar el informe.';
     }
 }
+
+
+
 
 
 /**
@@ -411,3 +447,31 @@ function pintar_informe_html($inmueble_id, $campos) {
     <?php
 }
 
+function registrar_pagina_generar_pdf() {
+    add_submenu_page(
+        'edit.php?post_type=inmueble', // Menú padre para el CPT
+        'Generar PDF', // Título de la página
+        'Generar PDF', // Título del menú (no se verá)
+        'manage_options', // Capacidad requerida (puedes cambiar a 'edit_posts')
+        'generar-pdf-informe', // Slug de la página
+        'generar_pdf_informe_inmueble' // Callback para ejecutar la función
+    );
+}
+add_action('admin_menu', 'registrar_pagina_generar_pdf');
+
+
+
+function ocultar_submenus_informe_inmueble() {
+    echo '<style>
+        /* Ocultar el submenú de "Informe de Inmueble" */
+        li a[href="edit.php?post_type=inmueble&page=informe-inmueble"] {
+            display: none !important;
+        }
+
+        /* Ocultar el submenú de "Generar PDF" */
+        li a[href="edit.php?post_type=inmueble&page=generar-pdf-informe"] {
+            display: none !important;
+        }
+    </style>';
+}
+add_action('admin_head', 'ocultar_submenus_informe_inmueble');
