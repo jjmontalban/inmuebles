@@ -433,22 +433,20 @@ jQuery(document).ready(function($) {
 
 
     // Asigna el evento al botón "El mapa está correcto"
-    $('#mapa_correcto').on('click', function() {
+    $('#mapa_correcto').on('click', function(event) {
+        event.preventDefault(); // Evita que se recargue la página
+        
         // Obtén la ubicación del marcador
         var ubicacion = marcador.getPosition();
-
+    
         // Guarda la ubicación en el campo "campo_mapa"
         $('#campo_mapa').val(ubicacion.lat() + ',' + ubicacion.lng());
-
+        console.log("Coordenadas guardadas:", ubicacion.lat() + ',' + ubicacion.lng());
+    
         // Oculta el modal
         $('#mapaModal').hide();
     });
-
-    // Asigna el evento al botón "Cerrar Modal"
-    $('#cerrar_modal').on('click', function() {
-        // Oculta el modal
-        $('#mapaModal').hide();
-    });
+    
 
     document.addEventListener('DOMContentLoaded', (event) => {
         var mapaCorrecto = document.getElementById('mapa_correcto');
