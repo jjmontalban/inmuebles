@@ -254,9 +254,6 @@ function guardar_campos_inmueble( $post_id ) {
     if (isset($_POST['campo_mapa'])) {
         update_post_meta($post_id, 'campo_mapa', sanitize_text_field($_POST['campo_mapa']));
     }
-    if (empty($_POST['campo_mapa'])) {
-        wp_die('Por favor, valida la dirección en el mapa antes de guardar.');
-    }
     
     //Campos plano
     if (isset($_FILES['plano1'])) {
