@@ -12,6 +12,10 @@ class Demanda
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_demanda'], 10, 2);
         add_filter('manage_demanda_posts_columns', [$this, 'agregar_columnas_demanda']);
         add_action('manage_demanda_posts_custom_column', [$this, 'mostrar_datos_columnas_demanda'], 10, 2);  
+
+            add_action('wp_ajax_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
+            add_action('wp_ajax_nopriv_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
+    
     }
 
     public function crear_cpt_demanda() {
@@ -458,58 +462,99 @@ class Demanda
         );
     }
 
+    /**
+     * Muestra los inmuebles sugeridos (cruces) en el formulario de edición de demandas.
+     * @param WP_Post $post El objeto de entrada actual.
+     */
     public function mostrar_cruces_inmuebles($post) {
         $inmuebles_sugeridos = $this->obtener_cruces_inmuebles($post->ID);
         $telefono = get_post_meta($post->ID, 'telefono', true);
         $email = get_post_meta($post->ID, 'email', true);
+        $mensajes_enviados = get_post_meta($post->ID, 'mensajes_enviados', true) ?: [];
     
         if (!empty($inmuebles_sugeridos)) {
             echo '<ul>';
             foreach ($inmuebles_sugeridos as $inmueble) {
                 $titulo_inmueble = get_the_title($inmueble->ID);
                 $link_inmueble = get_permalink($inmueble->ID);
+                $id_inmueble = $inmueble->ID;
     
                 echo '<li>';
                 echo '<strong><a href="' . esc_url($link_inmueble) . '" target="_blank">' . esc_html($titulo_inmueble) . '</a></strong>';
     
-                // Botones de acciones para cada inmueble
                 if (!empty($telefono)) {
                     $mensaje_whatsapp = sprintf(
-                        'Hola, encontré este inmueble que podría interesarte: %s. Mira los detalles aquí: %s',
+                        'Hola, tenemos este inmueble que podría interesarte: %s. Mira los detalles aquí: %s',
                         esc_html($titulo_inmueble),
                         esc_url($link_inmueble)
                     );
                     $link_whatsapp = 'https://wa.me/' . esc_attr($telefono) . '?text=' . urlencode($mensaje_whatsapp);
-                    echo ' <a href="' . esc_url($link_whatsapp) . '" target="_blank" class="button button-primary">Enviar por WhatsApp</a>';
+                    if (isset($mensajes_enviados[$id_inmueble]['whatsapp'])) {
+                        echo ' <span style="color:green;">Mensaje enviado por WhatsApp</span>';
+                    } else {
+                        echo ' <a href="' . esc_url($link_whatsapp) . '" class="button button-primary" target="_blank">Enviar por WhatsApp</a>';
+                    }
                 }
     
                 if (!empty($email)) {
-                    $subject = 'Inmueble sugerido para tu demanda';
-                    $body = sprintf(
-                        "Hola,\n\nEncontré este inmueble que podría interesarte: %s.\nMira los detalles aquí: %s",
-                        esc_html($titulo_inmueble),
-                        esc_url($link_inmueble)
-                    );
-                
-                    // Construir el enlace al webmail
-                    $link_webmail = 'https://webmail.chipicasa.com/compose'
-                        . '?to=' . urlencode($email)
-                        . '&subject=' . urlencode($subject)
-                        . '&body=' . urlencode($body);
-                
-                    echo ' <a href="' . esc_url($link_webmail) . '" target="_blank" class="button">Enviar por Webmail</a>';
+                    if (isset($mensajes_enviados[$id_inmueble]['email'])) {
+                        echo ' <span style="color:green;">Mensaje enviado por Email</span>';
+                    } else {
+                        $update_url = add_query_arg([
+                            'action' => 'marcar_mensaje_enviado',
+                            'post_id' => $post->ID,
+                            'inmueble_id' => $id_inmueble,
+                            'tipo' => 'email'
+                        ], admin_url('admin-ajax.php'));
+                        echo ' <a href="' . esc_url($update_url) . '" class="button button-primary">Enviar por Email</a>';
+                    }
                 }
-                
-                
     
                 echo '</li>';
             }
             echo '</ul>';
-        } else {
-            echo '<p>No se encontraron inmuebles sugeridos para esta demanda.</p>';
         }
     }
+
+
+    public function marcar_mensaje_enviado_callback() {
+        $post_id = intval($_GET['post_id']);
+        $inmueble_id = intval($_GET['inmueble_id']);
+        $tipo = sanitize_text_field($_GET['tipo']);
     
+        if ($post_id && $inmueble_id && in_array($tipo, ['whatsapp', 'email'])) {
+            $mensajes_enviados = get_post_meta($post_id, 'mensajes_enviados', true) ?: [];
+            $mensajes_enviados[$inmueble_id][$tipo] = true;
+            update_post_meta($post_id, 'mensajes_enviados', $mensajes_enviados);
+    
+            if ($tipo === 'email') {
+                $this->enviar_correo_inmueble($post_id, $inmueble_id);
+            }
+    
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+        }
+    }
+
+    private function enviar_correo_inmueble($post_id, $inmueble_id) {
+        $email_destino = get_post_meta($post_id, 'email', true);
+        if (empty($email_destino)) {
+            return;
+        }
+    
+        $titulo_inmueble = get_the_title($inmueble_id);
+        $link_inmueble = get_permalink($inmueble_id);
+    
+        $subject = 'Recomendación de inmueble desde chipicasa.com';
+        $message = "Hola,\n\n";
+        $message .= "Tenemos un inmueble que podría interesarte.\n\n";
+        $message .= "Título: " . esc_html($titulo_inmueble) . "\n";
+        $message .= esc_url($link_inmueble) . "\n\n";
+        $message .= "Saludos,\n";
+        $message .= "El equipo de Chipicasa.com";
+    
+        wp_mail($email_destino, $subject, $message);
+    }
 
 
 }
