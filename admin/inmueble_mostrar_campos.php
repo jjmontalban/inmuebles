@@ -30,6 +30,15 @@ function mostrar_campos_inmueble( $post ) {
 
     <table class="form-table">
     <tr>
+
+            <tr>
+                <th>Reservado?</th>
+                <td>
+                    <input type="checkbox" name="reservado" value="si" <?php checked($campos['reservado'] ?? '', 'si'); ?>>
+                    <label for="reservado">Marcar si está reservado</label>
+                </td>
+            </tr>
+
             <th><label for="tipo_inmueble">Tipo de Inmueble*</label></th>
             <td>
                 <select name="tipo_inmueble" id="tipo_inmueble" required>
