@@ -11,10 +11,9 @@ class Demanda
         add_filter('post_row_actions', [$this, 'modificar_texto_accion_demanda'], 10, 2);
         add_filter('post_row_actions', [$this, 'desactivar_quick_edit_demanda'], 10, 2);
         add_filter('manage_demanda_posts_columns', [$this, 'agregar_columnas_demanda']);
-        add_action('manage_demanda_posts_custom_column', [$this, 'mostrar_datos_columnas_demanda'], 10, 2);  
-
-            add_action('wp_ajax_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
-            add_action('wp_ajax_nopriv_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
+        add_action('manage_demanda_posts_custom_column', [$this, 'mostrar_datos_columnas_demanda'], 10, 2);
+        add_action('wp_ajax_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
+        add_action('wp_ajax_nopriv_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
     
     }
 
@@ -36,7 +35,7 @@ class Demanda
             'public' => false,
             'show_ui' => true,
             'show_in_menu' => true,
-            'supports' => array('')
+            'supports' => [],
         );
         register_post_type('demanda', $args);
     }
@@ -560,6 +559,16 @@ class Demanda
 }
 
 new Demanda();
+
+
+add_action('admin_init', 'demanda_quitar_soportes', 20);
+function demanda_quitar_soportes() {
+    remove_post_type_support('demanda', 'title');       // Quita el título
+    remove_post_type_support('demanda', 'editor');      // Quita el editor
+    remove_post_type_support('demanda', 'thumbnail');   // Quita la imagen destacada
+    remove_post_type_support('demanda', 'custom-fields'); 
+}
+
 
 /**
  * Amplia la búsqueda en campos personalizados de demandas.

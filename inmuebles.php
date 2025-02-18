@@ -19,6 +19,7 @@ require_once plugin_dir_path(__FILE__) . 'admin/cita.php';
 require_once plugin_dir_path(__FILE__) . 'admin/propietario.php';
 require_once plugin_dir_path(__FILE__) . 'admin/consulta.php';
 require_once plugin_dir_path(__FILE__) . 'admin/demanda.php';
+require_once plugin_dir_path(__FILE__) . 'admin/import-demandas.php';
 require_once plugin_dir_path(__FILE__) . 'admin/gmaps.php';
 require_once plugin_dir_path(__FILE__) . 'admin/recaptcha.php';
 
