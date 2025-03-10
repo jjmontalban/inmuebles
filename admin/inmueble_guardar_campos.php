@@ -180,8 +180,10 @@ function guardar_campos_inmueble( $post_id ) {
         update_post_meta($post_id, 'ascensor', sanitize_text_field($_POST['ascensor']));
     }
     if (isset($_POST['reservado'])) {
-        update_post_meta($post_id, 'reservado', sanitize_text_field($_POST['reservado']));
-    }
+        update_post_meta($post_id, 'reservado', 'si');
+    } else {
+        delete_post_meta($post_id, 'reservado');
+    }    
     if (isset($_POST['interior_ext'])) {
         update_post_meta($post_id, 'interior_ext', sanitize_text_field($_POST['interior_ext']));
     }
