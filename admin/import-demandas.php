@@ -17,7 +17,7 @@ function chipicasa_importar_demandas_submenu() {
         'edit.php?post_type=demanda',   // Menú padre (CPT Demandas)
         'Importar Demandas',       // Título de la página
         'Importar Demandas desde archivo',                // Título del submenú
-        'manage_options',               // Capability requerida
+        'edit_posts',               // Capability requerida
         'importar-demandas',            // Slug del submenú
         'chipicasa_importar_demandas_page'  // Callback para la pantalla
     );
