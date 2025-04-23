@@ -14,7 +14,8 @@ class Demanda
         add_action('manage_demanda_posts_custom_column', [$this, 'mostrar_datos_columnas_demanda'], 10, 2);
         add_action('wp_ajax_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
         add_action('wp_ajax_nopriv_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_callback']);
-    
+        add_action('admin_post_marcar_mensaje_enviado', [$this, 'marcar_mensaje_enviado_post']);
+
     }
 
     public function crear_cpt_demanda() {
@@ -482,16 +483,17 @@ class Demanda
                 echo '<strong><a href="' . esc_url($link_inmueble) . '" target="_blank">' . esc_html($titulo_inmueble) . '</a></strong>';
     
                 if (!empty($telefono)) {
-                    $mensaje_whatsapp = sprintf(
-                        'Hola, tenemos este inmueble que podría interesarte: %s. Mira los detalles aquí: %s',
-                        esc_html($titulo_inmueble),
-                        esc_url($link_inmueble)
-                    );
-                    $link_whatsapp = 'https://wa.me/' . esc_attr($telefono) . '?text=' . urlencode($mensaje_whatsapp);
                     if (isset($mensajes_enviados[$id_inmueble]['whatsapp'])) {
                         echo ' <span style="color:green;">Mensaje enviado por WhatsApp</span>';
                     } else {
-                        echo ' <a href="' . esc_url($link_whatsapp) . '" class="button button-primary" target="_blank">Enviar por WhatsApp</a>';
+                        $update_url = add_query_arg([
+                            'action' => 'marcar_mensaje_enviado',
+                            'post_id' => $post->ID,
+                            'inmueble_id' => $id_inmueble,
+                            'tipo' => 'whatsapp'
+                        ], admin_url('admin-post.php'));
+                
+                        echo ' <a href="' . esc_url($update_url) . '" class="button button-primary" target="_blank">Enviar por WhatsApp</a>';
                     }
                 }
     
@@ -515,6 +517,37 @@ class Demanda
         }
     }
 
+    public function marcar_mensaje_enviado_post() {
+        $post_id = intval($_GET['post_id']);
+        $inmueble_id = intval($_GET['inmueble_id']);
+        $tipo = sanitize_text_field($_GET['tipo']);
+    
+        if ($post_id && $inmueble_id && $tipo === 'whatsapp') {
+            $mensajes_enviados = get_post_meta($post_id, 'mensajes_enviados', true) ?: [];
+            $mensajes_enviados[$inmueble_id][$tipo] = true;
+            update_post_meta($post_id, 'mensajes_enviados', $mensajes_enviados);
+    
+            // Generar el mensaje y enlace de WhatsApp
+            $telefono = get_post_meta($post_id, 'telefono', true);
+            $titulo_inmueble = get_the_title($inmueble_id);
+            $link_inmueble = get_permalink($inmueble_id);
+    
+            $mensaje = sprintf(
+                'Hola, tenemos este inmueble que podría interesarte: %s. Mira los detalles aquí: %s',
+                $titulo_inmueble,
+                $link_inmueble
+            );
+    
+            $link_whatsapp = 'https://wa.me/' . urlencode($telefono) . '?text=' . urlencode($mensaje);
+            wp_redirect($link_whatsapp);
+            exit;
+        }
+    
+        // Si falla algo, volver a donde estaba
+        wp_redirect($_SERVER['HTTP_REFERER']);
+        exit;
+    }
+    
 
     public function marcar_mensaje_enviado_callback() {
         $post_id = intval($_GET['post_id']);
