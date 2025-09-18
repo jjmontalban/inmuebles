@@ -81,6 +81,7 @@ $zonas_inmueble_map = array(
     'estacion' => 'Estación autobuses',
     'lagunilla' => 'La Lagunilla',
     'montijo' => 'Montijo',
+    'loma' => 'La Loma',
 );
 
 /* Ocultar las opciones de publicación y visibilidad para los CPT personalizados */
